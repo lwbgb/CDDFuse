@@ -38,7 +38,7 @@ epoch_gap = 40  # epoches of Phase I
 
 lr = 1e-4
 weight_decay = 0
-batch_size = 8
+batch_size = 4
 GPU_number = os.environ['CUDA_VISIBLE_DEVICES']
 # Coefficients of the loss function
 coeff_mse_loss_VF = 1. # alpha1

@@ -11,8 +11,8 @@ warnings.filterwarnings("ignore")
 logging.basicConfig(level=logging.CRITICAL)
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-ckpt_path=r"models/CDDFuse_IVF.pth"
-for dataset_name in ["TNO","RoadScene"]:
+ckpt_path=r"models/CDDFuse_05-04-20-06.pth"
+for dataset_name in ["MSRS"]:
     print("\n"*2+"="*80)
     model_name="CDDFuse    "
     print("The test result of "+dataset_name+' :')
@@ -20,10 +20,10 @@ for dataset_name in ["TNO","RoadScene"]:
     test_out_folder=os.path.join('test_result',dataset_name)
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    Encoder = nn.DataParallel(Restormer_Encoder()).to(device)
-    Decoder = nn.DataParallel(Restormer_Decoder()).to(device)
-    BaseFuseLayer = nn.DataParallel(BaseFeatureExtraction(dim=64, num_heads=8)).to(device)
-    DetailFuseLayer = nn.DataParallel(DetailFeatureExtraction(num_layers=1)).to(device)
+    Encoder = Restormer_Encoder().to(device)
+    Decoder = Restormer_Decoder().to(device)
+    BaseFuseLayer = BaseFeatureExtraction(dim=64, num_heads=8).to(device)
+    DetailFuseLayer = DetailFeatureExtraction(num_layers=1).to(device)
 
     Encoder.load_state_dict(torch.load(ckpt_path)['DIDF_Encoder'])
     Decoder.load_state_dict(torch.load(ckpt_path)['DIDF_Decoder'])
@@ -52,22 +52,21 @@ for dataset_name in ["TNO","RoadScene"]:
             fi = np.squeeze((data_Fuse * 255).cpu().numpy())
             img_save(fi, img_name.split(sep='.')[0], test_out_folder)
 
-
     eval_folder=test_out_folder  
     ori_img_folder=test_folder
 
     metric_result = np.zeros((8))
     for img_name in os.listdir(os.path.join(ori_img_folder,"ir")):
-            ir = image_read_cv2(os.path.join(ori_img_folder,"ir", img_name), 'GRAY')
-            vi = image_read_cv2(os.path.join(ori_img_folder,"vi", img_name), 'GRAY')
-            fi = image_read_cv2(os.path.join(eval_folder, img_name.split('.')[0]+".png"), 'GRAY')
-            metric_result += np.array([Evaluator.EN(fi), Evaluator.SD(fi)
+        ir = image_read_cv2(os.path.join(ori_img_folder,"ir", img_name), 'GRAY')
+        vi = image_read_cv2(os.path.join(ori_img_folder,"vi", img_name), 'GRAY')
+        fi = image_read_cv2(os.path.join(eval_folder, img_name.split('.')[0]+".png"), 'GRAY')
+        metric_result += np.array([Evaluator.EN(fi), Evaluator.SD(fi)
                                         , Evaluator.SF(fi), Evaluator.MI(fi, ir, vi)
                                         , Evaluator.SCD(fi, ir, vi), Evaluator.VIFF(fi, ir, vi)
                                         , Evaluator.Qabf(fi, ir, vi), Evaluator.SSIM(fi, ir, vi)])
 
     metric_result /= len(os.listdir(eval_folder))
-    print("\t\t\t EN\t\t SD\t\t SF\t\t MI\t\tSCD\t\tVIF\t\tQabf\tSSIM")
+    print("\t\t EN\t SD\t SF\t MI\tSCD\tVIF\tQabf\tSSIM")
     print(model_name+'\t'+str(np.round(metric_result[0], 2))+'\t'
             +str(np.round(metric_result[1], 2))+'\t'
             +str(np.round(metric_result[2], 2))+'\t'
