@@ -3,7 +3,7 @@ data/*
 test_result/*
 MSRS_train/*
 MSRS-main
-test_img/
+# test_img/
 
 # idea
 .idea
