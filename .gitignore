@@ -4,6 +4,7 @@ test_result/*
 MSRS_train/*
 MSRS-main
 # test_img/
+.vscode
 
 # idea
 .idea

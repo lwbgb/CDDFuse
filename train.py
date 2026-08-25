@@ -100,7 +100,8 @@ prev_time = time.time()
 for epoch in range(num_epochs):
     ''' train '''
     for i, (data_VIS, data_IR) in enumerate(loader['train']):
-        data_VIS, data_IR = data_VIS.cuda(), data_IR.cuda()
+        if device == 'cuda':
+            data_VIS, data_IR = data_VIS.cuda(), data_IR.cuda()
         DIDF_Encoder.train()
         DIDF_Decoder.train()
         BaseFuseLayer.train()

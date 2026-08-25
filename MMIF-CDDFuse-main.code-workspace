@@ -4,5 +4,24 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.exclude": {
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/.DS_Store": true,
+			"**/Thumbs.db": true,
+			"**/node_modules": true,
+			"**/__pycache__": true
+		},
+		"commentTranslate.source": "Google",
+		"python.testing.unittestEnabled": true,
+		"python.testing.unittestArgs": [
+			"-v",
+			"-s",
+			"${workspaceFolder}/tests",
+			"-p",
+			"*test*.py"
+		],
+	}
 }

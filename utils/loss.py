@@ -2,7 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
+# TODO: 配置文件读取
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class Fusionloss(nn.Module):
     def __init__(self):
@@ -32,8 +33,12 @@ class Sobelxy(nn.Module):
                   [-1, -2, -1]]
         kernelx = torch.FloatTensor(kernelx).unsqueeze(0).unsqueeze(0)
         kernely = torch.FloatTensor(kernely).unsqueeze(0).unsqueeze(0)
-        self.weightx = nn.Parameter(data=kernelx, requires_grad=False).cuda()
-        self.weighty = nn.Parameter(data=kernely, requires_grad=False).cuda()
+        if device == 'cuda':
+            self.weightx = nn.Parameter(data=kernelx, requires_grad=False).cuda()
+            self.weighty = nn.Parameter(data=kernely, requires_grad=False).cuda()
+        else:
+            self.weightx = nn.Parameter(data=kernelx, requires_grad=False).cpu()
+            self.weighty = nn.Parameter(data=kernely, requires_grad=False).cpu()
     def forward(self,x):
         sobelx=F.conv2d(x, self.weightx, padding=1)
         sobely=F.conv2d(x, self.weighty, padding=1)

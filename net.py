@@ -391,8 +391,9 @@ class Restormer_Encoder(nn.Module):
 
         self.patch_embed = OverlapPatchEmbed(inp_channels, dim)
 
-        self.encoder_level1 = nn.Sequential(*[TransformerBlock(dim=dim, num_heads=heads[0], ffn_expansion_factor=ffn_expansion_factor,
-                                            bias=bias, LayerNorm_type=LayerNorm_type) for i in range(num_blocks[0])])
+        self.encoder_level1 = nn.Sequential(*[TransformerBlock(dim=dim, num_heads=heads[0],
+            ffn_expansion_factor=ffn_expansion_factor,
+            bias=bias, LayerNorm_type=LayerNorm_type) for i in range(num_blocks[0])])
         self.baseFeature = BaseFeatureExtraction(dim=dim, num_heads = heads[2])
         self.detailFeature = DetailFeatureExtraction()
              
@@ -416,16 +417,28 @@ class Restormer_Decoder(nn.Module):
                  ):
 
         super(Restormer_Decoder, self).__init__()
+
         self.reduce_channel = nn.Conv2d(int(dim*2), int(dim), kernel_size=1, bias=bias)
-        self.encoder_level2 = nn.Sequential(*[TransformerBlock(dim=dim, num_heads=heads[1], ffn_expansion_factor=ffn_expansion_factor,
-                                            bias=bias, LayerNorm_type=LayerNorm_type) for i in range(num_blocks[1])])
+        self.encoder_level2 = nn.Sequential(
+            *[
+                TransformerBlock(
+                    dim=dim,
+                    num_heads=heads[1],
+                    ffn_expansion_factor=ffn_expansion_factor,
+                    bias=bias,
+                    LayerNorm_type=LayerNorm_type,
+                )
+                for i in range(num_blocks[1])
+            ]
+        )
         self.output = nn.Sequential(
             nn.Conv2d(int(dim), int(dim)//2, kernel_size=3,
                       stride=1, padding=1, bias=bias),
             nn.LeakyReLU(),
             nn.Conv2d(int(dim)//2, out_channels, kernel_size=3,
                       stride=1, padding=1, bias=bias),)
-        self.sigmoid = nn.Sigmoid()              
+        self.sigmoid = nn.Sigmoid()      
+                
     def forward(self, inp_img, base_feature, detail_feature):
         out_enc_level0 = torch.cat((base_feature, detail_feature), dim=1)
         out_enc_level0 = self.reduce_channel(out_enc_level0)
