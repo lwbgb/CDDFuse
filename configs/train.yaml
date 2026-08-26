@@ -1,0 +1,20 @@
+model: CDDFuse
+num_epochs: 120 # total epoch
+epoch_gap: 40  # epoches of Phase I 
+lr: 1e-4
+weight_decay: 0
+batch_size: 4
+
+# Coefficients of the loss function
+coeff_mse_loss_VF: 1. # alpha1
+coeff_mse_loss_IF: 1.
+coeff_decomp: 2.      # alpha2 and alpha4
+coeff_tv: 5.
+
+# Optimizer
+clip_grad_norm_value: 0.01
+optim_step: 20
+optim_gamma: 0.5
+
+# device
+device: cuda:0

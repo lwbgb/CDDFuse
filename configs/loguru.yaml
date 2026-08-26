@@ -1,0 +1,8 @@
+root: logs/
+prefix: 
+rotation: "10 MB"
+retention: "30 days"
+encoding: utf-8
+backtrace: True
+diagnose: True
+format: "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <magenta>PID<{process}></magenta>:<yellow>TID<{thread}></yellow> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<yellow>{line}</yellow> - <level>{message}</level>"
