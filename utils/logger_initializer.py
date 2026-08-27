@@ -5,10 +5,12 @@ from time import localtime, strftime
 import hydra
 from omegaconf import DictConfig
 from loguru import logger
+from hydra import initialize, compose
 
 
 def init_logger(file_name: str | None = None):
-    
+    with initialize(version_base=None, config_path="../configs"):
+        opt: DictConfig = compose(config_name="loguru")
     logger.remove()
     # 控制台输出
     logger.add(sys.stderr, level='DEBUG', format=opt.format, colorize=True, backtrace=opt.backtrace, 
