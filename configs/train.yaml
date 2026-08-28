@@ -1,14 +1,22 @@
 model: CDDFuse
 n_epochs: 120 # total epoch
 epoch_gap: 40  # epoches of Phase I 
+start_epoch: 1
 lr: 1e-4
+min_lr: 1e-6
 weight_decay: 0
+print_epoch_freq: 1
+print_iter_freq: 10000
+display_freq: 100
+save_latest_freq: 1
+save_epoch_freq: 5
 
 # Coefficients of the loss function
 coeff_mse_loss_VF: 1. # alpha1
 coeff_mse_loss_IF: 1.
 coeff_decomp: 2.      # alpha2 and alpha4
 coeff_tv: 5.
+SSIM_window_size: 11
 
 # Optimizer
 clip_grad_norm_value: 0.01

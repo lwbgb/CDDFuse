@@ -12,159 +12,146 @@ def unwrap_model(model: nn.Module) -> nn.Module:
     return model.module if hasattr(model, "module") else model
 
 
-def get_grad_state(module: nn.Module) -> Dict[str, Optional[torch.Tensor]]:
-    grad_state = {}
-
-    for name, parameter in unwrap_model(module).named_parameters():
-        grad_state[name] = None if parameter.grad is None else parameter.grad.detach().cpu().clone()
-
-    return grad_state
-
-
-def load_grad_state(module: nn.Module, grad_state: Optional[Dict[str, Optional[torch.Tensor]]]) -> None:
-    if not grad_state:
-        return
-
-    parameters = dict(unwrap_model(module).named_parameters())
-
-    for name, gradient in grad_state.items():
-        if name not in parameters:
-            continue
-
-        parameter = parameters[name]
-
-        if gradient is None:
-            parameter.grad = None
-        else:
-            parameter.grad = gradient.to(device=parameter.device, dtype=parameter.dtype).clone()
-
-
-def move_optimizer_to_device(optimizer: torch.optim.Optimizer, device: torch.device) -> None:
-    for state in optimizer.state.values():
-        for key, value in state.items():
+def move_optimizer_to_device(
+    optimizer: torch.optim.Optimizer,
+    device: torch.device,
+) -> None:
+    for optimizer_state in optimizer.state.values():
+        for key, value in optimizer_state.items():
             if torch.is_tensor(value):
-                state[key] = value.to(device)
+                optimizer_state[key] = value.to(device)
 
 
-def save_checkpoint(
+def save_epoch_checkpoint(
     checkpoint_path: str,
     phase: int,
     epoch: int,
-    batch_index: int,
     global_step: int,
-    models: Dict[str, nn.Module],
-    optimizers: Dict[str, torch.optim.Optimizer],
-    schedulers: Dict[str, Any],
-    criteria: Dict[str, nn.Module],
-    latest_losses: Optional[Dict[str, float]] = None,
-    config: Optional[Dict[str, Any]] = None,
+    models: dict[str, nn.Module],
+    optimizers: dict[str, torch.optim.Optimizer],
+    schedulers: dict[str, Any],
+    config: dict | None = None,
 ) -> None:
-    target_path = Path(checkpoint_path)
-    target_path.parent.mkdir(parents=True, exist_ok=True)
+    checkpoint_path = Path(checkpoint_path)
+    checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
 
     checkpoint = {
-        "format_version": 1,
         "phase": phase,
         "epoch": epoch,
-        "batch_index": batch_index,
         "global_step": global_step,
-        "models": {
-            name: unwrap_model(model).state_dict()
-            for name, model in models.items()
-        },
-        "model_gradients": {
-            name: get_grad_state(model)
-            for name, model in models.items()
-        },
-        "optimizers": {
-            name: optimizer.state_dict()
-            for name, optimizer in optimizers.items()
-        },
-        "schedulers": {
-            name: scheduler.state_dict()
-            for name, scheduler in schedulers.items()
-        },
-        "criteria": {
-            name: criterion.state_dict()
-            for name, criterion in criteria.items()
-        },
-        "criterion_gradients": {
-            name: get_grad_state(criterion)
-            for name, criterion in criteria.items()
-        },
-        "latest_losses": latest_losses or {},
+        "models": {name: unwrap_model(model).state_dict() for name, model in models.items()},
+        "optimizers": {name: optimizer.state_dict() for name, optimizer in optimizers.items()},
+        "schedulers": {name: scheduler.state_dict() for name, scheduler in schedulers.items()},
         "config": config or {},
-        "random_state": {
-            "python": random.getstate(),
-            "numpy": np.random.get_state(),
-            "torch_cpu": torch.get_rng_state(),
-            "torch_cuda": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None,
+    }
+
+    temporary_path = checkpoint_path.with_suffix(checkpoint_path.suffix + ".tmp")
+    torch.save(checkpoint, temporary_path)
+    os.replace(temporary_path, checkpoint_path)
+
+
+def load_epoch_checkpoint(
+    checkpoint_path: str,
+    device: torch.device,
+    models: dict[str, nn.Module],
+    optimizers: dict[str, torch.optim.Optimizer],
+    schedulers: dict[str, torch.optim.lr_scheduler.LRScheduler],
+    expected_phase: int | None = None,
+    strict: bool = True,
+) -> dict:
+    checkpoint_file = Path(checkpoint_path)
+
+    if not checkpoint_file.is_file():
+        raise FileNotFoundError(f"Checkpoint 文件不存在：{checkpoint_path}")
+
+    checkpoint = torch.load(
+        checkpoint_file,
+        map_location=device,
+        weights_only=False,
+    )
+
+    required_fields = {
+        "phase",
+        "epoch",
+        "global_step",
+        "models",
+        "optimizers",
+        "schedulers",
+    }
+
+    missing_fields = required_fields.difference(checkpoint.keys())
+
+    if missing_fields:
+        raise KeyError(f"Checkpoint 缺少必要字段：{sorted(missing_fields)}")
+
+    checkpoint_phase = int(checkpoint["phase"])
+
+    if checkpoint_phase not in {1, 2}:
+        raise ValueError(f"Checkpoint 中的 phase 无效：{checkpoint_phase}")
+
+    if expected_phase is not None and checkpoint_phase != expected_phase:
+        raise ValueError(f"Checkpoint phase 不匹配，期望 {expected_phase}，" f"实际为 {checkpoint_phase}")
+
+    required_names = {
+        1: {
+            "models": {
+                "DIDF_Encoder",
+                "DIDF_Decoder",
+            },
+            "optimizers": {
+                "optimizer_encoder",
+                "optimizer_decoder",
+            },
+            "schedulers": {
+                "scheduler_encoder",
+                "scheduler_decoder",
+            },
+        },
+        2: {
+            "models": {
+                "DIDF_Encoder",
+                "DIDF_Decoder",
+                "BaseFuseLayer",
+                "DetailFuseLayer",
+            },
+            "optimizers": {
+                "optimizer_encoder",
+                "optimizer_decoder",
+                "optimizer_base_fusion",
+                "optimizer_detail_fusion",
+            },
+            "schedulers": {
+                "scheduler_encoder",
+                "scheduler_decoder",
+                "scheduler_base_fusion",
+                "scheduler_detail_fusion",
+            },
         },
     }
 
-    temporary_path = target_path.with_suffix(target_path.suffix + ".tmp")
-    torch.save(checkpoint, temporary_path)
-    os.replace(temporary_path, target_path)
+    phase_requirements = required_names[checkpoint_phase]
 
+    for category in ("models", "optimizers", "schedulers"):
+        missing_in_checkpoint = phase_requirements[category] - checkpoint[category].keys()
+        missing_in_runtime = phase_requirements[category] - locals()[category].keys()
 
-def load_checkpoint(
-    checkpoint_path: str,
-    device: torch.device,
-    models: Dict[str, nn.Module],
-    optimizers: Dict[str, torch.optim.Optimizer],
-    schedulers: Dict[str, Any],
-    criteria: Dict[str, nn.Module],
-    restore_gradients: bool = True,
-    restore_random_state: bool = True,
-    strict: bool = True,
-) -> Dict[str, Any]:
-    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
+        if missing_in_checkpoint:
+            raise KeyError(f"Checkpoint 的 {category} 缺少：" f"{sorted(missing_in_checkpoint)}")
 
-    for name, model in models.items():
-        if name not in checkpoint["models"]:
-            raise KeyError(f"Checkpoint 中不存在模型状态：{name}")
+        if missing_in_runtime:
+            raise KeyError(f"当前程序的 {category} 缺少：" f"{sorted(missing_in_runtime)}")
 
-        unwrap_model(model).load_state_dict(checkpoint["models"][name], strict=strict)
+    for name in phase_requirements["models"]:
+        unwrap_model(models[name]).load_state_dict(
+            checkpoint["models"][name],
+            strict=strict,
+        )
 
-    for name, optimizer in optimizers.items():
-        if name not in checkpoint["optimizers"]:
-            raise KeyError(f"Checkpoint 中不存在优化器状态：{name}")
+    for name in phase_requirements["optimizers"]:
+        optimizers[name].load_state_dict(checkpoint["optimizers"][name])
+        move_optimizer_to_device(optimizers[name], device)
 
-        optimizer.load_state_dict(checkpoint["optimizers"][name])
-        move_optimizer_to_device(optimizer, device)
-
-    for name, scheduler in schedulers.items():
-        if name not in checkpoint["schedulers"]:
-            raise KeyError(f"Checkpoint 中不存在调度器状态：{name}")
-
-        scheduler.load_state_dict(checkpoint["schedulers"][name])
-
-    for name, criterion in criteria.items():
-        criterion_state = checkpoint.get("criteria", {}).get(name)
-
-        if criterion_state is not None:
-            criterion.load_state_dict(criterion_state, strict=strict)
-
-    if restore_gradients:
-        for name, model in models.items():
-            load_grad_state(model, checkpoint.get("model_gradients", {}).get(name))
-
-        for name, criterion in criteria.items():
-            load_grad_state(criterion, checkpoint.get("criterion_gradients", {}).get(name))
-
-    if restore_random_state:
-        random_state = checkpoint.get("random_state", {})
-
-        if random_state.get("python") is not None:
-            random.setstate(random_state["python"])
-
-        if random_state.get("numpy") is not None:
-            np.random.set_state(random_state["numpy"])
-
-        if random_state.get("torch_cpu") is not None:
-            torch.set_rng_state(random_state["torch_cpu"].cpu())
-
-        if torch.cuda.is_available() and random_state.get("torch_cuda") is not None:
-            torch.cuda.set_rng_state_all(random_state["torch_cuda"])
+    for name in phase_requirements["schedulers"]:
+        schedulers[name].load_state_dict(checkpoint["schedulers"][name])
 
     return checkpoint
