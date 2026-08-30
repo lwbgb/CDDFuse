@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 
+from schemas.base_config import BaseConfig
+
 
 @dataclass
-class TrainConfig:
+class TrainConfig(BaseConfig):
     model: str = "CDDFuse"
     n_epochs: int = 120
     epoch_gap: int = 40
@@ -15,6 +17,8 @@ class TrainConfig:
     display_freq: int = 100
     save_latest_freq: int = 1
     save_epoch_freq: int = 5
+    checkpoint_root: str = r"checkpoints/"
+    continue_train: bool = False
 
     coeff_mse_loss_VF: float = 1.0
     coeff_mse_loss_IF: float = 1.0
@@ -32,3 +36,4 @@ class TrainConfig:
     shuffle: bool = True
     num_threads: int = 4
     drop_last: bool = False
+    dataset_root: str = "data/"

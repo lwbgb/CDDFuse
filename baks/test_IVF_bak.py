@@ -1,29 +1,24 @@
-from pathlib import Path
-
 from net import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
 import os
 import numpy as np
 from utils.Evaluator import Evaluator
 import torch
 import torch.nn as nn
-from utils.checkpoint import load_models
 from utils.device import init_ddp
 from utils.img_read_save import img_save,image_read_cv2
 import warnings
 import logging
 warnings.filterwarnings("ignore")
 logging.basicConfig(level=logging.CRITICAL)
-from utils.logger_initializer import logger, init_logger
 
-init_logger("test.log")
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-ckpt_path = Path("checkpoints/20260830-065231/CDDFuse_phase2_epoch120.pth")
+ckpt_path=r"checkpoints/20260830-065231/CDDFuse_phase2_epoch120.pth"
 
 if __name__ == '__main__':
     for dataset_name in ["MSRS"]:
-        logger.info("\n"*2+"="*80)
+        print("\n"*2+"="*80)
         model_name="CDDFuse    "
-        logger.info(f"Test model: {ckpt_path.name} on {dataset_name} :")
+        print("The test result of "+dataset_name+' :')
         test_folder=os.path.join('test_img',dataset_name) 
         test_out_folder=os.path.join('test_result',dataset_name)
 
@@ -32,16 +27,15 @@ if __name__ == '__main__':
         Decoder = Restormer_Decoder().to(device)
         BaseFuseLayer = BaseFeatureExtraction(dim=64, num_heads=8).to(device)
         DetailFuseLayer = DetailFeatureExtraction(num_layers=1).to(device)
-        models: dict[str, nn.Module] = {
-            "DIDF_Encoder": Encoder,
-            "DIDF_Decoder": Decoder,
-            "BaseFuseLayer": BaseFuseLayer,
-            "DetailFuseLayer": DetailFuseLayer,
-        }
-        
-        load_models(ckpt_path, device, models)
-        for model in models.values():
-            model.eval()
+
+        Encoder.load_state_dict(torch.load(ckpt_path)['DIDF_Encoder'])
+        Decoder.load_state_dict(torch.load(ckpt_path)['DIDF_Decoder'])
+        BaseFuseLayer.load_state_dict(torch.load(ckpt_path)['BaseFuseLayer'])
+        DetailFuseLayer.load_state_dict(torch.load(ckpt_path)['DetailFuseLayer'])
+        Encoder.eval()
+        Decoder.eval()
+        BaseFuseLayer.eval()
+        DetailFuseLayer.eval()
 
         with torch.no_grad():
             for img_name in os.listdir(os.path.join(test_folder,"ir")):
@@ -75,8 +69,8 @@ if __name__ == '__main__':
                                             , Evaluator.Qabf(fi, ir, vi), Evaluator.SSIM(fi, ir, vi)])
 
         metric_result /= len(os.listdir(eval_folder))
-        logger.info("\t\t EN\t SD\t SF\t MI\tSCD\tVIF\tQabf\tSSIM")
-        logger.info(model_name+'\t'+str(np.round(metric_result[0], 2))+'\t'
+        print("\t\t EN\t SD\t SF\t MI\tSCD\tVIF\tQabf\tSSIM")
+        print(model_name+'\t'+str(np.round(metric_result[0], 2))+'\t'
                 +str(np.round(metric_result[1], 2))+'\t'
                 +str(np.round(metric_result[2], 2))+'\t'
                 +str(np.round(metric_result[3], 2))+'\t'
@@ -85,4 +79,4 @@ if __name__ == '__main__':
                 +str(np.round(metric_result[6], 2))+'\t'
                 +str(np.round(metric_result[7], 2))
                 )
-        logger.info("="*80)
+        print("="*80)

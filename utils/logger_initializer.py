@@ -1,9 +1,10 @@
 from pathlib import Path
 import sys
 from time import localtime, strftime
+import time
 
 import hydra
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 from loguru import logger
 from hydra import initialize, compose
 
@@ -30,3 +31,12 @@ def init_logger(file_name: str | None = None):
         raise IOError("Logger 文件路径配置出错！")
     logger.add(file_path, level='INFO', format=opt.format, colorize=False, backtrace=opt.backtrace,
                diagnose=opt.diagnose, rotation=opt.rotation, retention=opt.retention, encoding=opt.encoding, enqueue=True)
+    
+
+def init_custom_resolvers() -> list[str]:
+    
+    resolvers: list[str] = []
+    resolvers.append("current_date")
+    OmegaConf.register_new_resolver("current_date", lambda fmt="%Y%m%d": time.strftime(fmt, time.localtime()))
+    
+    return resolvers

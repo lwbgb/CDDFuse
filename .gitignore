@@ -1,10 +1,10 @@
 # custom
-data/*
-test_result/*
-MSRS_train/*
-MSRS-main
+data/
+test_result/
+MSRS_train/
+MSRS-main/
 # test_img/
-.vscode
+.vscode/
 
 # idea
 .idea

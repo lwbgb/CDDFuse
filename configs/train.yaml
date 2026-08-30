@@ -1,7 +1,7 @@
 model: CDDFuse
 n_epochs: 120 # total epoch
 epoch_gap: 40  # epoches of Phase I 
-start_epoch: 1
+start_epoch: 42
 lr: 1e-4
 min_lr: 1e-6
 weight_decay: 0
@@ -9,7 +9,9 @@ print_epoch_freq: 1
 print_iter_freq: 10000
 display_freq: 100
 save_latest_freq: 1
-save_epoch_freq: 5
+save_epoch_freq: 10
+checkpoint_root: checkpoints/
+continue_train: True
 
 # Coefficients of the loss function
 coeff_mse_loss_VF: 1. # alpha1
@@ -24,10 +26,11 @@ optim_step: 20
 optim_gamma: 0.5
 
 # device
-device: cpu
+device: gpu
 
 # dataset
 batch_size: 4
 shuffle: True
-num_threads: 4
+num_threads: 24
 drop_last: False
+dataset_root: data/

@@ -1,4 +1,10 @@
+import os
+
 import torch
-print("PyTorch Version:", torch.__version__)
-print("CUDA Available:", torch.cuda.is_available())
-print("GPU Name:", torch.cuda.get_device_name(0))
+
+if __name__ == "__main__":
+    print(torch.__version__)
+    print(torch.cuda.is_available())
+    print(torch.version.cuda)
+    print(torch.backends.cudnn.version())
+    print("逻辑线程数:", os.cpu_count())

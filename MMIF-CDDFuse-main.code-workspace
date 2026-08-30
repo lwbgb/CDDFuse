@@ -16,8 +16,6 @@
 		},
 		"commentTranslate.source": "Google",
 		"python.testing.unittestEnabled": true,
-		// "python.testing.cwd": "${workspaceFolder}/tests", // pytest的工作目录
-		// "python.testing.autoTestDiscoverOnSavePattern": "**/tests/**/*.py",
 		"python.testing.unittestArgs": [
 			"-v",
 			"-s",

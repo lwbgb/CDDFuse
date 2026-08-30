@@ -20,25 +20,48 @@ def move_optimizer_to_device(
         for key, value in optimizer_state.items():
             if torch.is_tensor(value):
                 optimizer_state[key] = value.to(device)
+                
+
+def check_file_path(path: str | Path, create: bool = False) -> bool:
+    path = Path(path)
+    
+    # 1. 如果路径已存在，但它是一个目录而非文件，说明路径无效（被同名文件夹占用）
+    if path.exists() and not path.is_file():
+        raise ValueError(f"目标路径已被目录占用，无法作为文件使用：{path}")
+        
+    parent = path.parent
+    
+    # 2. 检查父目录状态
+    if parent.exists():
+        if not parent.is_dir():
+            raise NotADirectoryError(f"路径的父级已存在，但它是一个文件而非目录：{parent}")
+        return True
+    else:
+        # 3. 父目录不存在时，根据 create 参数决定行为
+        if create:
+            parent.mkdir(parents=True, exist_ok=True)
+            return True
+        else:
+            raise FileNotFoundError(f"父目录不存在且未授权创建：{parent}")
+    
 
 
 def save_epoch_checkpoint(
-    checkpoint_path: str,
+    checkpoint_path: str | Path,
     phase: int,
     epoch: int,
-    global_step: int,
     models: dict[str, nn.Module],
     optimizers: dict[str, torch.optim.Optimizer],
-    schedulers: dict[str, Any],
+    schedulers: dict[str, torch.optim.lr_scheduler.LRScheduler],
     config: dict | None = None,
 ) -> None:
-    checkpoint_path = Path(checkpoint_path)
-    checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
-
+    
+    checkpoint_path: Path = Path(checkpoint_path)
+    check_file_path(checkpoint_path, create=True)
+        
     checkpoint = {
         "phase": phase,
         "epoch": epoch,
-        "global_step": global_step,
         "models": {name: unwrap_model(model).state_dict() for name, model in models.items()},
         "optimizers": {name: optimizer.state_dict() for name, optimizer in optimizers.items()},
         "schedulers": {name: scheduler.state_dict() for name, scheduler in schedulers.items()},
@@ -60,32 +83,15 @@ def load_epoch_checkpoint(
     strict: bool = True,
 ) -> dict:
     checkpoint_file = Path(checkpoint_path)
+    check_file_path(checkpoint_file, create=False)
 
-    if not checkpoint_file.is_file():
-        raise FileNotFoundError(f"Checkpoint 文件不存在：{checkpoint_path}")
+    checkpoint = torch.load(checkpoint_file, map_location=device, weights_only=True)
 
-    checkpoint = torch.load(
-        checkpoint_file,
-        map_location=device,
-        weights_only=False,
-    )
-
-    required_fields = {
-        "phase",
-        "epoch",
-        "global_step",
-        "models",
-        "optimizers",
-        "schedulers",
-    }
-
-    missing_fields = required_fields.difference(checkpoint.keys())
-
-    if missing_fields:
-        raise KeyError(f"Checkpoint 缺少必要字段：{sorted(missing_fields)}")
+    required_keys = ["epoch", "phase", "models", "optimizers", "schedulers"]
+    if not all(k in checkpoint for k in required_keys):
+        raise KeyError("Checkpoint 文件结构不完整，缺少必要的键，无法恢复训练状态。")
 
     checkpoint_phase = int(checkpoint["phase"])
-
     if checkpoint_phase not in {1, 2}:
         raise ValueError(f"Checkpoint 中的 phase 无效：{checkpoint_phase}")
 
@@ -155,3 +161,22 @@ def load_epoch_checkpoint(
         schedulers[name].load_state_dict(checkpoint["schedulers"][name])
 
     return checkpoint
+
+
+def load_models(checkpoint_path: str, device: torch.device, models: dict[str, nn.Module]) -> bool:
+    checkpoint_file = Path(checkpoint_path)
+    check_file_path(checkpoint_file, create=False)
+
+    checkpoint = torch.load(checkpoint_file, map_location=device, weights_only=True)
+
+    if "models" not in checkpoint:
+        raise KeyError("Checkpoint 文件中缺少 'models' 键，无法加载模型参数。")
+
+    for name, model in models.items():
+        if name in checkpoint["models"]:
+            unwrap_model(model).load_state_dict(checkpoint["models"][name], strict=True)
+        else:
+            raise KeyError(f"Checkpoint 中缺少模型 '{name}' 的参数。")
+
+    return True
+    
