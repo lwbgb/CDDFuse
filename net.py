@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import torch.utils.checkpoint as checkpoint
 from timm.layers import DropPath, to_2tuple, trunc_normal_
 from einops import rearrange
+from mamba_ssm import Mamba2
 
 
 def drop_path(x, drop_prob: float = 0., training: bool = False):
@@ -106,7 +107,7 @@ class Mlp(nn.Module):
         x = self.project_out(x)
         return x
 
-class BaseFeatureExtraction(nn.Module):
+class   BaseFeatureExtraction(nn.Module):
     def __init__(self,
                  dim,
                  num_heads,
@@ -394,7 +395,8 @@ class Restormer_Encoder(nn.Module):
         self.encoder_level1 = nn.Sequential(*[TransformerBlock(dim=dim, num_heads=heads[0],
             ffn_expansion_factor=ffn_expansion_factor,
             bias=bias, LayerNorm_type=LayerNorm_type) for i in range(num_blocks[0])])
-        self.baseFeature = BaseFeatureExtraction(dim=dim, num_heads = heads[2])
+        # self.baseFeature = BaseFeatureExtraction(dim=dim, num_heads = heads[2])
+        self.baseFeature = BaseMambaEncoder(dim=dim)
         self.detailFeature = DetailFeatureExtraction()
              
     def forward(self, inp_img):
@@ -448,6 +450,56 @@ class Restormer_Decoder(nn.Module):
         else:
             out_enc_level1 = self.output(out_enc_level1)
         return self.sigmoid(out_enc_level1), out_enc_level0
+    
+
+############################ Mamba: Selective State Space Model for 2D Images ############################
+class SS2D(nn.Module):
+    # 【参数变化1】：d_state 从 16 提升为 128（Mamba 2 推荐的默认值，记忆容量更大）
+    # 【参数变化2】：新增 headdim=64（每个头的维度尺寸）
+    def __init__(self, d_model, d_state=128, d_conv=4, expand=2, headdim=64):
+        super().__init__()
+        
+        # 实例化替换为 Mamba2
+        self.mamba = Mamba2(
+            d_model=d_model,
+            d_state=d_state,
+            d_conv=d_conv,
+            expand=expand,
+            headdim=headdim
+        )
+    
+    def forward(self, x):
+        # 【无需修改】前向传播逻辑完美兼容！输入输出依然是 (B, C, H, W)
+        B, C, H, W = x.shape
+        x_hw = x.view(B, C, -1).transpose(1, 2)
+        x_wh = x.transpose(2, 3).contiguous().view(B, C, -1).transpose(1, 2)
+        x_hw_rev = torch.flip(x_hw, dims=[1])
+        x_wh_rev = torch.flip(x_wh, dims=[1])
+        
+        out_hw = self.mamba(x_hw)
+        out_wh = self.mamba(x_wh)
+        out_hw_rev = torch.flip(self.mamba(x_hw_rev), dims=[1])
+        out_wh_rev = torch.flip(self.mamba(x_wh_rev), dims=[1])
+        
+        out = (out_hw + out_wh + out_hw_rev + out_wh_rev) / 4.0
+        out = out.transpose(1, 2).view(B, C, H, W)
+        return out
+
+class BaseMambaEncoder(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.norm = nn.LayerNorm(dim)
+        self.ss2d = SS2D(d_model=dim)
+        self.conv_out = nn.Conv2d(dim, dim, kernel_size=3, padding=1)
+
+    def forward(self, x):
+        # 严格遵守输入输出契约: (B, C, H, W)
+        shortcut = x
+        x_norm = self.norm(x.permute(0, 2, 3, 1)).permute(0, 3, 1, 2)
+        out = self.ss2d(x_norm)
+        out = self.conv_out(out)
+        return out + shortcut
+
 
 if __name__ == '__main__':
     height = 128

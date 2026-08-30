@@ -12,7 +12,7 @@ from cv2 import phase
 from omegaconf import DictConfig, OmegaConf
 from tqdm import tqdm
 
-from net import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
+from net import BaseMambaEncoder, Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
 from schemas.train_config import TrainConfig
 from utils.checkpoint import load_epoch_checkpoint, save_epoch_checkpoint
 from utils.dataset import H5Dataset, get_loader
@@ -51,7 +51,8 @@ if __name__ == "__main__":
     # Model
     DIDF_Encoder = Restormer_Encoder().to(device)
     DIDF_Decoder = Restormer_Decoder().to(device)
-    BaseFuseLayer = BaseFeatureExtraction(dim=64, num_heads=8).to(device)
+    BaseFuseLayer = BaseMambaEncoder(dim=64).to(device)
+    # BaseFuseLayer = BaseFeatureExtraction(dim=64, num_heads=8).to(device)
     DetailFuseLayer = DetailFeatureExtraction(num_layers=1).to(device)
 
     # optimizer, scheduler and loss function

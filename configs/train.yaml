@@ -1,7 +1,7 @@
 model: CDDFuse
 n_epochs: 120 # total epoch
 epoch_gap: 40  # epoches of Phase I 
-start_epoch: 42
+start_epoch: 1
 lr: 1e-4
 min_lr: 1e-6
 weight_decay: 0
@@ -11,7 +11,7 @@ display_freq: 100
 save_latest_freq: 1
 save_epoch_freq: 10
 checkpoint_root: checkpoints/
-continue_train: True
+continue_train: False
 
 # Coefficients of the loss function
 coeff_mse_loss_VF: 1. # alpha1
