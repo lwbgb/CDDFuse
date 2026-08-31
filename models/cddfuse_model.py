@@ -1,9 +1,13 @@
+from typing import Any
+
 import torch
 import torch.nn as nn
 import kornia
 from models.base_model import BaseModel
 from net import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
+from utils import path_util
 from utils.loss import Fusionloss, cc
+from utils.logger_initializer import logger
 
 class CDDFuseModel(BaseModel):
     @staticmethod
@@ -58,13 +62,10 @@ class CDDFuseModel(BaseModel):
             self.optimizer_decoder = torch.optim.Adam(self.DIDF_Decoder.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
             self.optimizer_base = torch.optim.Adam(self.BaseFuseLayer.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
             self.optimizer_detail = torch.optim.Adam(self.DetailFuseLayer.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
-            
-            self.optimizers = {
-                "optimizer_encoder": self.optimizer_encoder,
-                "optimizer_decoder": self.optimizer_decoder,
-                "optimizer_base_fusion": self.optimizer_base,
-                "optimizer_detail_fusion": self.optimizer_detail
-            }
+            self.optimizers.append(self.optimizer_encoder)
+            self.optimizers.append(self.optimizer_decoder)
+            self.optimizers.append(self.optimizer_base)
+            self.optimizers.append(self.optimizer_detail)
 
             # 初始化日志中可能未被计算的损失值（防止 base_model 打印时报错）
             self._init_losses()
@@ -170,3 +171,16 @@ class CDDFuseModel(BaseModel):
             
             self.optimizer_base.step()
             self.optimizer_detail.step()
+            
+            
+    def load_model(self, ckp_name: str):
+        load_path = self.save_dir / ckp_name
+        try:
+            path_util.check_file_path(load_path)
+        except Exception as e:
+            logger.error(f"加载模型失败: {e}")
+            return
+        
+        components: list[dict[str, Any]] = [self.model_names, self.optimizers, self.schedulers]
+        for component in components:
+           ...

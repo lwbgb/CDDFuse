@@ -1,9 +1,16 @@
 import os
+from time import localtime, strftime
+from typing import Any
 import torch
 import logging
 from pathlib import Path
 from collections import OrderedDict
 from abc import ABC, abstractmethod
+
+from torch import nn
+from schemas.base_config import BaseConfig
+from utils import networks, path_util
+from utils.device import init_ddp
 from utils.logger_initializer import logger
 
 class BaseModel(ABC):
@@ -16,34 +23,23 @@ class BaseModel(ABC):
         -- <optimize_parameters>:计算损失、梯度，并更新网络权重。
     """
 
-    def __init__(self, opt):
+    def __init__(self, opt: BaseConfig):
         self.opt = opt
-        
-        # Hydra 配置读取（DictConfig 既可以通过 . 访问属性，也可用 .get() 防止缺少键报错）
+        self.init_time = strftime("%Y%m%d_%H%M%S", localtime())
+        self.device = init_ddp()  # 初始化分布式训练设备
         self.isTrain = opt.get("isTrain", True)
-        
-        # 1. 采用 Hydra yaml 中的 checkpoint_root 替代原本的 checkpoints_dir
-        save_dir_str = opt.get("checkpoint_root", "checkpoints/")
-        self.save_dir = Path(save_dir_str)
+        self.save_dir = Path(opt.checkpoint_root) / self.init_time
         if self.isTrain:
             self.save_dir.mkdir(parents=True, exist_ok=True)
-            
-        # 2. 匹配 train.yaml 中的设备配置，或自动检测
-        if str(opt.get("device", "")).lower() == "gpu" and torch.cuda.is_available():
-            self.device = torch.device('cuda')
-        else:
-            self.device = torch.device('cpu')
-            
+
         torch.backends.cudnn.benchmark = True
-        
-        self.loss_names = []
-        self.model_names = []
+
+        self.models: dict[str, nn.Module] = dict()
+        self.losses: dict[str, Any] = dict()
+        self.schedulers: dict[str, Any] = dict()
+        self.optimizers: dict[str, Any] = dict()
         self.visual_names = []
         self.image_paths = []
-        
-        # 3. 将原先的列表改为字典，方便统一检查点系统进行键值(Key)匹配
-        self.optimizers = {}
-        self.schedulers = {}
 
     @abstractmethod
     def set_input(self, input):
@@ -56,29 +52,31 @@ class BaseModel(ABC):
     @abstractmethod
     def optimize_parameters(self):
         pass
+    
+    @abstractmethod
+    def load_model(self, ckp_name: str):
+        pass
 
     def setup(self):
         """挂载模型到设备，并根据 Hydra 配置初始化学习率调度器"""
-        # 抛弃 "net" 前缀，直接利用 self.model_names 挂载到设备
-        for name in self.model_names:
-            if hasattr(self, name):
-                model = getattr(self, name)
-                model.to(self.device)
-            else:
-                logger.warning(f"在 model_names 中定义了 '{name}'，但类中未找到同名实例。")
+        for name, model in self.models.items():
+            networks.init_net(model)
 
-        self.print_networks(verbose=False)
+        if not self.isTrain or self.opt.continue_train:
+            ...
+
+        self.print_networks(self.opt.verbose)
 
         # 动态绑定调度器 (Schedulers)
         if self.isTrain:
-            for opt_name, optimizer in self.optimizers.items():
+            for i, optimizer in enumerate(self.optimizers):
                 # 按照 train.py 规则，动态生成调度器。如：optimizer_encoder -> scheduler_encoder
-                sch_name = opt_name.replace("optimizer", "scheduler")
-                self.schedulers[sch_name] = torch.optim.lr_scheduler.StepLR(
-                    optimizer, 
-                    step_size=self.opt.optim_step, 
+                sch_name = f"scheduler_{i}"
+                self.schedulers.append(torch.optim.lr_scheduler.StepLR(
+                    optimizer,
+                    step_size=self.opt.optim_step,
                     gamma=self.opt.optim_gamma
-                )
+                ))
 
     def eval(self):
         """测试时开启评估模式 (脱离 "net" 前缀限制)"""
@@ -97,11 +95,11 @@ class BaseModel(ABC):
         active_sch_keys = ["scheduler_encoder", "scheduler_decoder"]
         if current_phase == 2:
             active_sch_keys.extend(["scheduler_base_fusion", "scheduler_detail_fusion"])
-            
+
         for key in active_sch_keys:
             if key in self.schedulers:
                 self.schedulers[key].step()
-        
+
         # 保证学习率不低于 train.yaml 设置的 min_lr
         min_lr = self.opt.get("min_lr", 1e-6)
         for opt_name, optimizer in self.optimizers.items():
@@ -113,10 +111,10 @@ class BaseModel(ABC):
         if filename is None:
             filename = f"CDDFuse_phase{phase}_epoch_{epoch:03d}.pth"
         checkpoint_path = self.save_dir / filename
-        
+
         # 动态获取模型实例字典
         models_dict = {name: getattr(self, name) for name in self.model_names if hasattr(self, name)}
-        
+
         checkpoint = {
             "epoch": epoch,
             "phase": phase,
@@ -124,7 +122,7 @@ class BaseModel(ABC):
             "optimizers_state_dict": {name: opt.state_dict() for name, opt in self.optimizers.items()},
             "schedulers_state_dict": {name: sch.state_dict() for name, sch in self.schedulers.items()},
         }
-        
+
         torch.save(checkpoint, checkpoint_path)
         logger.info(f"Checkpoint 已保存: Phase={phase}, Epoch={epoch}, Path={checkpoint_path}")
 
@@ -133,36 +131,36 @@ class BaseModel(ABC):
         checkpoint_path = self.save_dir / filename
         if not checkpoint_path.exists():
             raise FileNotFoundError(f"找不到 Checkpoint 文件: {checkpoint_path}")
-            
+
         checkpoint = torch.load(checkpoint_path, map_location=self.device)
         saved_epoch = checkpoint["epoch"]
         saved_phase = checkpoint["phase"]
-        
+
         models_dict = {name: getattr(self, name) for name in self.model_names if hasattr(self, name)}
-        
+
         # 1. 恢复模型参数
         for name, model in models_dict.items():
             if name in checkpoint["models_state_dict"]:
                 model.load_state_dict(checkpoint["models_state_dict"][name])
             else:
                 logger.warning(f"Checkpoint 中缺少模型 '{name}' 的参数。")
-                
+
         # 2. 区分阶段恢复优化器和调度器
         active_opt_keys = ["optimizer_encoder", "optimizer_decoder"]
         active_sch_keys = ["scheduler_encoder", "scheduler_decoder"]
-        
+
         if saved_phase == 2:
             active_opt_keys.extend(["optimizer_base_fusion", "optimizer_detail_fusion"])
             active_sch_keys.extend(["scheduler_base_fusion", "scheduler_detail_fusion"])
-            
+
         for key in active_opt_keys:
             if key in checkpoint["optimizers_state_dict"] and key in self.optimizers:
                 self.optimizers[key].load_state_dict(checkpoint["optimizers_state_dict"][key])
-                
+
         for key in active_sch_keys:
             if key in checkpoint["schedulers_state_dict"] and key in self.schedulers:
                 self.schedulers[key].load_state_dict(checkpoint["schedulers_state_dict"][key])
-                
+
         logger.info(f"Checkpoint 恢复成功: Epoch {saved_epoch}, Phase {saved_phase}")
         return saved_epoch, saved_phase
 
@@ -183,13 +181,16 @@ class BaseModel(ABC):
         return visual_ret
 
     def print_networks(self, verbose):
-        """打印参数量（剔除了 "net" 前缀）"""
+        """打印参数量"""
         print("---------- Networks initialized -------------")
         for name in self.model_names:
             if hasattr(self, name):
-                net = getattr(self, name)
+                net: nn.Module = getattr(self, name)
                 num_params = sum(p.numel() for p in net.parameters())
                 if verbose:
                     print(net)
                 print(f"[Network {name}] Total number of parameters : {num_params / 1e6:.3f} M")
         print("-----------------------------------------------")
+
+        
+        
