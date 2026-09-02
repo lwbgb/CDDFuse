@@ -1,5 +1,7 @@
+from pathlib import Path
 from typing import Any
 
+from omegaconf import OmegaConf
 import torch
 import torch.nn as nn
 import kornia
@@ -8,64 +10,76 @@ from net import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, Det
 from utils import path_util
 from utils.loss import Fusionloss, cc
 from utils.logger_initializer import logger
+from schemas.model_checkpoint import ModelCkp
+
 
 class CDDFuseModel(BaseModel):
-    @staticmethod
-    def modify_commandline_options(parser, is_train=True):
-        """添加特定于 CDDFuse 的命令行参数并覆盖默认值。"""
-        parser.set_defaults(dataset_mode="cddfuse")
-        
-        if is_train:
-            # 基础训练超参数
-            parser.add_argument("--epoch_gap", type=int, default=40, help="第一阶段训练的 epoch 数量")
-            parser.add_argument("--clip_grad_norm_value", type=float, default=0.01, help="梯度裁剪阈值")
-            parser.add_argument("--SSIM_window_size", type=int, default=11, help="SSIM 损失的窗口大小")
-            
-            # 损失函数系数
-            parser.add_argument("--coeff_mse_loss_VF", type=float, default=1.0, help="可见光 MSE 损失系数")
-            parser.add_argument("--coeff_mse_loss_IF", type=float, default=1.0, help="红外 MSE 损失系数")
-            parser.add_argument("--coeff_decomp", type=float, default=2.0, help="分解损失系数")
-            parser.add_argument("--coeff_gradient", type=float, default=5.0, help="gradient (平滑/梯度) 损失系数")
-
-        return parser
 
     def __init__(self, opt):
-        """初始化 CDDFuse 模型。"""
         BaseModel.__init__(self, opt)
-        
-        # 定义需要打印和保存的损失名称。BaseModel 会自动读取 self.loss_XXX 进行日志记录
-        self.loss_names = ["total", "mse_V", "mse_I", "cc_B", "cc_D", "decomp", "gradient", "fusion"]
-        
-        # 定义需要可视化的图像名称。BaseModel 会自动读取 self.XXX 以保存到 HTML
-        self.visual_names = ["data_VIS", "data_IR", "data_VIS_hat", "data_IR_hat", "data_Fuse"]
-        
-        # 定义需要保存/加载的模型组件名称。BaseModel 将保存 self.netEncoder, self.netDecoder 等
-        self.model_names = ["DIDF_Encoder", "DIDF_Decoder", "BaseFuseLayer", "DetailFuseLayer"]
+        self.name = opt.model
 
         # 定义网络结构
         self.DIDF_Encoder = Restormer_Encoder()
         self.DIDF_Decoder = Restormer_Decoder()
         self.BaseFuseLayer = BaseFeatureExtraction(dim=64, num_heads=8)
         self.DetailFuseLayer = DetailFeatureExtraction(num_layers=1)
-
-        self.current_phase = 1  # 默认为第一阶段
+        self.models: dict[str, nn.Module] = {
+            "DIDF_Encoder": self.DIDF_Encoder,
+            "DIDF_Decoder": self.DIDF_Decoder,
+            "BaseFuseLayer": self.BaseFuseLayer,
+            "DetailFuseLayer": self.DetailFuseLayer,
+        }
 
         if self.isTrain:
             # 定义损失函数
             self.MSELoss = nn.MSELoss()
             self.L1Loss = nn.L1Loss()
             self.Loss_ssim = kornia.losses.SSIMLoss(window_size=opt.SSIM_window_size, reduction="mean")
-            self.criteria_fusion = Fusionloss().to(self.device)
+            self.losses: dict[str, nn.Module] = {
+                "MSELoss": self.MSELoss,
+                "L1Loss": self.L1Loss,
+                "SSIMLoss": self.Loss_ssim,
+            }
 
             # 定义优化器。按照 base_model 的规范，需要将所有优化器存入 self.optimizers 列表
-            self.optimizer_encoder = torch.optim.Adam(self.DIDF_Encoder.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
-            self.optimizer_decoder = torch.optim.Adam(self.DIDF_Decoder.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
-            self.optimizer_base = torch.optim.Adam(self.BaseFuseLayer.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
-            self.optimizer_detail = torch.optim.Adam(self.DetailFuseLayer.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
-            self.optimizers.append(self.optimizer_encoder)
-            self.optimizers.append(self.optimizer_decoder)
-            self.optimizers.append(self.optimizer_base)
-            self.optimizers.append(self.optimizer_detail)
+            self.optimizer_encoder = torch.optim.Adam(
+                self.DIDF_Encoder.parameters(), lr=opt.lr, weight_decay=opt.weight_decay
+            )
+            self.optimizer_decoder = torch.optim.Adam(
+                self.DIDF_Decoder.parameters(), lr=opt.lr, weight_decay=opt.weight_decay
+            )
+            self.optimizer_base = torch.optim.Adam(
+                self.BaseFuseLayer.parameters(), lr=opt.lr, weight_decay=opt.weight_decay
+            )
+            self.optimizer_detail = torch.optim.Adam(
+                self.DetailFuseLayer.parameters(), lr=opt.lr, weight_decay=opt.weight_decay
+            )
+            self.optimizers: dict[str, torch.optim.Optimizer] = {
+                "optimizer_encoder": self.optimizer_encoder,
+                "optimizer_decoder": self.optimizer_decoder,
+                "optimizer_base_fusion": self.optimizer_base,
+                "optimizer_detail_fusion": self.optimizer_detail,
+            }
+
+            self.scheduler1 = torch.optim.lr_scheduler.StepLR(
+                self.optimizer_encoder, step_size=opt.optim_step, gamma=opt.optim_gamma
+            )
+            self.scheduler2 = torch.optim.lr_scheduler.StepLR(
+                self.optimizer_decoder, step_size=opt.optim_step, gamma=opt.optim_gamma
+            )
+            self.scheduler3 = torch.optim.lr_scheduler.StepLR(
+                self.optimizer_base, step_size=opt.optim_step, gamma=opt.optim_gamma
+            )
+            self.scheduler4 = torch.optim.lr_scheduler.StepLR(
+                self.optimizer_detail, step_size=opt.optim_step, gamma=opt.optim_gamma
+            )
+            self.schedulers: dict[str, torch.optim.lr_scheduler.LRScheduler] = {
+                "scheduler_encoder": self.scheduler1,
+                "scheduler_decoder": self.scheduler2,
+                "scheduler_base_fusion": self.scheduler3,
+                "scheduler_detail_fusion": self.scheduler4,
+            }
 
             # 初始化日志中可能未被计算的损失值（防止 base_model 打印时报错）
             self._init_losses()
@@ -94,24 +108,24 @@ class CDDFuseModel(BaseModel):
             # Phase I: 自编码重构
             self.feature_V_B, self.feature_V_D, _ = self.netEncoder(self.data_VIS)
             self.feature_I_B, self.feature_I_D, _ = self.netEncoder(self.data_IR)
-            
+
             self.data_VIS_hat, _ = self.netDecoder(self.data_VIS, self.feature_V_B, self.feature_V_D)
             self.data_IR_hat, _ = self.netDecoder(self.data_IR, self.feature_I_B, self.feature_I_D)
-            
+
             # Phase I 没有最终的融合图像，置为 None
-            self.data_Fuse = None 
+            self.data_Fuse = None
 
         elif self.current_phase == 2:
             # Phase II: 融合任务
             self.feature_V_B, self.feature_V_D, _ = self.DIDF_Encoder(self.data_VIS)
             self.feature_I_B, self.feature_I_D, _ = self.DIDF_Encoder(self.data_IR)
-            
+
             self.feature_F_B = self.BaseFuseLayer(self.feature_I_B + self.feature_V_B)
             self.feature_F_D = self.DetailFuseLayer(self.feature_I_D + self.feature_V_D)
-            
+
             self.data_Fuse, _ = self.DIDF_Decoder(self.data_VIS, self.feature_F_B, self.feature_F_D)
-            
-            # Phase II 不产出独立的可见光/红外重构图，保留 None 
+
+            # Phase II 不产出独立的可见光/红外重构图，保留 None
             self.data_VIS_hat = None
             self.data_IR_hat = None
 
@@ -120,13 +134,17 @@ class CDDFuseModel(BaseModel):
         # 公共特征分解损失
         self.loss_cc_B = cc(self.feature_V_B, self.feature_I_B)
         self.loss_cc_D = cc(self.feature_V_D, self.feature_I_D)
-        self.loss_decomp = (self.loss_cc_D ** 2) / (1.01 + self.loss_cc_B)
+        self.loss_decomp = (self.loss_cc_D**2) / (1.01 + self.loss_cc_B)
 
         if self.current_phase == 1:
             # 第一阶段重构损失计算
-            self.loss_mse_V = 5 * self.Loss_ssim(self.data_VIS, self.data_VIS_hat) + self.MSELoss(self.data_VIS, self.data_VIS_hat)
-            self.loss_mse_I = 5 * self.Loss_ssim(self.data_IR, self.data_IR_hat) + self.MSELoss(self.data_IR, self.data_IR_hat)
-            
+            self.loss_mse_V = 5 * self.Loss_ssim(self.data_VIS, self.data_VIS_hat) + self.MSELoss(
+                self.data_VIS, self.data_VIS_hat
+            )
+            self.loss_mse_I = 5 * self.Loss_ssim(self.data_IR, self.data_IR_hat) + self.MSELoss(
+                self.data_IR, self.data_IR_hat
+            )
+
             spatial_grad = kornia.filters.SpatialGradient()
             self.loss_gradient = self.L1Loss(spatial_grad(self.data_VIS), spatial_grad(self.data_VIS_hat))
 
@@ -141,7 +159,7 @@ class CDDFuseModel(BaseModel):
         else:
             # 第二阶段融合损失计算
             self.loss_fusion, _, _ = self.criteria_fusion(self.data_VIS, self.data_IR, self.data_Fuse)
-            
+
             self.loss_total = self.loss_fusion + self.opt.coeff_decomp * self.loss_decomp
             self.loss_total.backward()
 
@@ -166,21 +184,67 @@ class CDDFuseModel(BaseModel):
         self.optimizer_decoder.step()
 
         if self.current_phase == 2:
-            nn.utils.clip_grad_norm_(self.BaseFuseLayer.parameters(), max_norm=self.opt.clip_grad_norm_value, norm_type=2)
-            nn.utils.clip_grad_norm_(self.DetailFuseLayer.parameters(), max_norm=self.opt.clip_grad_norm_value, norm_type=2)
-            
+            nn.utils.clip_grad_norm_(
+                self.BaseFuseLayer.parameters(), max_norm=self.opt.clip_grad_norm_value, norm_type=2
+            )
+            nn.utils.clip_grad_norm_(
+                self.DetailFuseLayer.parameters(), max_norm=self.opt.clip_grad_norm_value, norm_type=2
+            )
+
             self.optimizer_base.step()
             self.optimizer_detail.step()
-            
-            
-    def load_model(self, ckp_name: str):
-        load_path = self.save_dir / ckp_name
+
+    def load_model(self, ckp_name: str, prefix: str | Path = "") -> ModelCkp:
         try:
+            load_path = self.opt.checkpoint_root / prefix / ckp_name
             path_util.check_file_path(load_path)
+
+            checkpoint: dict = torch.load(load_path, weights_only=True)
+            model_ckp = ModelCkp.from_dict(checkpoint)
+
+            logger.info(f"Loading {self.name} checkpoint from {load_path}...")
+            for name, model in self.models.items():
+                model_state = model_ckp.models.get(name)
+                if model_state is None:
+                    raise KeyError(f"Checkpoint 中缺少模型 '{name}' 的参数")
+                model.load_state_dict(model_state)
+
+            for name, optimizer in self.optimizers.items():
+                optimizer_state = model_ckp.optimizers.get(name)
+                if optimizer_state is None:
+                    raise KeyError(f"Checkpoint 中缺少优化器 '{name}' 的参数")
+                optimizer.load_state_dict(optimizer_state)
+
+            for name, scheduler in self.schedulers.items():
+                scheduler_state = model_ckp.schedulers.get(name)
+                if scheduler_state is None:
+                    raise KeyError(f"Checkpoint 中缺少调度器 '{name}' 的参数")
+                scheduler.load_state_dict(scheduler_state)
         except Exception as e:
-            logger.error(f"加载模型失败: {e}")
-            return
-        
-        components: list[dict[str, Any]] = [self.model_names, self.optimizers, self.schedulers]
-        for component in components:
-           ...
+            logger.error(f"Error occurred while loading checkpoint: {e}")
+            raise
+
+        logger.info(f"{self.name}_phase{model_ckp.phase}_epoch{model_ckp.epoch} loaded successfully from {load_path}")
+        return model_ckp
+
+    def save_model(self, ckp_name: str) -> None:
+        try:
+            save_path = self.save_dir / ckp_name
+            path_util.check_file_path(save_path, create=True)
+
+            model_ckp = ModelCkp(
+                phase=self.phase,
+                epoch=self.epoch,
+                models={name: model.state_dict() for name, model in self.models.items()},
+                optimizers={name: optimizer.state_dict() for name, optimizer in self.optimizers.items()},
+                schedulers={name: scheduler.state_dict() for name, scheduler in self.schedulers.items()},
+                config=OmegaConf.to_container(self.opt, resolve=True),
+            )
+
+            torch.save(model_ckp.to_dict(), save_path)
+            logger.info(
+                f"{self.name}_phase{model_ckp.phase}_epoch{model_ckp.epoch} checkpoint saved successfully at {save_path}"
+            )
+        except Exception as e:
+            logger.error(f"Error occurred while saving checkpoint: {e}")
+            raise

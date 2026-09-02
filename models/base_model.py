@@ -2,7 +2,6 @@ import os
 from time import localtime, strftime
 from typing import Any
 import torch
-import logging
 from pathlib import Path
 from collections import OrderedDict
 from abc import ABC, abstractmethod
@@ -12,6 +11,7 @@ from schemas.base_config import BaseConfig
 from utils import networks, path_util
 from utils.device import init_ddp
 from utils.logger_initializer import logger
+
 
 class BaseModel(ABC):
     """
@@ -26,7 +26,7 @@ class BaseModel(ABC):
     def __init__(self, opt: BaseConfig):
         self.opt = opt
         self.init_time = strftime("%Y%m%d_%H%M%S", localtime())
-        self.device = init_ddp()  # 初始化分布式训练设备
+        self.device = init_ddp()
         self.isTrain = opt.get("isTrain", True)
         self.save_dir = Path(opt.checkpoint_root) / self.init_time
         if self.isTrain:
@@ -52,9 +52,13 @@ class BaseModel(ABC):
     @abstractmethod
     def optimize_parameters(self):
         pass
-    
+
     @abstractmethod
     def load_model(self, ckp_name: str):
+        pass
+
+    @abstractmethod
+    def save_model(self, ckp_name: str):
         pass
 
     def setup(self):
@@ -66,17 +70,6 @@ class BaseModel(ABC):
             ...
 
         self.print_networks(self.opt.verbose)
-
-        # 动态绑定调度器 (Schedulers)
-        if self.isTrain:
-            for i, optimizer in enumerate(self.optimizers):
-                # 按照 train.py 规则，动态生成调度器。如：optimizer_encoder -> scheduler_encoder
-                sch_name = f"scheduler_{i}"
-                self.schedulers.append(torch.optim.lr_scheduler.StepLR(
-                    optimizer,
-                    step_size=self.opt.optim_step,
-                    gamma=self.opt.optim_gamma
-                ))
 
     def eval(self):
         """测试时开启评估模式 (脱离 "net" 前缀限制)"""
@@ -191,6 +184,3 @@ class BaseModel(ABC):
                     print(net)
                 print(f"[Network {name}] Total number of parameters : {num_params / 1e6:.3f} M")
         print("-----------------------------------------------")
-
-        
-        
