@@ -1,13 +1,16 @@
 import os
 from time import localtime, strftime
 from typing import Any
+from omegaconf import DictConfig
 import torch
 from pathlib import Path
 from collections import OrderedDict
 from abc import ABC, abstractmethod
 
 from torch import nn
+import torch.distributed as dist
 from schemas.base_config import BaseConfig
+from schemas.model_checkpoint import ModelCkp
 from utils import networks, path_util
 from utils.device import init_ddp
 from utils.logger_initializer import logger
@@ -23,16 +26,14 @@ class BaseModel(ABC):
         -- <optimize_parameters>:计算损失、梯度，并更新网络权重。
     """
 
-    def __init__(self, opt: BaseConfig):
+    def __init__(self, opt: DictConfig):
+        torch.backends.cudnn.benchmark = True
         self.opt = opt
         self.init_time = strftime("%Y%m%d_%H%M%S", localtime())
         self.device = init_ddp()
-        self.isTrain = opt.get("isTrain", True)
+        self.isTrain = opt.get("isTrain", False)
+        self.ckp_name = opt.get("ckp_name")
         self.save_dir = Path(opt.checkpoint_root) / self.init_time
-        if self.isTrain:
-            self.save_dir.mkdir(parents=True, exist_ok=True)
-
-        torch.backends.cudnn.benchmark = True
 
         self.models: dict[str, nn.Module] = dict()
         self.losses: dict[str, Any] = dict()
@@ -43,14 +44,24 @@ class BaseModel(ABC):
 
     @abstractmethod
     def set_input(self, input):
+        """Unpack input data from the dataloader and perform necessary pre-processing steps.
+
+        Parameters:
+            input (dict): includes the data itself and its metadata information.
+        """
+
         pass
 
     @abstractmethod
     def forward(self):
+        """Run forward pass; called by both functions <optimize_parameters> and <test>."""
+
         pass
 
     @abstractmethod
     def optimize_parameters(self):
+        """Calculate losses, gradients, and update network weights; called in every training iteration"""
+
         pass
 
     @abstractmethod
@@ -62,100 +73,40 @@ class BaseModel(ABC):
         pass
 
     def setup(self):
-        """挂载模型到设备，并根据 Hydra 配置初始化学习率调度器"""
-        for name, model in self.models.items():
-            networks.init_net(model)
+        # 将模型挂载到设备并初始化权重
+        for name, net in self.models.items():
+            net = networks.init_net(net, self.opt)
 
+        # 测试或是继续训练时加载模型
         if not self.isTrain or self.opt.continue_train:
-            ...
+            model_ckp: ModelCkp = self.load_model(self.ckp_name)
 
         self.print_networks(self.opt.verbose)
 
     def eval(self):
-        """测试时开启评估模式 (脱离 "net" 前缀限制)"""
-        for name in self.model_names:
-            if hasattr(self, name):
-                getattr(self, name).eval()
+        """Make models eval mode during test time"""
 
-    def train(self):
-        """训练时开启训练模式"""
-        for name in self.model_names:
-            if hasattr(self, name):
-                getattr(self, name).train()
+        for net in self.models.values():
+            net.eval()
 
-    def update_learning_rate(self, current_phase=1):
-        """根据当前阶段 (Phase) 更新学习率"""
-        active_sch_keys = ["scheduler_encoder", "scheduler_decoder"]
-        if current_phase == 2:
-            active_sch_keys.extend(["scheduler_base_fusion", "scheduler_detail_fusion"])
+    def test(self):
+        """Forward function used in test time.
 
-        for key in active_sch_keys:
-            if key in self.schedulers:
-                self.schedulers[key].step()
+        This function wraps <forward> function in no_grad() so we don't save intermediate steps for backprop
+        It also calls <compute_visuals> to produce additional visualization results
+        """
 
-        # 保证学习率不低于 train.yaml 设置的 min_lr
-        min_lr = self.opt.get("min_lr", 1e-6)
-        for opt_name, optimizer in self.optimizers.items():
-            for param_group in optimizer.param_groups:
-                param_group["lr"] = max(param_group["lr"], min_lr)
+        with torch.no_grad():
+            self.forward()
+            self.compute_visuals()
 
-    def save_checkpoint(self, epoch, phase, filename=None):
-        """将模型、优化器、调度器打包存入单个 .pth 文件 (替代旧版的 save_networks)"""
-        if filename is None:
-            filename = f"CDDFuse_phase{phase}_epoch_{epoch:03d}.pth"
-        checkpoint_path = self.save_dir / filename
+    def compute_visuals(self):
+        """Calculate additional output images for visdom and HTML visualization"""
+        pass
 
-        # 动态获取模型实例字典
-        models_dict = {name: getattr(self, name) for name in self.model_names if hasattr(self, name)}
-
-        checkpoint = {
-            "epoch": epoch,
-            "phase": phase,
-            "models_state_dict": {name: model.state_dict() for name, model in models_dict.items()},
-            "optimizers_state_dict": {name: opt.state_dict() for name, opt in self.optimizers.items()},
-            "schedulers_state_dict": {name: sch.state_dict() for name, sch in self.schedulers.items()},
-        }
-
-        torch.save(checkpoint, checkpoint_path)
-        logger.info(f"Checkpoint 已保存: Phase={phase}, Epoch={epoch}, Path={checkpoint_path}")
-
-    def load_checkpoint(self, filename):
-        """从单个 .pth 恢复训练状态 (替代旧版的 load_networks)"""
-        checkpoint_path = self.save_dir / filename
-        if not checkpoint_path.exists():
-            raise FileNotFoundError(f"找不到 Checkpoint 文件: {checkpoint_path}")
-
-        checkpoint = torch.load(checkpoint_path, map_location=self.device)
-        saved_epoch = checkpoint["epoch"]
-        saved_phase = checkpoint["phase"]
-
-        models_dict = {name: getattr(self, name) for name in self.model_names if hasattr(self, name)}
-
-        # 1. 恢复模型参数
-        for name, model in models_dict.items():
-            if name in checkpoint["models_state_dict"]:
-                model.load_state_dict(checkpoint["models_state_dict"][name])
-            else:
-                logger.warning(f"Checkpoint 中缺少模型 '{name}' 的参数。")
-
-        # 2. 区分阶段恢复优化器和调度器
-        active_opt_keys = ["optimizer_encoder", "optimizer_decoder"]
-        active_sch_keys = ["scheduler_encoder", "scheduler_decoder"]
-
-        if saved_phase == 2:
-            active_opt_keys.extend(["optimizer_base_fusion", "optimizer_detail_fusion"])
-            active_sch_keys.extend(["scheduler_base_fusion", "scheduler_detail_fusion"])
-
-        for key in active_opt_keys:
-            if key in checkpoint["optimizers_state_dict"] and key in self.optimizers:
-                self.optimizers[key].load_state_dict(checkpoint["optimizers_state_dict"][key])
-
-        for key in active_sch_keys:
-            if key in checkpoint["schedulers_state_dict"] and key in self.schedulers:
-                self.schedulers[key].load_state_dict(checkpoint["schedulers_state_dict"][key])
-
-        logger.info(f"Checkpoint 恢复成功: Epoch {saved_epoch}, Phase {saved_phase}")
-        return saved_epoch, saved_phase
+    def update_learning_rate(self):
+        """Update learning rates for all the networks; called at the end of every epoch"""
+        pass
 
     def get_current_losses(self):
         """返回当前的 losses 字典用于打印"""
@@ -174,13 +125,10 @@ class BaseModel(ABC):
         return visual_ret
 
     def print_networks(self, verbose):
-        """打印参数量"""
         print("---------- Networks initialized -------------")
-        for name in self.model_names:
-            if hasattr(self, name):
-                net: nn.Module = getattr(self, name)
-                num_params = sum(p.numel() for p in net.parameters())
-                if verbose:
-                    print(net)
-                print(f"[Network {name}] Total number of parameters : {num_params / 1e6:.3f} M")
+        for name, net in self.models.items():
+            num_params = sum(p.numel() for p in net.parameters())
+            if verbose:
+                print(net)
+            print(f"[Network {name}] Total number of parameters : {num_params / 1e6:.3f} M")
         print("-----------------------------------------------")

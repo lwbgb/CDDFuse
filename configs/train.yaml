@@ -12,6 +12,7 @@ save_latest_freq: 1
 save_epoch_freq: 10
 checkpoint_root: checkpoints/
 continue_train: False
+norm: layer
 
 # Coefficients of the loss function
 coeff_mse_loss_VF: 1. # alpha1
@@ -22,6 +23,7 @@ SSIM_window_size: 11
 
 # Optimizer
 clip_grad_norm_value: 0.01
+lr_policy: step
 optim_step: 20
 optim_gamma: 0.5
 
