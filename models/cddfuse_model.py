@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any
 
-from omegaconf import OmegaConf
+from omegaconf import DictConfig, OmegaConf
 import torch
 import torch.nn as nn
 import kornia
@@ -16,11 +16,11 @@ from torch.optim import lr_scheduler
 
 class CDDFuseModel(BaseModel):
 
-    def __init__(self, opt):
+    def __init__(self, opt: DictConfig):
         BaseModel.__init__(self, opt)
         self.name = opt.model
-        self.epoch = opt.start_epoch
-        self.phase = 1 if opt.start_epoch <= opt.epoch_gap else 2
+        self._epoch = opt.start_epoch
+        self._phase = 1 if opt.start_epoch <= opt.epoch_gap else 2
 
         # 定义网络结构
         self.DIDF_Encoder = Restormer_Encoder()
@@ -40,12 +40,6 @@ class CDDFuseModel(BaseModel):
             self.L1Loss = nn.L1Loss()
             self.Loss_ssim = kornia.losses.SSIMLoss(window_size=opt.SSIM_window_size, reduction="mean")
             self.criteria_fusion = Fusionloss().to(self.device)
-            self.losses: dict[str, nn.Module] = {
-                "MSELoss": self.MSELoss,
-                "L1Loss": self.L1Loss,
-                "SSIMLoss": self.Loss_ssim,
-                "FusionLoss": self.criteria_fusion,
-            }
 
             # 优化器
             self.optimizer_encoder = torch.optim.Adam(
@@ -78,22 +72,24 @@ class CDDFuseModel(BaseModel):
                 "scheduler_detail_fusion": self.scheduler_detail,
             }
 
-    def set_phase(self, epoch):
-        """
-        供外部调用的方法，用于控制训练阶段。
-        例如在 train.py 中：model.set_phase(epoch)
-        """
-        self.current_phase = 1 if epoch <= self.opt.epoch_gap else 2
+    def get_phase(self):
+        return self._phase
+
+    def get_epoch(self):
+        return self._epoch
+
+    def get_current_loss(self) -> torch.Tensor | None:
+        return self.losses.get("loss_total", None)
 
     def set_input(self, input):
         """从 DataLoader 解包数据。"""
-        self.data_VIS = input["VIS"].to(self.device)
-        self.data_IR = input["IR"].to(self.device)
+        self.data_VIS, self.data_IR = input
+        self.data_VIS, self.data_IR = self.data_VIS.to(self.device), self.data_IR.to(self.device)
 
     def update_learning_rate(self):
         """根据当前阶段 (Phase) 更新学习率"""
         active_sch_keys = ["scheduler_encoder", "scheduler_decoder"]
-        if self.phase == 2:
+        if self._phase == 2:
             active_sch_keys.extend(["scheduler_base_fusion", "scheduler_detail_fusion"])
 
         for key in active_sch_keys:
@@ -108,13 +104,13 @@ class CDDFuseModel(BaseModel):
 
     def update_state(self, epoch: int):
         """更新模型的训练状态，包括 epoch 和 phase"""
-        self.epoch = epoch
-        self.phase = 1 if epoch <= self.opt.epoch_gap else 2
+        self._epoch = epoch
+        self._phase = 1 if epoch <= self.opt.epoch_gap else 2
 
     def forward(self):
         """执行前向传播计算。会根据 phase 采取不同的网络拓扑。"""
 
-        if self.phase == 1:
+        if self._phase == 1:
             # Phase I: 自编码重构
             self.feature_VIS_Base, self.feature_VIS_Detail, _ = self.DIDF_Encoder(self.data_VIS)
             self.feature_IR_Base, self.feature_IR_Detail, _ = self.DIDF_Encoder(self.data_IR)
@@ -122,7 +118,7 @@ class CDDFuseModel(BaseModel):
             self.data_VIS_hat, _ = self.DIDF_Decoder(self.data_VIS, self.feature_VIS_Base, self.feature_VIS_Detail)
             self.data_IR_hat, _ = self.DIDF_Decoder(self.data_IR, self.feature_IR_Base, self.feature_IR_Detail)
 
-        elif self.phase == 2:
+        elif self._phase == 2:
             # Phase II: 融合任务
             self.feature_VIS_Base, self.feature_VIS_Detail, _ = self.DIDF_Encoder(self.data_VIS)
             self.feature_IR_Base, self.feature_IR_Detail, _ = self.DIDF_Encoder(self.data_IR)
@@ -140,7 +136,7 @@ class CDDFuseModel(BaseModel):
         self.loss_cc_Detail = cc(self.feature_VIS_Detail, self.feature_IR_Detail)
         self.loss_decomp = (self.loss_cc_Detail**2) / (1.01 + self.loss_cc_Base)
 
-        if self.phase == 1:
+        if self._phase == 1:
             self.loss_MSE_VIS = 5 * self.Loss_ssim(self.data_VIS, self.data_VIS_hat) + self.MSELoss(
                 self.data_VIS, self.data_VIS_hat
             )
@@ -155,15 +151,30 @@ class CDDFuseModel(BaseModel):
                 self.opt.coeff_mse_loss_VF * self.loss_MSE_VIS
                 + self.opt.coeff_mse_loss_IF * self.loss_MSE_IR
                 + self.opt.coeff_decomp * self.loss_decomp
-                + self.opt.coeff_gradient * self.loss_gradient
+                + self.opt.coeff_tv * self.loss_gradient
             )
             self.loss_total.backward()
 
-        else:
+            self.losses |= {
+                "loss_MSE_VIS": self.loss_MSE_VIS,
+                "loss_MSE_IR": self.loss_MSE_IR,
+                "loss_gradient": self.loss_gradient,
+            }
+
+        elif self._phase == 2:
             self.loss_fusion, _, _ = self.criteria_fusion(self.data_VIS, self.data_IR, self.data_Fuse)
 
             self.loss_total = self.loss_fusion + self.opt.coeff_decomp * self.loss_decomp
             self.loss_total.backward()
+
+            self.losses |= {"loss_fusion": self.loss_fusion}
+
+        self.losses |= {
+            "loss_total": self.loss_total,
+            "loss_cc_Base": self.loss_cc_Base,
+            "loss_cc_Detail": self.loss_cc_Detail,
+            "loss_decomp": self.loss_decomp,
+        }
 
     def optimize_parameters(self):
         """更新网络权重（每个 iteration 调用一次）。"""
@@ -182,7 +193,7 @@ class CDDFuseModel(BaseModel):
         self.optimizer_encoder.step()
         self.optimizer_decoder.step()
 
-        if self.phase == 2:
+        if self._phase == 2:
             nn.utils.clip_grad_norm_(
                 self.BaseFuseLayer.parameters(), max_norm=self.opt.clip_grad_norm_value, norm_type=2
             )
@@ -236,8 +247,8 @@ class CDDFuseModel(BaseModel):
             path_util.check_file_path(save_path, create=True)
 
             model_ckp = ModelCkp(
-                phase=self.phase,
-                epoch=self.epoch,
+                phase=self._phase,
+                epoch=self._epoch,
                 models={name: model.state_dict() for name, model in self.models.items()},
                 optimizers={name: optimizer.state_dict() for name, optimizer in self.optimizers.items()},
                 schedulers={name: scheduler.state_dict() for name, scheduler in self.schedulers.items()},

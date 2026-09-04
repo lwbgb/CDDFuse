@@ -1,0 +1,4 @@
+model: CDDFuse
+isTrain: True
+verbose: False
+checkpoint_root: checkpoints/

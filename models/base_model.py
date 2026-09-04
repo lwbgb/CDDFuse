@@ -110,11 +110,7 @@ class BaseModel(ABC):
 
     def get_current_losses(self):
         """返回当前的 losses 字典用于打印"""
-        errors_ret = OrderedDict()
-        for name in self.loss_names:
-            if hasattr(self, "loss_" + name):
-                errors_ret[name] = float(getattr(self, "loss_" + name))
-        return errors_ret
+        return self.losses
 
     def get_current_visuals(self):
         """返回当前的图像数据字典用于可视化"""

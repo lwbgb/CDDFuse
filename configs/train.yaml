@@ -1,7 +1,7 @@
-model: CDDFuse
 n_epochs: 120 # total epoch
 epoch_gap: 40  # epoches of Phase I 
 start_epoch: 1
+n_epochs_decay: 20
 lr: 1e-4
 min_lr: 1e-6
 weight_decay: 0
@@ -10,7 +10,7 @@ print_iter_freq: 10000
 display_freq: 100
 save_latest_freq: 1
 save_epoch_freq: 10
-checkpoint_root: checkpoints/
+ckp_name: CDDFuse
 continue_train: False
 norm: layer
 
@@ -33,6 +33,6 @@ device: gpu
 # dataset
 batch_size: 4
 shuffle: True
-num_threads: 24
+num_threads: 8
 drop_last: False
 dataset_root: data/

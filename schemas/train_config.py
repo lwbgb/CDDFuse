@@ -5,10 +5,10 @@ from schemas.base_config import BaseConfig
 
 @dataclass
 class TrainConfig(BaseConfig):
-    model: str = "CDDFuse"
     n_epochs: int = 120
     epoch_gap: int = 40
     start_epoch: int = 1
+    n_epochs_decay: int = 20
     lr: float = 1e-4
     min_lr: float = 1e-6
     weight_decay: float = 0
@@ -17,8 +17,9 @@ class TrainConfig(BaseConfig):
     display_freq: int = 100
     save_latest_freq: int = 1
     save_epoch_freq: int = 5
-    checkpoint_root: str = r"checkpoints/"
+    ckp_name: str = "CDDFuse"
     continue_train: bool = False
+    norm: str = "layer"
 
     coeff_mse_loss_VF: float = 1.0
     coeff_mse_loss_IF: float = 1.0
@@ -27,6 +28,7 @@ class TrainConfig(BaseConfig):
     SSIM_window_size: int = 11
 
     clip_grad_norm_value: float = 0.01
+    lr_policy: str = "step"
     optim_step: int = 20
     optim_gamma: float = 0.5
 

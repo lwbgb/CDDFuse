@@ -1,3 +1,4 @@
+from omegaconf import DictConfig
 import torch.utils.data as Data
 from torch.utils.data import DataLoader
 import h5py
@@ -25,7 +26,7 @@ class H5Dataset(Data.Dataset):
         return torch.Tensor(VIS), torch.Tensor(IR)
     
 
-def get_loader(opt: TrainConfig, dataset: Data.Dataset) -> DataLoader:
+def get_loader(opt: DictConfig, dataset: Data.Dataset) -> DataLoader:
     in_order = not opt.num_threads > 0
     data_loader = DataLoader(
         dataset, opt.batch_size, opt.shuffle, num_workers=opt.num_threads, drop_last=opt.drop_last, pin_memory=torch.cuda.is_available(), persistent_workers=True, in_order=in_order)

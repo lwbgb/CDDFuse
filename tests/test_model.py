@@ -1,9 +1,12 @@
+from pathlib import Path
 import unittest
 
+import kornia
 from torch import nn, optim
 import torch
 
 from net import BaseFeatureExtraction, DetailFeatureExtraction, Restormer_Decoder, Restormer_Encoder
+from schemas.model_checkpoint import ModelCkp
 from schemas.train_config import TrainConfig
 from utils.checkpoint import save_epoch_checkpoint, load_epoch_checkpoint
 from utils.device import init_ddp
@@ -11,11 +14,11 @@ from hydra import initialize, compose
 
 
 class TestModel(unittest.TestCase):
-    
+
     device = init_ddp()
     with initialize(version_base=None, config_path="../configs"):
-            opt: TrainConfig = compose(config_name="train")
-    
+        opt: TrainConfig = compose(config_name="train")
+
     # Model
     DIDF_Encoder = Restormer_Encoder().to(device)
     DIDF_Decoder = Restormer_Decoder().to(device)
@@ -32,7 +35,11 @@ class TestModel(unittest.TestCase):
     scheduler2 = torch.optim.lr_scheduler.StepLR(optimizer2, step_size=opt.optim_step, gamma=opt.optim_gamma)
     scheduler3 = torch.optim.lr_scheduler.StepLR(optimizer3, step_size=opt.optim_step, gamma=opt.optim_gamma)
     scheduler4 = torch.optim.lr_scheduler.StepLR(optimizer4, step_size=opt.optim_step, gamma=opt.optim_gamma)
-    
+
+    MSELoss = nn.MSELoss()
+    L1Loss = nn.L1Loss()
+    Loss_ssim = kornia.losses.SSIMLoss(window_size=opt.SSIM_window_size, reduction="mean")
+
     models: dict[str, nn.Module] = {
         "DIDF_Encoder": DIDF_Encoder,
         "DIDF_Decoder": DIDF_Decoder,
@@ -53,19 +60,30 @@ class TestModel(unittest.TestCase):
         "scheduler_base_fusion": scheduler3,
         "scheduler_detail_fusion": scheduler4,
     }
-    
+
     def test_load_model(self):
-        checkpoint_path = "checkpoints/20260829/CDDFuse_phase1_latest.pth"
+        checkpoint_path = "checkpoints/base_model/CDDFuse_phase1_latest.pth"
         checkpoint = load_epoch_checkpoint(checkpoint_path, self.device, self.models, self.optimizers, self.schedulers, expected_phase=1, strict=True)
+        model_ckp = ModelCkp.from_dict(checkpoint)
+        print(type(model_ckp))
         ...
+
+    def test_01(self):
+        prefix = ''
+        path = Path("checkpoints") / prefix / "CDDFuse_phase1_latest.pth"
+        print(f"Checkpoint path: {path}")
         
     
-    def test_01(self):
-        d = {
-            "encoder1": nn.Linear(10, 10),
-            "encoder2": nn.Linear(10, 10),
-            "decoder1": nn.Linear(10, 10),
-            "decoder2": nn.Linear(10, 10),
-        }
+    def test_02(self):
+        a = 2
         
-        print(list(d.values())[:2])
+        try:
+            if a == 2:
+                raise ValueError("a should not be 2")
+            if a == 3:
+                raise ValueError("a should not be 3")
+        except ValueError as e:
+            print(f"Error: {e}")
+            raise
+        
+        print("Test 02 completed successfully.")
