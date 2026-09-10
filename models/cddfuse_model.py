@@ -147,7 +147,7 @@ class CDDFuseModel(BaseModel):
             spatial_grad = kornia.filters.SpatialGradient()
             self.loss_gradient = self.L1Loss(spatial_grad(self.data_VIS), spatial_grad(self.data_VIS_hat))
 
-            self.loss_total = (
+            self.loss_total: torch.Tensor = (
                 self.opt.coeff_mse_loss_VF * self.loss_MSE_VIS
                 + self.opt.coeff_mse_loss_IF * self.loss_MSE_IR
                 + self.opt.coeff_decomp * self.loss_decomp
@@ -164,7 +164,7 @@ class CDDFuseModel(BaseModel):
         elif self._phase == 2:
             self.loss_fusion, _, _ = self.criteria_fusion(self.data_VIS, self.data_IR, self.data_Fuse)
 
-            self.loss_total = self.loss_fusion + self.opt.coeff_decomp * self.loss_decomp
+            self.loss_total: torch.Tensor = self.loss_fusion + self.opt.coeff_decomp * self.loss_decomp
             self.loss_total.backward()
 
             self.losses |= {"loss_fusion": self.loss_fusion}
