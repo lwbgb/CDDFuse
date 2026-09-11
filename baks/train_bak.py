@@ -6,7 +6,7 @@ Import packages
 ------------------------------------------------------------------------------
 '''
 
-from net import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
+from models.net import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
 from utils.dataset import H5Dataset
 import os
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'

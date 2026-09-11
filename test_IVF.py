@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from net import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
+from models.net import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
 import os
 import numpy as np
 from utils.Evaluator import Evaluator

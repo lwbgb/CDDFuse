@@ -11,7 +11,7 @@ from pathlib import Path
 from omegaconf import DictConfig, OmegaConf
 from tqdm import tqdm
 
-from net import BaseMambaEncoder, Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
+from models.net import BaseMambaEncoder, Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
 from schemas.train_config import TrainConfig
 from utils.checkpoint import load_epoch_checkpoint, save_epoch_checkpoint
 from utils.dataset import H5Dataset, get_loader
@@ -125,7 +125,7 @@ if __name__ == "__main__":
             trainloader,
             desc=f"[Phase {current_phase}] [Epoch {epoch}/{opt.n_epochs}]",
             dynamic_ncols=True,
-            leave=False  # 每个 epoch 结束后保留该行记录
+            leave=False  # 每个 epoch 结束后保留�?��?��?�录
         )
         epoch_start_time = time.time()  
         iter_data_time = time.time()  # timer for data loading per iteration
@@ -208,7 +208,7 @@ if __name__ == "__main__":
 
             # statement = f"[Phase {current_phase}] [Epoch {epoch}/{opt.n_epochs}] [Batch {batch_idx + 1}/{epoch_batches}] [loss: {loss.item():.8f}] ETA: {time_left}"
             # sys.stdout.write("\r" + statement)
-            # 2. 动态更新进度条右侧的指标信息（替代手动打印 loss 和 ETA）
+            # 2. 动态更新进度条右侧的指标信�?（替代手动打�? loss �? ETA�?
             pbar.set_postfix({
                 "loss": f"{loss.item():.8f}",
                 "lr": f"{optimizer.param_groups[0]['lr']:.2e}"
