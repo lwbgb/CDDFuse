@@ -5,6 +5,7 @@ MSRS_train/
 MSRS-main/
 # test_img/
 .vscode/
+checkpoints/
 
 # idea
 .idea

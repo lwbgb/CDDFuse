@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from omegaconf import DictConfig
+from torch.utils.data import DataLoader
 
 from utils.dataset import H5Dataset, get_loader
 from utils.logger_initializer import init_custom_resolvers, init_logger
@@ -11,7 +12,7 @@ __all__ = ["init_logger", "init_custom_resolvers", "create_dataset"]
 init_logger()
 init_custom_resolvers()
 
-def create_dataset(opt: DictConfig, h5_file_name: str):
+def create_dataset(opt: DictConfig, h5_file_name: str) -> DataLoader:
     """Create a dataset given the option.
 
     This function wraps the class CustomDatasetDataLoader.

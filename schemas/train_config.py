@@ -13,11 +13,12 @@ class TrainConfig(BaseConfig):
     min_lr: float = 1e-6
     weight_decay: float = 0
     print_epoch_freq: int = 1
-    print_iter_freq: int = 10000
+    print_iter_freq: int = 1
     display_freq: int = 100
     save_latest_freq: int = 1
     save_epoch_freq: int = 5
     ckp_name: str = "CDDFuse"
+    load_dir: str = ""
     continue_train: bool = False
     norm: str = "layer"
 

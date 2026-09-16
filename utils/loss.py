@@ -2,9 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from utils.device import init_ddp
-
-device = init_ddp()
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class Fusionloss(nn.Module):
     def __init__(self):
@@ -34,12 +32,30 @@ class Sobelxy(nn.Module):
                   [-1, -2, -1]]
         kernelx = torch.FloatTensor(kernelx).unsqueeze(0).unsqueeze(0)
         kernely = torch.FloatTensor(kernely).unsqueeze(0).unsqueeze(0)
-        self.weightx = nn.Parameter(data=kernelx, requires_grad=False).to(device)
-        self.weighty = nn.Parameter(data=kernely, requires_grad=False).to(device)
+        self.weightx = nn.Parameter(data=kernelx, requires_grad=False).to("cpu")
+        self.weighty = nn.Parameter(data=kernely, requires_grad=False).to("cpu")
     def forward(self,x):
         sobelx=F.conv2d(x, self.weightx, padding=1)
         sobely=F.conv2d(x, self.weighty, padding=1)
         return torch.abs(sobelx)+torch.abs(sobely)
+    
+
+def complex_decoupling_loss(feat_V, feat_I):
+    # 将 64 维特征拆分为伪复数的实部(32)和虚部(32)
+    real_V, imag_V = feat_V.chunk(2, dim=1)
+    real_I, imag_I = feat_I.chunk(2, dim=1)
+    
+    # 计算振幅 (能量先验 -> 共享特征 -> 应当高度相关)
+    amp_V = torch.sqrt(real_V**2 + imag_V**2 + 1e-6)
+    amp_I = torch.sqrt(real_I**2 + imag_I**2 + 1e-6)
+    cc_amp = cc(amp_V, amp_I) # 优化目标：最大化 cc_amp
+    
+    # 计算相位 (结构先验 -> 特异性特征 -> 应当正交/不相关)
+    phase_V = torch.atan2(imag_V, real_V + 1e-6)
+    phase_I = torch.atan2(imag_I, real_I + 1e-6)
+    cc_phase = cc(phase_V, phase_I) # 优化目标：最小化 cc_phase
+    
+    return cc_amp, cc_phase
 
 
 def cc(img1, img2):

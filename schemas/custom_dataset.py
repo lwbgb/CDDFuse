@@ -14,6 +14,7 @@ class CustomImageDataset(Dataset):
         self._vis_path = self._root / vis_dir
         self._ir_images = sorted(os.listdir(self._ir_path))
         self._vis_images = sorted(os.listdir(self._vis_path))
+        assert len(self._ir_images) == len(self._vis_images)
         self._items = [(ir, vis) for ir, vis in zip(self._ir_images, self._vis_images)]
         self.transform = transform
 

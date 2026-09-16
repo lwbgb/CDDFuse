@@ -57,8 +57,7 @@ def init_net(net: nn.Module, opt, init_type: str = "normal", init_gain: float = 
     else:
         device = torch.device("cpu")
 
-    net = net.to(device)
-    print(f"Initialized with device {device}")
+    # net = net.to(device)
     # 多显卡训练
     if dist.is_available() and dist.is_initialized():
         net = torch.nn.parallel.DistributedDataParallel(net, device_ids=[device.index])

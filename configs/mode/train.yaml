@@ -1,17 +1,18 @@
 n_epochs: 120 # total epoch
 epoch_gap: 40  # epoches of Phase I 
-start_epoch: 1
+start_epoch: 41
 n_epochs_decay: 20
 lr: 1e-4
 min_lr: 1e-6
 weight_decay: 0
 print_epoch_freq: 1
-print_iter_freq: 10000
+print_iter_freq: 4
 display_freq: 100
 save_latest_freq: 1
 save_epoch_freq: 10
-ckp_name: CDDFuse
-continue_train: False
+ckp_name: CDDFuse_phase1_epoch_040.pth
+load_dir: base_model
+continue_train: True
 norm: layer
 
 # Coefficients of the loss function

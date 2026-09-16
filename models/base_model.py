@@ -2,6 +2,7 @@ import os
 from time import localtime, strftime
 from typing import Any
 from omegaconf import DictConfig
+from regex import P
 import torch
 from pathlib import Path
 from collections import OrderedDict
@@ -65,7 +66,7 @@ class BaseModel(ABC):
         pass
 
     @abstractmethod
-    def load_model(self, ckp_name: str):
+    def load_model(self, ckp_name: str, prefix: str | Path = ""):
         pass
 
     @abstractmethod
@@ -79,7 +80,7 @@ class BaseModel(ABC):
 
         # 测试或是继续训练时加载模型
         if not self.isTrain or self.opt.continue_train:
-            model_ckp: ModelCkp = self.load_model(self.ckp_name)
+            model_ckp: ModelCkp = self.load_model(self.ckp_name, self.opt.load_dir)
 
         self.print_networks(self.opt.verbose)
 

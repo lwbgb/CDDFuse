@@ -9,27 +9,23 @@ import torch.nn as nn
 from utils.checkpoint import load_models
 from utils.device import init_ddp
 from utils.img_read_save import img_save,image_read_cv2
-import warnings
-import logging
-warnings.filterwarnings("ignore")
-logging.basicConfig(level=logging.CRITICAL)
 from utils.logger_initializer import logger, init_logger
 
 init_logger("test.log")
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-ckpt_path = Path("checkpoints/20260830-065231/CDDFuse_phase2_epoch120.pth")
+ckpt_path = Path("checkpoints/20260831-062038/CDDFuse_phase2_epoch120.pth")
 
 if __name__ == '__main__':
-    for dataset_name in ["MSRS"]:
-        logger.info("\n"*2+"="*80)
+    for dataset_name in ["MSRS", "TNO", "RoadScene"]:
         model_name="CDDFuse    "
-        logger.info(f"Test model: {ckpt_path.name} on {dataset_name} :")
         test_folder=os.path.join('test_img',dataset_name) 
         test_out_folder=os.path.join('test_result',dataset_name)
 
         device = init_ddp()
         Encoder = Restormer_Encoder().to(device)
         Decoder = Restormer_Decoder().to(device)
+        
+        # BaseFuseLayer = BaseMambaEncoder(dim=64).to(device)
         BaseFuseLayer = BaseFeatureExtraction(dim=64, num_heads=8).to(device)
         DetailFuseLayer = DetailFeatureExtraction(num_layers=1).to(device)
         models: dict[str, nn.Module] = {
@@ -50,10 +46,15 @@ if __name__ == '__main__':
                 data_VIS = image_read_cv2(os.path.join(test_folder,"vi",img_name), mode='GRAY')[np.newaxis,np.newaxis, ...]/255.0
 
                 data_IR,data_VIS = torch.FloatTensor(data_IR),torch.FloatTensor(data_VIS)
-                data_VIS, data_IR = data_VIS.cuda(), data_IR.cuda()
+                data_VIS, data_IR = data_VIS.to(device), data_IR.to(device)
 
                 feature_V_B, feature_V_D, feature_V = Encoder(data_VIS)
                 feature_I_B, feature_I_D, feature_I = Encoder(data_IR)
+
+                # 修改后 (需在初始化时增加一个 1x1 Conv，将 128 维降回 64 维)
+                # concat_feature = torch.cat((feature_I_B, feature_V_B), dim=1) 
+                # feature_F_B = BaseFuseLayer(concat_feature)
+                
                 feature_F_B = BaseFuseLayer(feature_V_B + feature_I_B)
                 feature_F_D = DetailFuseLayer(feature_V_D + feature_I_D)
                 data_Fuse, _ = Decoder(data_VIS, feature_F_B, feature_F_D)
@@ -75,6 +76,8 @@ if __name__ == '__main__':
                                             , Evaluator.Qabf(fi, ir, vi), Evaluator.SSIM(fi, ir, vi)])
 
         metric_result /= len(os.listdir(eval_folder))
+        logger.info("="*80)
+        logger.info(f"Test model: {ckpt_path.name} on {dataset_name} :")
         logger.info("\t\t EN\t SD\t SF\t MI\tSCD\tVIF\tQabf\tSSIM")
         logger.info(model_name+'\t'+str(np.round(metric_result[0], 2))+'\t'
                 +str(np.round(metric_result[1], 2))+'\t'

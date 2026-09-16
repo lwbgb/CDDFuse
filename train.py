@@ -12,6 +12,7 @@ from omegaconf import DictConfig, OmegaConf
 from tqdm import tqdm
 
 from models.net import BaseMambaEncoder, Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
+from schemas.base_config import BaseConfig
 from schemas.train_config import TrainConfig
 from utils.checkpoint import load_epoch_checkpoint, save_epoch_checkpoint
 from utils.dataset import H5Dataset, get_loader
@@ -41,14 +42,15 @@ if __name__ == "__main__":
     device = init_ddp()
     criteria_fusion = Fusionloss().to(device)
     with initialize(version_base=None, config_path="./configs"):
-        opt: TrainConfig = compose(config_name="train")
+        opt: BaseConfig | TrainConfig = compose(config_name="config", overrides=["+mode@_global_=train"])
     # device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     # Model
     DIDF_Encoder = Restormer_Encoder().to(device)
     DIDF_Decoder = Restormer_Decoder().to(device)
-    BaseFuseLayer = BaseMambaEncoder(dim=64).to(device)
-    # BaseFuseLayer = BaseFeatureExtraction(dim=64, num_heads=8).to(device)
+    # BaseFuseLayer = BaseMambaEncoder(dim=64).to(device)
+    # BaseFuseLayer = MIMOMambaFusion(in_dim=128, out_dim=64).to(device)
+    BaseFuseLayer = BaseFeatureExtraction(dim=64, num_heads=8).to(device)
     DetailFuseLayer = DetailFeatureExtraction(num_layers=1).to(device)
 
     # optimizer, scheduler and loss function
@@ -100,6 +102,7 @@ if __name__ == "__main__":
     train_state = {"models": models, "optimizers": optimizers, "schedules": schedulers}
     timestamp = datetime.datetime.now().strftime("%m-%d-%H-%M")
     train_date = strftime("%Y%m%d-%H%M%S", localtime())
+    
 
     """
     ------------------------------------------------------------------------------
@@ -125,7 +128,7 @@ if __name__ == "__main__":
             trainloader,
             desc=f"[Phase {current_phase}] [Epoch {epoch}/{opt.n_epochs}]",
             dynamic_ncols=True,
-            leave=False  # 每个 epoch 结束后保留�?��?��?�录
+            leave=False
         )
         epoch_start_time = time.time()  
         iter_data_time = time.time()  # timer for data loading per iteration
@@ -176,11 +179,17 @@ if __name__ == "__main__":
                     optimizer.step()
 
             else:  # Phase II
-                feature_VIS_Base, feature_VIS_Detail, feature_VIS = DIDF_Encoder(data_VIS)
-                feature_IR_Base, feature_IR_Detail, feature_IR = DIDF_Encoder(data_IR)
-                feature_Fuse_Base = BaseFuseLayer(feature_IR_Base + feature_VIS_Base)
-                feature_Fuse_Detail = DetailFuseLayer(feature_IR_Detail + feature_VIS_Detail)
-                data_Fuse, _ = DIDF_Decoder(data_VIS, feature_Fuse_Base, feature_Fuse_Detail)
+                feature_V_B, feature_V_D, feature_V = DIDF_Encoder(data_VIS)
+                feature_I_B, feature_I_D, feature_I = DIDF_Encoder(data_IR)
+
+                # feature_F_B = BaseFuseLayer(feature_I_B, feature_V_B)
+
+                # concat_feature = torch.cat((feature_I_B, feature_V_B), dim=1) 
+                # feature_F_B = BaseFuseLayer(concat_feature)
+                
+                feature_F_B = BaseFuseLayer(feature_I_B + feature_V_B)
+                feature_F_D = DetailFuseLayer(feature_I_D + feature_V_D)
+                data_Fuse, feature_F = DIDF_Decoder(data_VIS, feature_F_B, feature_F_D)
 
                 mse_loss_V = 5 * Loss_ssim(data_VIS, data_Fuse) + MSELoss(data_VIS, data_Fuse)
                 mse_loss_I = 5 * Loss_ssim(data_IR, data_Fuse) + MSELoss(data_IR, data_Fuse)
@@ -190,7 +199,7 @@ if __name__ == "__main__":
                 loss_decomp = (cc_loss_D) ** 2 / (1.01 + cc_loss_B)
                 fusionloss, _, _ = criteria_fusion(data_VIS, data_IR, data_Fuse)
 
-                loss = fusionloss + opt.coeff_decomp * loss_decomp
+                loss: torch.Tensor = fusionloss + opt.coeff_decomp * loss_decomp
                 loss.backward()
 
                 for model in models.values():
@@ -208,7 +217,6 @@ if __name__ == "__main__":
 
             # statement = f"[Phase {current_phase}] [Epoch {epoch}/{opt.n_epochs}] [Batch {batch_idx + 1}/{epoch_batches}] [loss: {loss.item():.8f}] ETA: {time_left}"
             # sys.stdout.write("\r" + statement)
-            # 2. 动态更新进度条右侧的指标信�?（替代手动打�? loss �? ETA�?
             pbar.set_postfix({
                 "loss": f"{loss.item():.8f}",
                 "lr": f"{optimizer.param_groups[0]['lr']:.2e}"
@@ -232,7 +240,7 @@ if __name__ == "__main__":
         logger.info(f"Epoch {epoch}/{opt.n_epochs} completed. Average loss: {epoch_losses[-1]:.6f}. Time taken: {time.time() - epoch_start_time:.2f}s")
 
         # save latest checkpoint
-        if epoch % opt.save_latest_freq == 0 or epoch == opt.epoch_gap or epoch == opt.n_epochs:
+        if epoch % opt.save_latest_freq == 0:
 
             latest_checkpoint_path = Path(opt.checkpoint_root) / train_date / f"CDDFuse_phase{current_phase}_latest.pth"
 

@@ -1,6 +1,7 @@
 import time
 
 from omegaconf import DictConfig, OmegaConf
+from torch.utils.data import DataLoader
 import torch
 from tqdm import tqdm
 from models.cddfuse_model import CDDFuseModel
@@ -17,10 +18,8 @@ if __name__ == "__main__":
         opt: BaseConfig | TrainConfig = compose(config_name="config", 
                                                 overrides=["+mode@_global_=train"])
 
-    dataset = create_dataset(
-        opt, "MSRS_train_imgsize_128_stride_200.h5"
-    )  # create a dataset given opt.dataset_mode and other options
-    dataset_size = len(dataset)  # get the number of images in the dataset.
+    dataLoader: DataLoader = create_dataset(opt, "MSRS_train_imgsize_128_stride_200.h5")
+    dataset_size = len(dataLoader.dataset)  # get the number of images in the dataset.
     print(f"The number of training images = {dataset_size}")
 
     model: CDDFuseModel = CDDFuseModel(opt)  # create a model given opt.model and other options
@@ -41,7 +40,7 @@ if __name__ == "__main__":
         # visualizer.reset()
 
         pbar = tqdm(
-            dataset,
+            dataLoader,
             desc=f"[Phase {model.get_phase()}] [Epoch {epoch}/{opt.n_epochs}]",
             dynamic_ncols=True,  # 进度条宽度自适应
             leave=False,  # 进度条完成后不保留
@@ -57,19 +56,19 @@ if __name__ == "__main__":
             model.optimize_parameters()  # calculate loss functions, get gradients, update network weights
 
             epoch_iters += opt.batch_size
+            loss = model.get_current_loss()
+            epoch_loss += loss * opt.batch_size
 
             # if total_iters % opt.display_freq == 0:  # display images on visdom and save images to a HTML file
             #     save_result = total_iters % opt.update_html_freq == 0
             #     model.compute_visuals()
             #     visualizer.display_current_results(model.get_current_visuals(), epoch, total_iters, save_result)
 
-            if total_iters % opt.print_iter_freq == 0:  # print training losses and save logging information to the disk
-                loss: torch.Tensor = model.get_current_loss()
-                epoch_loss += loss.item() * opt.batch_size
+            if (total_iters + epoch_iters) % opt.print_iter_freq == 0:  # print training losses and save logging information to the disk
                 t_comp = (time.time() - iter_start_time) / opt.batch_size
                 pbar.set_postfix(
                     {
-                        "loss": f"{loss.item():.8f}",
+                        "loss": f"{loss:.8f}",
                     }
                 )
                 # visualizer.print_current_losses(epoch, epoch_iter, losses, t_comp, t_data)
@@ -86,6 +85,9 @@ if __name__ == "__main__":
 
         total_epochs += 1
         total_iters += epoch_iters
+        logger.info(
+            f"Epoch {epoch}/{opt.n_epochs} completed. Average loss: {(epoch_loss / dataset_size):.6f}. Time taken: {time.time() - epoch_start_time:.2f} sec"
+        )
         
         if epoch % opt.save_latest_freq == 0:
             model.save_model(f"{opt.model}_latest.pth")
@@ -94,9 +96,5 @@ if __name__ == "__main__":
         if epoch % opt.save_epoch_freq == 0 or epoch == opt.epoch_gap or epoch == opt.n_epochs:
             model.save_model(f"{opt.model}_epoch_{epoch}.pth")
             logger.info(f"The model saved at the end of epoch: {epoch}, iters: {total_iters}")
-
-        logger.info(
-            f"Epoch {epoch}/{opt.n_epochs} completed. Average loss: {(epoch_loss / dataset_size):.6f}. Time taken: {time.time() - epoch_start_time:.2f} sec"
-        )
 
     cleanup_ddp()

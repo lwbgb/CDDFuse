@@ -26,10 +26,10 @@ class CDDFuseModel(BaseModel):
             self._phase = 2  # 测试阶段直接进入 Phase II
 
         # 定义网络结构
-        self.DIDF_Encoder = Restormer_Encoder()
-        self.DIDF_Decoder = Restormer_Decoder()
-        self.BaseFuseLayer = BaseFeatureExtraction(dim=64, num_heads=8)
-        self.DetailFuseLayer = DetailFeatureExtraction(num_layers=1)
+        self.DIDF_Encoder = Restormer_Encoder().to(self.device)
+        self.DIDF_Decoder = Restormer_Decoder().to(self.device)
+        self.BaseFuseLayer = BaseFeatureExtraction(dim=64, num_heads=8).to(self.device)
+        self.DetailFuseLayer = DetailFeatureExtraction(num_layers=1).to(self.device)
         self.models: dict[str, nn.Module] = {
             "DIDF_Encoder": self.DIDF_Encoder,
             "DIDF_Decoder": self.DIDF_Decoder,
@@ -81,7 +81,7 @@ class CDDFuseModel(BaseModel):
     def get_epoch(self):
         return self._epoch
 
-    def get_current_loss(self) -> torch.Tensor | None:
+    def get_current_loss(self) -> float | None:
         return self.losses.get("loss_total", None)
 
     def set_input(self, input):
@@ -140,15 +140,15 @@ class CDDFuseModel(BaseModel):
         self.loss_decomp = (self.loss_cc_Detail**2) / (1.01 + self.loss_cc_Base)
 
         if self._phase == 1:
-            self.loss_MSE_VIS = 5 * self.Loss_ssim(self.data_VIS, self.data_VIS_hat) + self.MSELoss(
+            self.loss_MSE_VIS: torch.Tensor = 5 * self.Loss_ssim(self.data_VIS, self.data_VIS_hat) + self.MSELoss(
                 self.data_VIS, self.data_VIS_hat
             )
-            self.loss_MSE_IR = 5 * self.Loss_ssim(self.data_IR, self.data_IR_hat) + self.MSELoss(
+            self.loss_MSE_IR: torch.Tensor = 5 * self.Loss_ssim(self.data_IR, self.data_IR_hat) + self.MSELoss(
                 self.data_IR, self.data_IR_hat
             )
 
             spatial_grad = kornia.filters.SpatialGradient()
-            self.loss_gradient = self.L1Loss(spatial_grad(self.data_VIS), spatial_grad(self.data_VIS_hat))
+            self.loss_gradient: torch.Tensor = self.L1Loss(spatial_grad(self.data_VIS), spatial_grad(self.data_VIS_hat))
 
             self.loss_total: torch.Tensor = (
                 self.opt.coeff_mse_loss_VF * self.loss_MSE_VIS
@@ -159,9 +159,9 @@ class CDDFuseModel(BaseModel):
             self.loss_total.backward()
 
             self.losses |= {
-                "loss_MSE_VIS": self.loss_MSE_VIS,
-                "loss_MSE_IR": self.loss_MSE_IR,
-                "loss_gradient": self.loss_gradient,
+                "loss_MSE_VIS": self.loss_MSE_VIS.item(),
+                "loss_MSE_IR": self.loss_MSE_IR.item(),
+                "loss_gradient": self.loss_gradient.item(),
             }
 
         elif self._phase == 2:
@@ -170,22 +170,26 @@ class CDDFuseModel(BaseModel):
             self.loss_total: torch.Tensor = self.loss_fusion + self.opt.coeff_decomp * self.loss_decomp
             self.loss_total.backward()
 
-            self.losses |= {"loss_fusion": self.loss_fusion}
+            self.losses |= {"loss_fusion": self.loss_fusion.item()}
 
         self.losses |= {
-            "loss_total": self.loss_total,
-            "loss_cc_Base": self.loss_cc_Base,
-            "loss_cc_Detail": self.loss_cc_Detail,
-            "loss_decomp": self.loss_decomp,
+            "loss_total": self.loss_total.item(),
+            "loss_cc_Base": self.loss_cc_Base.item(),
+            "loss_cc_Detail": self.loss_cc_Detail.item(),
+            "loss_decomp": self.loss_decomp.item(),
         }
 
     def optimize_parameters(self):
         """更新网络权重（每个 iteration 调用一次）。"""
-        self.forward()  # 前向传播
-
+        for model in self.models.values():
+            model.train()
+            model.zero_grad()
+            
         # 根据阶段清空梯度
         for optimizer in self.optimizers.values():
             optimizer.zero_grad()
+        
+        self.forward()  # 前向传播
 
         self.backward()  # 反向传播
 
@@ -209,7 +213,7 @@ class CDDFuseModel(BaseModel):
 
     def load_model(self, ckp_name: str, prefix: str | Path = "") -> ModelCkp:
         try:
-            load_path = self.opt.checkpoint_root / prefix / ckp_name
+            load_path = Path(self.opt.checkpoint_root) / prefix / ckp_name
             path_util.check_file_path(load_path)
 
             checkpoint: dict = torch.load(load_path, weights_only=True)
@@ -246,7 +250,7 @@ class CDDFuseModel(BaseModel):
 
     def save_model(self, ckp_name: str) -> ModelCkp:
         try:
-            save_path = self.save_dir / ckp_name
+            save_path = Path(self.save_dir) / ckp_name
             path_util.check_file_path(save_path, create=True)
 
             model_ckp = ModelCkp(
@@ -260,7 +264,7 @@ class CDDFuseModel(BaseModel):
 
             torch.save(model_ckp.to_dict(), save_path)
             logger.info(
-                f"{self.name}_phase{model_ckp.phase}_epoch{model_ckp.epoch} checkpoint saved successfully at {save_path}."
+                f'{self.name}_phase{model_ckp.phase}_epoch{model_ckp.epoch} checkpoint saved successfully at "{save_path}".'
             )
             return model_ckp
         except Exception as e:

@@ -1,0 +1,4 @@
+root: datasets/
+name: MSRS_train
+crop_size: 256
+stride: 128
