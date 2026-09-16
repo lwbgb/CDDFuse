@@ -1,0 +1,8 @@
+device: gpu
+isTrain: False
+num_threads: 8
+batch_size: 1
+shuffle: False
+no_flip: True
+drop_last: False
+num_test: 10000

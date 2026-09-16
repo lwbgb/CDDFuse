@@ -19,8 +19,11 @@ class CDDFuseModel(BaseModel):
     def __init__(self, opt: DictConfig):
         BaseModel.__init__(self, opt)
         self.name = opt.model
-        self._epoch = opt.start_epoch
-        self._phase = 1 if opt.start_epoch <= opt.epoch_gap else 2
+        if opt.isTrain:
+            self._epoch = opt.start_epoch
+            self._phase = 1 if opt.start_epoch <= opt.epoch_gap else 2
+        else:
+            self._phase = 2  # 测试阶段直接进入 Phase II
 
         # 定义网络结构
         self.DIDF_Encoder = Restormer_Encoder()

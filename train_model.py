@@ -14,7 +14,8 @@ from hydra import initialize, compose
 if __name__ == "__main__":
 
     with initialize(version_base=None, config_path="./configs"):
-        opt: BaseConfig | TrainConfig = compose(config_name="config")
+        opt: BaseConfig | TrainConfig = compose(config_name="config", 
+                                                overrides=["+mode@_global_=train"])
 
     dataset = create_dataset(
         opt, "MSRS_train_imgsize_128_stride_200.h5"
