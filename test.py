@@ -86,7 +86,7 @@ if __name__ == '__main__':
             model.test()
 
             # 获取当前 Batch 的张量 (在 GPU 上)
-            batch_fused = model.data_Fuse
+            batch_fused: torch.Tensor = model.data_Fuse
             batch_ir = model.data_IR
             batch_vi = model.data_VIS
             B = batch_fused.size(0)

@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import torch.utils.checkpoint as checkpoint
 from timm.layers import DropPath
 from einops import rearrange, repeat
-from mamba_ssm.ops.selective_scan_interface import selective_scan_fn
+from mamba_ssm.ops.selective_scan_interface import selective_scan_fn, selective_scan_ref
 # from mamba_ssm import Mamba3
 
 
