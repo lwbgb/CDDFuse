@@ -2,7 +2,6 @@ import os
 from time import localtime, strftime
 from typing import Any
 from omegaconf import DictConfig
-from regex import P
 import torch
 from pathlib import Path
 from collections import OrderedDict

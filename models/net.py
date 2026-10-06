@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import torch.utils.checkpoint as checkpoint
 from timm.layers import DropPath, to_2tuple, trunc_normal_
 from einops import rearrange
-from mamba_ssm import Mamba3
+# from mamba_ssm import Mamba3
 
 
 def drop_path(x, drop_prob: float = 0., training: bool = False):
@@ -502,28 +502,6 @@ class BaseMambaEncoder(nn.Module):
         out = self.conv_out(out)
         return out + shortcut
     
-    
-class MIMOMambaFusion(nn.Module):
-    def __init__(self, in_dim=128, out_dim=64):
-        super().__init__()
-        # MIMO 降维路由：将双模态并行输入映射到统一的潜空间
-        self.input_proj = nn.Conv2d(in_dim, out_dim, kernel_size=1, bias=False)
-        self.norm = nn.LayerNorm(out_dim)
-        self.ss2d = SS2D(d_model=out_dim) # 核心连续状态扫描
-        self.out_proj = nn.Conv2d(out_dim, out_dim, kernel_size=3, padding=1)
-        self.act = nn.SiLU() # 引入非线性激活增强融合表达
-
-    def forward(self, x_ir, x_vis):
-        # 替代原始的直接相加，进行通道级拼接 (B, 128, H, W)
-        x_concat = torch.cat([x_ir, x_vis], dim=1)
-        x = self.input_proj(x_concat)
-        x = self.act(x)
-        
-        shortcut = x
-        x_norm = self.norm(x.permute(0, 2, 3, 1)).permute(0, 3, 1, 2)
-        out = self.ss2d(x_norm)
-        out = self.out_proj(out)
-        return out + shortcut
 
 if __name__ == '__main__':
     height = 128
