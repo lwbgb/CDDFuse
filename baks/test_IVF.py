@@ -13,10 +13,10 @@ from utils.logger_initializer import logger, init_logger
 
 init_logger("test.log")
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-ckpt_path = Path("checkpoints/20260831-062038/CDDFuse_phase2_epoch120.pth")
+ckpt_path = Path("checkpoints/base_model/CDDFuse_phase2_epoch120.pth")
 
 if __name__ == '__main__':
-    for dataset_name in ["MSRS", "TNO", "RoadScene"]:
+    for dataset_name in ["MSRS"]:
         model_name="CDDFuse    "
         test_folder=os.path.join('test_img',dataset_name) 
         test_out_folder=os.path.join('test_result',dataset_name)

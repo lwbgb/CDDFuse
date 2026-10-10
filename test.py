@@ -5,152 +5,151 @@ import logging
 from pathlib import Path
 import numpy as np
 import torch
-from tqdm import tqdm
-from torchvision.transforms import v2
+from torch.utils.data import DataLoader
 from hydra import initialize, compose
+from tqdm import tqdm
 
 from models.cddfuse_model import CDDFuseModel
 from schemas.base_config import BaseConfig
-from schemas.test_config import TestConfig
 from schemas.custom_dataset import CustomImageDataset
-from utils.dataset import get_loader
-from utils.img_read_save import img_save
-from utils.loss import Fusionloss
+from schemas.test_config import TestConfig
+from utils.evaluator_torch import EvaluatorTorch
+from utils.img_read_save import img_save, image_read_cv2
 from utils.logger_initializer import logger, init_logger
-from utils.evaluator_torch import EvaluatorTorch  # 引入我们优化的纯 GPU 并行评估器
+from utils.loss import Fusionloss
 
 warnings.filterwarnings("ignore")
 logging.basicConfig(level=logging.CRITICAL)
 
-# 环境配置
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 init_logger("test.log")
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
+
+def print_metrics_table(dataset_name: str, model_name: str, metrics: np.ndarray, 
+                        ckpt_name: str, total_imgs: int, avg_loss: float, elapsed_time: float):
+    """可视化输出终端与日志报告面板"""
+    fps = total_imgs / elapsed_time if elapsed_time > 0 else 0.0
+    headers = ["EN", "SD", "SF", "MI", "SCD", "VIF", "Qabf", "SSIM"]
+    line_sep = "+" + "+".join(["-" * 10 for _ in range(8)]) + "+"
+    header_str = "|" + "|".join([f"{h:^10}" for h in headers]) + "|"
+    val_str = "|" + "|".join([f"{val:^10.2f}" for val in metrics]) + "|"
+
+    border = "=" * 89
+    sub_border = "-" * 89
+
+    report = (
+        f"\n{border}\n"
+        f"                       TEST & EVALUATION SUMMARY REPORT\n"
+        f"{border}\n"
+        f"  Model Name       : {model_name.strip()}\n"
+        f"  Checkpoint       : {ckpt_name}\n"
+        f"  Target Dataset   : {dataset_name}\n"
+        f"  Dataset Size     : {total_imgs} images\n"
+        f"  Average Loss     : {avg_loss:.4f}\n"
+        f"  Total Duration   : {elapsed_time:.2f} s  ({fps:.2f} img/s)\n"
+        f"{sub_border}\n"
+        f"{line_sep}\n"
+        f"{header_str}\n"
+        f"{line_sep}\n"
+        f"{val_str}\n"
+        f"{line_sep}\n"
+        f"{border}"
+    )
+    logger.info(report)
+
 
 if __name__ == '__main__':
-    # 恢复多个数据集的泛化性测试
-    dataset_names = ["MSRS", "TNO", "RoadScene"]
-    
+    torch.backends.cudnn.benchmark = True
+
     with initialize(version_base=None, config_path="./configs"):
         opt: BaseConfig | TestConfig = compose(config_name="config", overrides=["+mode@_global_=test"])
 
-    # 模型初始化
+    model_name = opt.model
     model: CDDFuseModel = CDDFuseModel(opt)
     model.setup()
     model.eval()
-    device = model.device
     
-    # 实例化损失函数，用于测试阶段的 Loss 跟踪
-    criteria_fusion = Fusionloss().to(device)
+    criterion_fusion = Fusionloss().to(model.device)
 
-    for dataset_name in dataset_names:
+    datasets = ["MSRS"]
+
+    for dataset_name in datasets:
         test_folder = Path(opt.root) / dataset_name
         test_out_folder = Path(opt.output_dir) / dataset_name
-        
-        # 如果数据集文件夹不存在，则跳过
-        if not test_folder.exists():
-            logger.warning(f"Dataset folder {test_folder} not found, skipping...")
-            continue
+        test_out_folder.mkdir(parents=True, exist_ok=True)
 
-        transform_PIL_to_tensor = v2.Compose([
-            v2.ToImage(), 
-            v2.Grayscale(),
-            v2.ToDtype(torch.float32, scale=True)
-        ])
-        
-        dataset = CustomImageDataset(root=test_folder, ir_dir="ir", vis_dir="vi", transform=transform_PIL_to_tensor)
-        dataloader = get_loader(opt, dataset)
-        
-        logger.info(f"Start evaluating on {dataset_name} (Size: {len(dataset)})...")
+        dataset = CustomImageDataset(root=test_folder, ir_dir="ir", vis_dir="vi")
+        total_imgs = len(dataset)
+        dataloader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=2, pin_memory=True)
 
-        # 指标与 Loss 累加器（防 OOM 流式设计）
-        metric_sums = {k: 0.0 for k in ["EN", "SD", "SF", "MI", "SCD", "VIFF", "Qabf", "SSIM"]}
-        total_loss = 0.0
-        num_processed = 0
+        logger.info(f"==> [{dataset_name}] Starting Inference & Evaluation (Total Dataset Size: {total_imgs} samples)...")
 
-        pbar = tqdm(dataloader, desc=f"Testing {dataset_name}", dynamic_ncols=True, leave=False)
+        metric_accum = np.zeros(8)
+        loss_accum = 0.0
         start_time = time.time()
 
-        for i, data in enumerate(pbar):
-            if num_processed >= opt.num_test:
-                break
-            
-            # 安全的输入解析：防止 DataLoader 返回 Dict 导致 set_input 异常
-            if isinstance(data, dict):
-                model.set_input((data["vi"], data["ir"]))
-                img_names = data.get("img_name", [f"img_{num_processed+j}" for j in range(len(data["vi"]))])
-            else:
+        # 2. 结合 tqdm 进度条执行高效推理与评测
+        pbar = tqdm(
+            dataloader, 
+            desc=f"[{dataset_name} | Size: {total_imgs}]", 
+            unit="img", 
+            dynamic_ncols=True, 
+            leave=True
+        )
+
+        with torch.inference_mode():
+            for i, data in enumerate(pbar):
                 model.set_input(data)
-                img_names = [f"img_{num_processed+j}" for j in range(model.data_VIS.size(0))]
-            
-            # 前向推理 (内部自动封装了 torch.no_grad())
-            model.test()
+                model.test()
 
-            # 获取当前 Batch 的张量 (在 GPU 上)
-            batch_fused: torch.Tensor = model.data_Fuse
-            batch_ir = model.data_IR
-            batch_vi = model.data_VIS
-            B = batch_fused.size(0)
+                # 计算当前样本的融合损失
+                loss_val = criterion_fusion(model.data_VIS, model.data_IR, model.data_Fuse)
+                curr_loss = loss_val[0].item() if isinstance(loss_val, (tuple, list)) else loss_val.item()
+                loss_accum += curr_loss
+                running_avg_loss = loss_accum / (i + 1)
 
-            # ---------------------------------------------------------
-            # 1. 实例级归一化 (Instance-wise Normalization)
-            # ---------------------------------------------------------
-            fused_flat = batch_fused.view(B, -1)
-            mins = fused_flat.min(dim=1, keepdim=True)[0].view(B, 1, 1, 1)
-            maxs = fused_flat.max(dim=1, keepdim=True)[0].view(B, 1, 1, 1)
-            batch_fused_norm = (batch_fused - mins) / (maxs - mins + 1e-8)
+                # GPU 快速 Min-Max 归一化并缩放到 [0, 255]
+                fuse_t = model.data_Fuse
+                f_min = torch.min(fuse_t)
+                f_max = torch.max(fuse_t)
+                fuse_norm = (fuse_t - f_min) / (f_max - f_min + 1e-12)
+                fuse_255: torch.Tensor = fuse_norm * 255.0
 
-            # ---------------------------------------------------------
-            # 2. 计算测试损失 (Monitoring Test Loss)
-            # ---------------------------------------------------------
-            # 这里调用测试集上的 Fusion Loss 来观察损失情况
-            with torch.no_grad():
-                loss, _, _ = criteria_fusion(batch_vi, batch_ir, batch_fused_norm)
-            
-            total_loss += loss.item() * B
-            pbar.set_postfix({"Test Loss": f"{loss.item():.4f}"})
+                # 获取图像名称并保存融合结果
+                img_name: str = model.ir_img_name
+                fi_np = np.squeeze(fuse_255.round().cpu().numpy()).astype(np.uint8)
+                img_save(fi_np, img_name.split('.')[0], str(test_out_folder))
 
-            # ---------------------------------------------------------
-            # 3. GPU 并行计算评估指标 (Batch-wise 流式累加)
-            # ---------------------------------------------------------
-            metric_sums["EN"] += EvaluatorTorch.EN(batch_fused_norm) * B
-            metric_sums["SD"] += EvaluatorTorch.SD(batch_fused_norm) * B
-            metric_sums["SF"] += EvaluatorTorch.SF(batch_fused_norm) * B
-            metric_sums["MI"] += EvaluatorTorch.MI(batch_fused_norm, batch_ir, batch_vi) * B
-            metric_sums["SCD"] += EvaluatorTorch.SCD(batch_fused_norm, batch_ir, batch_vi) * B
-            metric_sums["VIFF"] += EvaluatorTorch.VIFF(batch_fused_norm, batch_ir, batch_vi) * B
-            metric_sums["Qabf"] += EvaluatorTorch.Qabf(batch_fused_norm, batch_ir, batch_vi) * B
-            metric_sums["SSIM"] += EvaluatorTorch.SSIM(batch_fused_norm, batch_ir, batch_vi) * B
+                # 读取原图并转入 GPU 计算融合指标
+                ir_path = os.path.join(test_folder, "ir", img_name)
+                vi_path = os.path.join(test_folder, "vi", img_name)
+                ir_np = image_read_cv2(ir_path, 'GRAY')
+                vi_np = image_read_cv2(vi_path, 'GRAY')
 
-            # ---------------------------------------------------------
-            # 4. 异步保存融合图像 (非阻塞)
-            # ---------------------------------------------------------
-            for b in range(B):
-                # 仅将单张需要保存的图片转到 CPU
-                fi_np = (batch_fused_norm[b].squeeze().cpu().numpy() * 255).astype(np.uint8)
-                current_name = img_names[b].split('.')[0]
-                img_save(fi_np, current_name, test_out_folder)
+                ir_t = torch.from_numpy(ir_np).to(model.device)
+                vi_t = torch.from_numpy(vi_np).to(model.device)
 
-            num_processed += B
+                curr_metric = EvaluatorTorch.evaluate_all(fuse_255.squeeze(), ir_t, vi_t, device=model.device)
+                metric_accum += curr_metric
 
-        # ---------------------------------------------------------
-        # 5. 汇总与优化可视化输出 (Logging)
-        # ---------------------------------------------------------
-        avg_loss = total_loss / max(num_processed, 1)
-        avg_metrics = {k: v / max(num_processed, 1) for k, v in metric_sums.items()}
-        time_cost = time.time() - start_time
+                # 实时更新进度条后缀显示
+                pbar.set_postfix({
+                    "Loss": f"{curr_loss:.4f}",
+                    "Avg_Loss": f"{running_avg_loss:.4f}"
+                })
 
-        logger.info("=" * 95)
-        logger.info(f"Test Model : {opt.model}")
-        logger.info(f"Dataset    : {dataset_name} ({num_processed} imgs) | Time: {time_cost:.1f}s | Avg Loss: {avg_loss:.5f}")
-        logger.info("-" * 95)
-        logger.info(f"{'Model Name':<15} {'EN':>8} {'SD':>8} {'SF':>8} {'MI':>8} {'SCD':>8} {'VIFF':>8} {'Qabf':>8} {'SSIM':>8}")
-        logger.info(f"{opt.model:<15} "
-                    f"{avg_metrics['EN']:>8.4f} "
-                    f"{avg_metrics['SD']:>8.4f} "
-                    f"{avg_metrics['SF']:>8.4f} "
-                    f"{avg_metrics['MI']:>8.4f} "
-                    f"{avg_metrics['SCD']:>8.4f} "
-                    f"{avg_metrics['VIFF']:>8.4f} "
-                    f"{avg_metrics['Qabf']:>8.4f} "
-                    f"{avg_metrics['SSIM']:>8.4f}")
-        logger.info("=" * 95 + "\n")
+        pbar.close()
+        elapsed_total = time.time() - start_time
+
+        # 3. 计算全局平均指标并格式化输出可视化面板
+        final_metrics = metric_accum / total_imgs
+        final_avg_loss = loss_accum / total_imgs
+        print_metrics_table(
+            dataset_name=dataset_name,
+            model_name=model_name,
+            metrics=final_metrics,
+            ckpt_name=opt.ckp_name,
+            total_imgs=total_imgs,
+            avg_loss=final_avg_loss,
+            elapsed_time=elapsed_total
+        )

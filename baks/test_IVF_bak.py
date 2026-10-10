@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore")
 logging.basicConfig(level=logging.CRITICAL)
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-ckpt_path=r"checkpoints/20260830-065231/CDDFuse_phase2_epoch120.pth"
+ckpt_path=r"checkpoints/base_model/CDDFuse_phase2_epoch120.pth"
 
 if __name__ == '__main__':
     for dataset_name in ["MSRS"]:

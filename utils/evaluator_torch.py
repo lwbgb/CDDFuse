@@ -1,275 +1,297 @@
+import math
+import numpy as np
 import torch
 import torch.nn.functional as F
-import math
+
 
 class EvaluatorTorch:
     """
-    纯 PyTorch 实现的图像融合质量评估器 (GPU 加速版)
-    所有方法期望的输入张量格式为 (B, 1, H, W) 或 (B, H, W)，取值范围 [0, 1] 或 [0, 255]
+    基于 PyTorch 实现的高性能图像融合评价指标计算器。
+    所有指标数学逻辑与原版 Evaluator.py 完全一致，支持 GPU 纯张量并行加速。
     """
-    
+    _viff_filters: dict[tuple[int, str, torch.dtype], list[torch.Tensor]] = {}
+
     @classmethod
-    def _check_dim(cls, img):
-        # 统一转为 (B, 1, H, W) 形状
-        if img.dim() == 2:
-            return img.unsqueeze(0).unsqueeze(0)
-        elif img.dim() == 3:
-            return img.unsqueeze(1)
-        elif img.dim() == 4:
-            return img
+    def _to_tensor(cls, img: np.ndarray | torch.Tensor, device: torch.device) -> torch.Tensor:
+        """确保输入为 shape [1, 1, H, W] 的 float64 张量（使用 float64 保证与 scipy 卷积精度完全对齐）"""
+        if isinstance(img, np.ndarray):
+            t = torch.from_numpy(img).to(device=device, dtype=torch.float64)
         else:
-            raise ValueError(f"Unsupported tensor dimension: {img.dim()}")
+            t = img.to(device=device, dtype=torch.float64)
 
+        if t.ndim == 2:
+            t = t.unsqueeze(0).unsqueeze(0)
+        elif t.ndim == 3:
+            t = t.unsqueeze(0)
+        return t
+
+    # ------------------- 1. EN: 信息熵 -------------------
     @classmethod
-    def EN(cls, img, bins=256):
-        """信息熵 (Entropy) - Batch并行"""
-        img = cls._check_dim(img)
-        # 将输入缩放到 0-255 并转为整型
-        if img.max() <= 1.0:
-            img = (img * 255).clamp(0, 255).round().long()
+    def EN(cls, img: np.ndarray | torch.Tensor, device: torch.device = torch.device('cuda:0')) -> float:
+        if isinstance(img, np.ndarray):
+            t = torch.from_numpy(img).to(device)
         else:
-            img = img.clamp(0, 255).round().long()
+            t = img.to(device)
+        a = torch.round(t).to(torch.long).flatten()
+        # 限制在 [0, 255] 灰度区间统计
+        h = torch.bincount(a, minlength=256).to(torch.float64) / a.numel()
+        h_nz = h[h > 0]
+        return float(-torch.sum(h_nz * torch.log2(h_nz)).item())
 
-        B = img.size(0)
-        entropies = []
-        for i in range(B):
-            # torch.bincount 目前不支持 batch 维度，所以在此处用小循环
-            hist = torch.bincount(img[i].flatten(), minlength=bins).float()
-            prob = hist / hist.sum()
-            prob = prob[prob > 0]
-            entropy = -torch.sum(prob * torch.log2(prob))
-            entropies.append(entropy)
-        return torch.stack(entropies).mean().item()
+    # ------------------- 2. SD: 标准差 -------------------
+    @classmethod
+    def SD(cls, img: np.ndarray | torch.Tensor, device: torch.device = torch.device('cuda:0')) -> float:
+        t = cls._to_tensor(img, device)
+        return float(torch.std(t, unbiased=False).item())
+
+    # ------------------- 3. SF: 空间频率 -------------------
+    @classmethod
+    def SF(cls, img: np.ndarray | torch.Tensor, device: torch.device = torch.device('cuda:0')) -> float:
+        t = cls._to_tensor(img, device)
+        rf = torch.mean((t[:, :, :, 1:] - t[:, :, :, :-1]) ** 2)
+        cf = torch.mean((t[:, :, 1:, :] - t[:, :, :-1, :]) ** 2)
+        return float(torch.sqrt(rf + cf).item())
+
+    # ------------------- 4. MI: 互信息 -------------------
+    @classmethod
+    def _mutual_info(cls, x: torch.Tensor, y: torch.Tensor) -> float:
+        """等价于 sklearn.metrics.mutual_info_score"""
+        x_flat = torch.round(x).to(torch.long).flatten()
+        y_flat = torch.round(y).to(torch.long).flatten()
+        n = x_flat.numel()
+
+        idx = x_flat * 256 + y_flat
+        joint_h = torch.bincount(idx, minlength=256 * 256).to(torch.float64)
+        pxy = joint_h / n
+
+        px = torch.bincount(x_flat, minlength=256).to(torch.float64) / n
+        py = torch.bincount(y_flat, minlength=256).to(torch.float64) / n
+
+        mask = pxy > 0
+        if not mask.any():
+            return 0.0
+
+        i_indices = torch.arange(256 * 256, device=x.device)[mask]
+        xi = i_indices // 256
+        yi = i_indices % 256
+
+        p_joint = pxy[mask]
+        p_indep = px[xi] * py[yi]
+
+        # sklearn.metrics.mutual_info_score 默认底数为 e
+        mi = torch.sum(p_joint * torch.log(p_joint / p_indep))
+        return float(mi.item())
 
     @classmethod
-    def SD(cls, img):
-        """标准差 (Standard Deviation)"""
-        img = cls._check_dim(img)
-        # 沿每个图像的展平维度求标准差
-        return img.view(img.size(0), -1).std(dim=1).mean().item()
+    def MI(cls, image_F: np.ndarray | torch.Tensor, image_A: np.ndarray | torch.Tensor, image_B: np.ndarray | torch.Tensor, device: torch.device = torch.device('cuda:0')) -> float:
+        tF = cls._to_tensor(image_F, device)
+        tA = cls._to_tensor(image_A, device)
+        tB = cls._to_tensor(image_B, device)
+        return cls._mutual_info(tF, tA) + cls._mutual_info(tF, tB)
+
+    # ------------------- 5. SCD: 差异相关和 -------------------
+    @classmethod
+    def SCD(cls, image_F: np.ndarray | torch.Tensor, image_A: np.ndarray | torch.Tensor, image_B: np.ndarray | torch.Tensor, device: torch.device = torch.device('cuda:0')) -> float:
+        tF = cls._to_tensor(image_F, device)
+        tA = cls._to_tensor(image_A, device)
+        tB = cls._to_tensor(image_B, device)
+
+        imgF_A = tF - tA
+        imgF_B = tF - tB
+
+        def _corr(x, y):
+            x_diff = x - torch.mean(x)
+            y_diff = y - torch.mean(y)
+            return torch.sum(x_diff * y_diff) / torch.sqrt(torch.sum(x_diff ** 2) * torch.sum(y_diff ** 2) + 1e-12)
+
+        return float((_corr(tA, imgF_B) + _corr(tB, imgF_A)).item())
+
+    # ------------------- 6. VIFF: 视觉信息保真度 -------------------
+    @classmethod
+    def _get_viff_windows(cls, device: torch.device, dtype: torch.dtype) -> list[torch.Tensor]:
+        key = (device.index or 0, str(device.type), dtype)
+        if key in cls._viff_filters:
+            return cls._viff_filters[key]
+
+        windows = []
+        for scale in range(1, 5):
+            N = 2 ** (4 - scale + 1) + 1
+            sd = N / 5.0
+            m = (N - 1.) / 2.
+            y, x = np.ogrid[-m:m + 1, -m:m + 1]
+            h = np.exp(-(x * x + y * y) / (2. * sd * sd))
+            h[h < np.finfo(h.dtype).eps * h.max()] = 0
+            sumh = h.sum()
+            win = h / sumh if sumh != 0 else h
+            win = np.rot90(win, 2).copy()
+            win_t = torch.from_numpy(win).unsqueeze(0).unsqueeze(0).to(device=device, dtype=dtype)
+            windows.append(win_t)
+
+        cls._viff_filters[key] = windows
+        return windows
 
     @classmethod
-    def SF(cls, img):
-        """空间频率 (Spatial Frequency)"""
-        img = cls._check_dim(img)
-        RF = torch.mean((img[:, :, :, 1:] - img[:, :, :, :-1]) ** 2, dim=[1, 2, 3])
-        CF = torch.mean((img[:, :, 1:, :] - img[:, :, :-1, :]) ** 2, dim=[1, 2, 3])
-        return torch.sqrt(RF + CF).mean().item()
-
-    @classmethod
-    def AG(cls, img):
-        """平均梯度 (Average Gradient)"""
-        img = cls._check_dim(img)
-        B, C, H, W = img.shape
-        
-        Gx = torch.zeros_like(img)
-        Gy = torch.zeros_like(img)
-
-        Gx[:, :, :, 0] = img[:, :, :, 1] - img[:, :, :, 0]
-        Gx[:, :, :, -1] = img[:, :, :, -1] - img[:, :, :, -2]
-        Gx[:, :, :, 1:-1] = (img[:, :, :, 2:] - img[:, :, :, :-2]) / 2.0
-
-        Gy[:, :, 0, :] = img[:, :, 1, :] - img[:, :, 0, :]
-        Gy[:, :, -1, :] = img[:, :, -1, :] - img[:, :, -2, :]
-        Gy[:, :, 1:-1, :] = (img[:, :, 2:, :] - img[:, :, :-2, :]) / 2.0
-
-        ag = torch.mean(torch.sqrt((Gx ** 2 + Gy ** 2) / 2.0), dim=[1, 2, 3])
-        return ag.mean().item()
-
-    @classmethod
-    def _mutual_info(cls, x, y, bins=256):
-        """计算两组张量之间的互信息 (基于直方图近似)"""
-        if x.max() <= 1.0: x = (x * 255)
-        if y.max() <= 1.0: y = (y * 255)
-        x = x.clamp(0, 255).long()
-        y = y.clamp(0, 255).long()
-        
-        B = x.size(0)
-        mi_scores = []
-        for i in range(B):
-            hist_2d = torch.histogramdd(
-                torch.stack((x[i].flatten().float(), y[i].flatten().float()), dim=1),
-                bins=bins, range=[0, 255, 0, 255]
-            )[0]
-            pxy = hist_2d / hist_2d.sum()
-            px = pxy.sum(dim=1)
-            py = pxy.sum(dim=0)
-            px_py = px.unsqueeze(1) * py.unsqueeze(0)
-            nz = pxy > 0
-            mi = torch.sum(pxy[nz] * torch.log(pxy[nz] / px_py[nz]))
-            mi_scores.append(mi)
-        return torch.stack(mi_scores)
-
-    @classmethod
-    def MI(cls, img_F, img_A, img_B):
-        """互信息 (Mutual Information)"""
-        img_F, img_A, img_B = cls._check_dim(img_F), cls._check_dim(img_A), cls._check_dim(img_B)
-        mi_AF = cls._mutual_info(img_F, img_A)
-        mi_BF = cls._mutual_info(img_F, img_B)
-        return (mi_AF + mi_BF).mean().item()
-
-    @classmethod
-    def SCD(cls, img_F, img_A, img_B):
-        """差异相关性总和 (Sum of Correlations of Differences)"""
-        img_F, img_A, img_B = cls._check_dim(img_F), cls._check_dim(img_A), cls._check_dim(img_B)
-        
-        diff_A = img_F - img_A
-        diff_B = img_F - img_B
-        
-        def calc_corr(img1, img2):
-            img1_flat = img1.view(img1.size(0), -1)
-            img2_flat = img2.view(img2.size(0), -1)
-            
-            img1_mu = img1_flat - img1_flat.mean(dim=1, keepdim=True)
-            img2_mu = img2_flat - img2_flat.mean(dim=1, keepdim=True)
-            
-            num = torch.sum(img1_mu * img2_mu, dim=1)
-            den = torch.sqrt(torch.sum(img1_mu**2, dim=1) * torch.sum(img2_mu**2, dim=1))
-            return num / (den + 1e-8)
-            
-        corr1 = calc_corr(img_A, diff_B)
-        corr2 = calc_corr(img_B, diff_A)
-        return (corr1 + corr2).mean().item()
-
-    @classmethod
-    def SSIM(cls, img_F, img_A, img_B, window_size=11):
-        """结构相似性 (Structural Similarity)
-        使用 torchvision 或本地简单的 SSIM 实现。这里提供一个轻量级实现。
-        """
-        import kornia
-        img_F, img_A, img_B = cls._check_dim(img_F), cls._check_dim(img_A), cls._check_dim(img_B)
-        
-        # Kornia 的 SSIM 返回的是 Loss (1 - SSIM) / 2 或者 1 - SSIM，具体取决于参数，
-        # 为了得到纯正的指标，直接使用底层的 ssim 函数
-        ssim_AF = kornia.metrics.ssim(img_F, img_A, window_size=window_size).mean()
-        ssim_BF = kornia.metrics.ssim(img_F, img_B, window_size=window_size).mean()
-        
-        return (ssim_AF + ssim_BF).item()
-
-    @classmethod
-    def _create_gaussian_kernel(cls, N, sd, device):
-        """创建用于 VIFF 的高斯核"""
-        m, n = (N - 1) / 2.0, (N - 1) / 2.0
-        y, x = torch.meshgrid(torch.arange(-m, m + 1, device=device), 
-                              torch.arange(-n, n + 1, device=device), indexing='ij')
-        h = torch.exp(-(x * x + y * y) / (2.0 * sd * sd))
-        h[h < torch.finfo(h.dtype).eps * h.max()] = 0
-        sumh = h.sum()
-        if sumh != 0:
-            h = h / sumh
-        return h.view(1, 1, N, N)
-
-    @classmethod
-    def compare_viff(cls, ref, dist):
-        """单组图片的 VIFF 计算"""
-        device = ref.device
+    def _compare_viff(cls, ref: torch.Tensor, dist: torch.Tensor) -> float:
         sigma_nsq = 2.0
         eps = 1e-10
+        windows = cls._get_viff_windows(ref.device, ref.dtype)
 
-        num = torch.zeros(ref.size(0), device=device)
-        den = torch.zeros(ref.size(0), device=device)
-        
+        num = 0.0
+        den = 0.0
+
         for scale in range(1, 5):
-            N = int(2 ** (4 - scale + 1) + 1)
-            sd = N / 5.0
-            win = cls._create_gaussian_kernel(N, sd, device)
-
+            win = windows[scale - 1]
             if scale > 1:
-                # 相当于 matlab 的 valid 卷积并下采样
-                ref = F.conv2d(ref, win, padding=0, stride=2)
-                dist = F.conv2d(dist, win, padding=0, stride=2)
-                # 因为加入了 stride=2，不再需要 ref[::2, ::2] 切片
+                ref = F.conv2d(ref, win, padding=0)
+                dist = F.conv2d(dist, win, padding=0)
+                ref = ref[:, :, ::2, ::2]
+                dist = dist[:, :, ::2, ::2]
 
             mu1 = F.conv2d(ref, win, padding=0)
             mu2 = F.conv2d(dist, win, padding=0)
-            
             mu1_sq = mu1 * mu1
             mu2_sq = mu2 * mu2
             mu1_mu2 = mu1 * mu2
-            
+
             sigma1_sq = F.conv2d(ref * ref, win, padding=0) - mu1_sq
             sigma2_sq = F.conv2d(dist * dist, win, padding=0) - mu2_sq
             sigma12 = F.conv2d(ref * dist, win, padding=0) - mu1_mu2
 
-            sigma1_sq = F.relu(sigma1_sq)
-            sigma2_sq = F.relu(sigma2_sq)
+            sigma1_sq = torch.clamp(sigma1_sq, min=0.0)
+            sigma2_sq = torch.clamp(sigma2_sq, min=0.0)
 
             g = sigma12 / (sigma1_sq + eps)
             sv_sq = sigma2_sq - g * sigma12
 
-            g[sigma1_sq < eps] = 0
-            sv_sq[sigma1_sq < eps] = sigma2_sq[sigma1_sq < eps]
-            sigma1_sq[sigma1_sq < eps] = 0
+            mask_s1 = sigma1_sq < eps
+            g[mask_s1] = 0.0
+            sv_sq[mask_s1] = sigma2_sq[mask_s1]
+            sigma1_sq[mask_s1] = 0.0
 
-            g[sigma2_sq < eps] = 0
-            sv_sq[sigma2_sq < eps] = 0
+            mask_s2 = sigma2_sq < eps
+            g[mask_s2] = 0.0
+            sv_sq[mask_s2] = 0.0
 
-            sv_sq[g < 0] = sigma2_sq[g < 0]
-            g[g < 0] = 0
-            sv_sq[sv_sq <= eps] = eps
+            mask_neg = g < 0.0
+            sv_sq[mask_neg] = sigma2_sq[mask_neg]
+            g[mask_neg] = 0.0
+            sv_sq = torch.clamp(sv_sq, min=eps)
 
-            # 沿 H, W 维度求和
-            num += torch.sum(torch.log10(1 + g * g * sigma1_sq / (sv_sq + sigma_nsq)), dim=[1, 2, 3])
-            den += torch.sum(torch.log10(1 + sigma1_sq / sigma_nsq), dim=[1, 2, 3])
+            num += torch.sum(torch.log10(1.0 + g * g * sigma1_sq / (sv_sq + sigma_nsq))).item()
+            den += torch.sum(torch.log10(1.0 + sigma1_sq / sigma_nsq)).item()
 
-        vifp = num / den
-        vifp[torch.isnan(vifp)] = 1.0
-        return vifp
-
-    @classmethod
-    def VIFF(cls, img_F, img_A, img_B):
-        """视觉信息保真度 (VIFF)"""
-        img_F, img_A, img_B = cls._check_dim(img_F), cls._check_dim(img_A), cls._check_dim(img_B)
-        viff_AF = cls.compare_viff(img_A, img_F)
-        viff_BF = cls.compare_viff(img_B, img_F)
-        return (viff_AF + viff_BF).mean().item()
+        vifp = num / den if den != 0 else 1.0
+        return 1.0 if math.isnan(vifp) else vifp
 
     @classmethod
-    def Qabf(cls, img_F, img_A, img_B):
-        """基于边缘信息的评估指标 (Qabf)"""
-        img_F, img_A, img_B = cls._check_dim(img_F), cls._check_dim(img_A), cls._check_dim(img_B)
-        
-        device = img_F.device
-        h1 = torch.tensor([[1, 2, 1], [0, 0, 0], [-1, -2, -1]], dtype=torch.float32, device=device).view(1, 1, 3, 3)
-        h3 = torch.tensor([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]], dtype=torch.float32, device=device).view(1, 1, 3, 3)
-        
-        def get_qabf_array(img):
-            SAx = F.conv2d(img, h3, padding=1)
-            SAy = F.conv2d(img, h1, padding=1)
-            g = torch.sqrt(SAx**2 + SAy**2)
-            a = torch.zeros_like(img)
-            mask_zero = (SAx == 0)
-            mask_non_zero = ~mask_zero
-            a[mask_zero] = math.pi / 2
-            a[mask_non_zero] = torch.atan(SAy[mask_non_zero] / SAx[mask_non_zero])
-            return g, a
-            
-        gA, aA = get_qabf_array(img_A)
-        gB, aB = get_qabf_array(img_B)
-        gF, aF = get_qabf_array(img_F)
-        
-        def get_qabf_score(a, g, aF, gF):
-            Tg, kg, Dg = 0.9994, -15, 0.5
-            Ta, ka, Da = 0.9879, -22, 0.8
-            
-            GAF = torch.zeros_like(a)
-            mask_gt = g > gF
-            mask_eq = g == gF
-            mask_lt = g < gF
-            
-            GAF[mask_gt] = gF[mask_gt] / (g[mask_gt] + 1e-8)
-            GAF[mask_eq] = gF[mask_eq]
-            GAF[mask_lt] = g[mask_lt] / (gF[mask_lt] + 1e-8)
-            
-            AAF = 1 - torch.abs(a - aF) / (math.pi / 2)
-            QgAF = Tg / (1 + torch.exp(kg * (GAF - Dg)))
-            QaAF = Ta / (1 + torch.exp(ka * (AAF - Da)))
-            return QgAF * QaAF
+    def VIFF(cls, image_F: np.ndarray | torch.Tensor, image_A: np.ndarray | torch.Tensor, image_B: np.ndarray | torch.Tensor, device: torch.device = torch.device('cuda:0')) -> float:
+        tF = cls._to_tensor(image_F, device)
+        tA = cls._to_tensor(image_A, device)
+        tB = cls._to_tensor(image_B, device)
+        return cls._compare_viff(tA, tF) + cls._compare_viff(tB, tF)
 
-        QAF = get_qabf_score(aA, gA, aF, gF)
-        QBF = get_qabf_score(aB, gB, aF, gF)
+    # ------------------- 7. Qabf: 梯度边缘保留度 -------------------
+    @classmethod
+    def _qabf_get_array(cls, img: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        h1 = torch.tensor([[1, 2, 1], [0, 0, 0], [-1, -2, -1]], dtype=img.dtype, device=img.device).view(1, 1, 3, 3)
+        h3 = torch.tensor([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]], dtype=img.dtype, device=img.device).view(1, 1, 3, 3)
 
-        # 在 Batch 上并行计算最终 Qabf
-        deno = torch.sum(gA + gB, dim=[1, 2, 3])
-        nume = torch.sum(QAF * gA + QBF * gB, dim=[1, 2, 3])
-        return (nume / (deno + 1e-8)).mean().item()
+        SAx = F.conv2d(img, h3, padding=1)
+        SAy = F.conv2d(img, h1, padding=1)
+
+        gA = torch.sqrt(SAx * SAx + SAy * SAy)
+        aA = torch.zeros_like(img)
+        mask_zero = SAx == 0
+        aA[mask_zero] = math.pi / 2
+        aA[~mask_zero] = torch.atan(SAy[~mask_zero] / SAx[~mask_zero])
+        return gA, aA
+
+    @classmethod
+    def _qabf_calc(cls, aA, gA, aF, gF):
+        Tg, kg, Dg = 0.9994, -15.0, 0.5
+        Ta, ka, Da = 0.9879, -22.0, 0.8
+
+        GAF = torch.zeros_like(aA)
+        mask_gt = gA > gF
+        mask_eq = gA == gF
+        mask_lt = gA < gF
+
+        GAF[mask_gt] = gF[mask_gt] / (gA[mask_gt] + 1e-12)
+        GAF[mask_eq] = gF[mask_eq]
+        GAF[mask_lt] = gA[mask_lt] / (gF[mask_lt] + 1e-12)
+
+        AAF = 1.0 - torch.abs(aA - aF) / (math.pi / 2)
+        QgAF = Tg / (1.0 + torch.exp(kg * (GAF - Dg)))
+        QaAF = Ta / (1.0 + torch.exp(ka * (AAF - Da)))
+        return QgAF * QaAF
+
+    @classmethod
+    def Qabf(cls, image_F: np.ndarray | torch.Tensor, image_A: np.ndarray | torch.Tensor, image_B: np.ndarray | torch.Tensor, device: torch.device = torch.device('cuda:0')) -> float:
+        tF = cls._to_tensor(image_F, device)
+        tA = cls._to_tensor(image_A, device)
+        tB = cls._to_tensor(image_B, device)
+
+        gA, aA = cls._qabf_get_array(tA)
+        gB, aB = cls._qabf_get_array(tB)
+        gF, aF = cls._qabf_get_array(tF)
+
+        QAF = cls._qabf_calc(aA, gA, aF, gF)
+        QBF = cls._qabf_calc(aB, gB, aF, gF)
+
+        deno = torch.sum(gA + gB)
+        nume = torch.sum(QAF * gA + QBF * gB)
+        return float((nume / (deno + 1e-12)).item())
+
+    # ------------------- 8. SSIM: 结构相似性 -------------------
+    @classmethod
+    def _ssim_single(cls, x: torch.Tensor, y: torch.Tensor) -> float:
+        """等价于 skimage.metrics.structural_similarity(x, y, data_range=1.0)"""
+        # skimage 默认 11x11 高斯窗口，标准差 1.5
+        win_size = 11
+        sigma = 1.5
+        coords = torch.arange(win_size, dtype=x.dtype, device=x.device) - (win_size - 1) / 2
+        g = torch.exp(-(coords ** 2) / (2 * sigma ** 2))
+        kernel = (g.unsqueeze(1) @ g.unsqueeze(0))
+        kernel = (kernel / kernel.sum()).view(1, 1, win_size, win_size)
+
+        pad = win_size // 2
+        mu_x = F.conv2d(x, kernel, padding=pad)
+        mu_y = F.conv2d(y, kernel, padding=pad)
+
+        mu_x_sq = mu_x.pow(2)
+        mu_y_sq = mu_y.pow(2)
+        mu_xy = mu_x * mu_y
+
+        sigma_x_sq = F.conv2d(x * x, kernel, padding=pad) - mu_x_sq
+        sigma_y_sq = F.conv2d(y * y, kernel, padding=pad) - mu_y_sq
+        sigma_xy = F.conv2d(x * y, kernel, padding=pad) - mu_xy
+
+        # data_range = 1.0 时常数设定
+        C1 = (0.01 * 1.0) ** 2
+        C2 = (0.03 * 1.0) ** 2
+
+        ssim_map = ((2 * mu_xy + C1) * (2 * sigma_xy + C2)) / ((mu_x_sq + mu_y_sq + C1) * (sigma_x_sq + sigma_y_sq + C2))
+        return float(ssim_map.mean().item())
+
+    @classmethod
+    def SSIM(cls, image_F: np.ndarray | torch.Tensor, image_A: np.ndarray | torch.Tensor, image_B: np.ndarray | torch.Tensor, device: torch.device = torch.device('cuda:0')) -> float:
+        # skimage 接收归一化到 [0, 1] 的图像
+        tF = cls._to_tensor(image_F, device) / 255.0 if image_F.max() > 1.0 else cls._to_tensor(image_F, device)
+        tA = cls._to_tensor(image_A, device) / 255.0 if image_A.max() > 1.0 else cls._to_tensor(image_A, device)
+        tB = cls._to_tensor(image_B, device) / 255.0 if image_B.max() > 1.0 else cls._to_tensor(image_B, device)
+        return cls._ssim_single(tF, tA) + cls._ssim_single(tF, tB)
+
+    # ------------------- 批量评估接口 -------------------
+    @classmethod
+    def evaluate_all(cls, fi: np.ndarray | torch.Tensor, ir: np.ndarray | torch.Tensor, vi: np.ndarray | torch.Tensor, device: torch.device = torch.device('cuda:0')) -> np.ndarray:
+        """单次调用直接输出 8 个核心指标数组"""
+        return np.array([
+            cls.EN(fi, device),
+            cls.SD(fi, device),
+            cls.SF(fi, device),
+            cls.MI(fi, ir, vi, device),
+            cls.SCD(fi, ir, vi, device),
+            cls.VIFF(fi, ir, vi, device),
+            cls.Qabf(fi, ir, vi, device),
+            cls.SSIM(fi, ir, vi, device)
+        ])

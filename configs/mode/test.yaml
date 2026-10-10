@@ -8,6 +8,6 @@ drop_last: False
 num_test: 500
 
 root: test_img/
-output_dir: test_results/
+output_dir: test_result/
 load_dir: base_model
 ckp_name: CDDFuse_phase2_epoch120.pth

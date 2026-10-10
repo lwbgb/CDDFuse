@@ -3,9 +3,9 @@ data/
 test_result/
 MSRS_train/
 MSRS-main/
-# test_img/
 .vscode/
 checkpoints/
+# test_img/
 
 # idea
 .idea

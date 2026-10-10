@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import kornia
 from models.base_model import BaseModel
-from models.net_mamba3 import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
+from models.net import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
 from models.net_mamba3 import MIMOHybridMambaVisionFusion
 from utils import networks, path_util
 from utils.loss import Fusionloss, cc
@@ -29,8 +29,8 @@ class CDDFuseModel(BaseModel):
         # 定义网络结构
         self.DIDF_Encoder = Restormer_Encoder().to(self.device)
         self.DIDF_Decoder = Restormer_Decoder().to(self.device)
-        # self.BaseFuseLayer = BaseFeatureExtraction(dim=64, num_heads=8).to(self.device)
-        self.BaseFuseLayer = MIMOHybridMambaVisionFusion(in_dim=128, out_dim=64, num_heads=8).to(self.device)
+        self.BaseFuseLayer = BaseFeatureExtraction(dim=64, num_heads=8).to(self.device)
+        # self.BaseFuseLayer = MIMOHybridMambaVisionFusion(in_dim=128, out_dim=64, num_heads=8).to(self.device)
         self.DetailFuseLayer = DetailFeatureExtraction(num_layers=1).to(self.device)
         self.models: dict[str, nn.Module] = {
             "DIDF_Encoder": self.DIDF_Encoder,
@@ -88,8 +88,10 @@ class CDDFuseModel(BaseModel):
 
     def set_input(self, input):
         """从 DataLoader 解包数据。"""
-        self.data_VIS, self.data_IR = input
-        self.data_VIS, self.data_IR = self.data_VIS.to(self.device), self.data_IR.to(self.device)
+        self.data_IR, self.data_VIS, self.ir_img_name, self.vis_img_name = input
+        self.ir_img_name = self.ir_img_name[0]
+        self.vis_img_name = self.vis_img_name[0]
+        self.data_IR, self.data_VIS = self.data_IR.to(self.device), self.data_VIS.to(self.device)
 
     def update_learning_rate(self):
         """根据当前阶段 (Phase) 更新学习率"""
@@ -128,7 +130,9 @@ class CDDFuseModel(BaseModel):
             self.feature_VIS_Base, self.feature_VIS_Detail, _ = self.DIDF_Encoder(self.data_VIS)
             self.feature_IR_Base, self.feature_IR_Detail, _ = self.DIDF_Encoder(self.data_IR)
 
-            self.feature_Fuse_Base = self.BaseFuseLayer(self.feature_IR_Base, self.feature_VIS_Base)
+            # self.feature_Fuse_Base = self.BaseFuseLayer(self.feature_IR_Base, self.feature_VIS_Base)
+
+            self.feature_Fuse_Base = self.BaseFuseLayer(self.feature_IR_Base + self.feature_VIS_Base)
             self.feature_Fuse_Detail = self.DetailFuseLayer(self.feature_IR_Detail + self.feature_VIS_Detail)
 
             self.data_Fuse, _ = self.DIDF_Decoder(self.data_VIS, self.feature_Fuse_Base, self.feature_Fuse_Detail)

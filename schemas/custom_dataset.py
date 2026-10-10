@@ -7,6 +7,8 @@ from torch.utils.data import Dataset
 from PIL import Image
 from torchvision.transforms import v2
 
+from utils.img_read_save import image_read_cv2
+
 class CustomImageDataset(Dataset):
     def __init__(self, root: str | Path, ir_dir: str, vis_dir: str, transform=None):
         self._root = Path(root)
@@ -23,14 +25,18 @@ class CustomImageDataset(Dataset):
 
     def __getitem__(self, idx):
         ir_img_name, vis_img_name = self._items[idx]
-        ir_img_path = self._ir_path / ir_img_name
-        vis_img_path = self._vis_path / vis_img_name
-        ir_image = Image.open(ir_img_path)
-        vis_image = Image.open(vis_img_path)
-        if self.transform:
-            ir_image = self.transform(ir_image)
-            vis_image = self.transform(vis_image)
-        return (ir_image, vis_image)
+        ir_file = str(self._ir_path / ir_img_name)
+        vis_file = str(self._vis_path / vis_img_name)
+
+        # 严格复现 image_read_cv2 的处理逻辑
+        ir_img = image_read_cv2(ir_file, mode='GRAY') / 255.0
+        vis_img = image_read_cv2(vis_file, mode='GRAY') / 255.0
+
+        # 转为 PyTorch Tensor [C, H, W]
+        data_ir = torch.from_numpy(ir_img).unsqueeze(0).float()
+        data_vis = torch.from_numpy(vis_img).unsqueeze(0).float()
+
+        return data_ir, data_vis, ir_img_name, vis_img_name
 
 
 if __name__ == "__main__":
