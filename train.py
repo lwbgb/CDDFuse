@@ -30,6 +30,7 @@ if __name__ == "__main__":
     total_epochs = opt.start_epoch - 1  # the total number of training epochs
     epoch_batches: int = dataset_size // opt.batch_size
 
+    logger.info(f"Starting training from epoch {opt.start_epoch} to {opt.n_epochs}, total epochs: {opt.n_epochs - opt.start_epoch + 1}")
     for epoch in range(opt.start_epoch, opt.n_epochs + 1):
         epoch_start_time = time.time()  # timer for entire epoch
         iter_data_time = time.time()  # timer for data loading per iteration

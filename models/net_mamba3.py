@@ -457,7 +457,6 @@ class Restormer_Decoder(nn.Module):
         return self.sigmoid(out_enc_level1), out_enc_level0
     
 
-# 1. 确保顶部有以下导入（如果 mamba_vision.py 和 net_2.py 在同级目录）
 class MambaVisionMixer(nn.Module):
     def __init__(
         self,

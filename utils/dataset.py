@@ -29,7 +29,7 @@ class H5Dataset(Data.Dataset):
         IR = self.h5f['ir_patchs'][index]
         VIS = self.h5f['vis_patchs'][index]
         
-        return torch.from_numpy(VIS).float(), torch.from_numpy(IR).float()
+        return torch.from_numpy(IR).float(), torch.from_numpy(VIS).float()
 
 
 def get_loader(opt: DictConfig, dataset: Data.Dataset) -> DataLoader:

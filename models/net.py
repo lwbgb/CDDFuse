@@ -396,10 +396,6 @@ class Restormer_Encoder(nn.Module):
             ffn_expansion_factor=ffn_expansion_factor,
             bias=bias, LayerNorm_type=LayerNorm_type) for i in range(num_blocks[0])])
         self.baseFeature = BaseFeatureExtraction(dim=dim, num_heads = heads[2])
-
-        # self.encoder_level1 = nn.Sequential(*[BaseMambaEncoder(dim=dim) for i in range(num_blocks[0])])
-        # self.baseFeature = BaseMambaEncoder(dim=dim)
-        
         self.detailFeature = DetailFeatureExtraction()
              
     def forward(self, inp_img):
@@ -435,8 +431,6 @@ class Restormer_Decoder(nn.Module):
                 for i in range(num_blocks[1])]
         )
         
-        # self.encoder_level2 = nn.Sequential(*[BaseMambaEncoder(dim=dim) for i in range(num_blocks[1])])
-        
         self.output = nn.Sequential(
             nn.Conv2d(int(dim), int(dim)//2, kernel_size=3,
                       stride=1, padding=1, bias=bias),
@@ -454,53 +448,6 @@ class Restormer_Decoder(nn.Module):
         else:
             out_enc_level1 = self.output(out_enc_level1)
         return self.sigmoid(out_enc_level1), out_enc_level0
-    
-
-############################ Mamba: Selective State Space Model for 2D Images ############################
-class SS2D(nn.Module):
-    def __init__(self, d_model, d_state=64, d_conv=4, expand=2, headdim=64):
-        super().__init__()
-        # 核心替换：直接实例化 Mamba3，享受 MIMO 底层优化与极速扫描
-        self.mamba = Mamba3(
-            d_model=d_model,
-            d_state=d_state,
-            d_conv=d_conv,
-            expand=expand,
-            headdim=headdim
-        )
-
-    def forward(self, x):
-        B, C, H, W = x.shape
-        x_hw = x.view(B, C, -1).transpose(1, 2)
-        x_wh = x.transpose(2, 3).contiguous().view(B, C, -1).transpose(1, 2)
-        x_hw_rev = torch.flip(x_hw, dims=[1])
-        x_wh_rev = torch.flip(x_wh, dims=[1])
-
-        out_hw = self.mamba(x_hw)
-        out_wh = self.mamba(x_wh)
-        out_hw_rev = torch.flip(self.mamba(x_hw_rev), dims=[1])
-        out_wh_rev = torch.flip(self.mamba(x_wh_rev), dims=[1])
-
-        out = (out_hw + out_wh + out_hw_rev + out_wh_rev) / 4.0
-        out = out.transpose(1, 2).view(B, C, H, W)
-        return out
-
-class BaseMambaEncoder(nn.Module):
-    def __init__(self, dim):
-        super().__init__()
-        self.norm = nn.LayerNorm(dim)
-        self.ss2d = SS2D(d_model=dim)
-        self.conv_out = nn.Conv2d(dim, dim, kernel_size=3, padding=1)
-        # 新增：局部细节补偿分支
-        self.local_dwc = nn.Conv2d(dim, dim, kernel_size=3, padding=1, groups=dim)
-
-    def forward(self, x):
-        shortcut = x
-        x_norm = self.norm(x.permute(0, 2, 3, 1)).permute(0, 3, 1, 2)
-        # 全局状态流转 + 局部边缘保留
-        out = self.ss2d(x_norm) + self.local_dwc(x) 
-        out = self.conv_out(out)
-        return out + shortcut
     
 
 if __name__ == '__main__':

@@ -88,9 +88,12 @@ class CDDFuseModel(BaseModel):
 
     def set_input(self, input):
         """从 DataLoader 解包数据。"""
-        self.data_IR, self.data_VIS, self.ir_img_name, self.vis_img_name = input
-        self.ir_img_name = self.ir_img_name[0]
-        self.vis_img_name = self.vis_img_name[0]
+        if self.isTrain:
+            self.data_IR, self.data_VIS = input
+        else:
+            self.data_IR, self.data_VIS, self.ir_img_name, self.vis_img_name = input
+            self.ir_img_name = self.ir_img_name[0]
+            self.vis_img_name = self.vis_img_name[0]
         self.data_IR, self.data_VIS = self.data_IR.to(self.device), self.data_VIS.to(self.device)
 
     def update_learning_rate(self):
