@@ -1,0 +1,520 @@
+2026-10-10 10:22:38.618 | INFO     | PID<12611>:TID<136317060286272> | models.cddfuse_model:load_model:224 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 10:22:38.626 | INFO     | PID<12611>:TID<136317060286272> | models.cddfuse_model:load_model:230 - Models loaded successfully from checkpoint.
+2026-10-10 10:22:38.626 | INFO     | PID<12611>:TID<136317060286272> | models.cddfuse_model:load_model:250 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 10:22:38.629 | INFO     | PID<12611>:TID<136317060286272> | __main__:<module>:63 - Start evaluating on MSRS (Size: 361)...
+2026-10-10 10:29:53.690 | INFO     | PID<15191>:TID<126902866995008> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 10:29:53.698 | INFO     | PID<15191>:TID<126902866995008> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 10:29:53.698 | INFO     | PID<15191>:TID<126902866995008> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 10:29:53.700 | INFO     | PID<15191>:TID<126902866995008> | __main__:<module>:63 - Start evaluating on MSRS (Size: 361)...
+2026-10-10 10:40:20.778 | INFO     | PID<17446>:TID<123681977100096> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 10:40:20.781 | INFO     | PID<17446>:TID<123681977100096> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 10:40:20.781 | INFO     | PID<17446>:TID<123681977100096> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 10:40:20.784 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:63 - Start evaluating on MSRS (Size: 361)...
+2026-10-10 10:42:35.400 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:142 - ===============================================================================================
+2026-10-10 10:42:35.401 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:143 - Test Model : CDDFuse
+2026-10-10 10:42:35.401 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:144 - Dataset    : MSRS (361 imgs) | Time: 134.6s | Avg Loss: 0.56196
+2026-10-10 10:42:35.401 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:145 - -----------------------------------------------------------------------------------------------
+2026-10-10 10:42:35.401 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:146 - Model Name            EN       SD       SF       MI      SCD     VIFF     Qabf     SSIM
+2026-10-10 10:42:35.401 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:147 - CDDFuse           6.5168   0.1489   0.0419   2.8254   1.5522   2.0142   0.6841   1.4217
+2026-10-10 10:42:35.401 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:156 - ===============================================================================================
+
+2026-10-10 10:42:35.403 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:63 - Start evaluating on TNO (Size: 25)...
+2026-10-10 10:43:04.750 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:142 - ===============================================================================================
+2026-10-10 10:43:04.751 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:143 - Test Model : CDDFuse
+2026-10-10 10:43:04.751 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:144 - Dataset    : TNO (25 imgs) | Time: 29.3s | Avg Loss: 0.78979
+2026-10-10 10:43:04.751 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:145 - -----------------------------------------------------------------------------------------------
+2026-10-10 10:43:04.752 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:146 - Model Name            EN       SD       SF       MI      SCD     VIFF     Qabf     SSIM
+2026-10-10 10:43:04.752 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:147 - CDDFuse           7.0601   0.1714   0.0514   2.3943   1.6864   1.6649   0.5465   1.3537
+2026-10-10 10:43:04.752 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:156 - ===============================================================================================
+
+2026-10-10 10:43:04.753 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:63 - Start evaluating on RoadScene (Size: 50)...
+2026-10-10 10:44:13.062 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:142 - ===============================================================================================
+2026-10-10 10:44:13.062 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:143 - Test Model : CDDFuse
+2026-10-10 10:44:13.062 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:144 - Dataset    : RoadScene (50 imgs) | Time: 68.3s | Avg Loss: 0.88718
+2026-10-10 10:44:13.062 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:145 - -----------------------------------------------------------------------------------------------
+2026-10-10 10:44:13.062 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:146 - Model Name            EN       SD       SF       MI      SCD     VIFF     Qabf     SSIM
+2026-10-10 10:44:13.062 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:147 - CDDFuse           7.3497   0.1923   0.0642   2.7046   1.6400   1.8995   0.5775   1.3592
+2026-10-10 10:44:13.062 | INFO     | PID<17446>:TID<123681977100096> | __main__:<module>:156 - ===============================================================================================
+
+2026-10-10 10:47:06.206 | INFO     | PID<20623>:TID<128231806633792> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 10:47:06.209 | INFO     | PID<20623>:TID<128231806633792> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 10:47:06.209 | INFO     | PID<20623>:TID<128231806633792> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 10:54:00.676 | INFO     | PID<22214>:TID<131934125266752> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 10:54:00.680 | INFO     | PID<22214>:TID<131934125266752> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 10:54:00.680 | INFO     | PID<22214>:TID<131934125266752> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 10:58:39.898 | INFO     | PID<23770>:TID<125227372189504> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 10:58:39.900 | INFO     | PID<23770>:TID<125227372189504> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 10:58:39.900 | INFO     | PID<23770>:TID<125227372189504> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 11:05:19.686 | INFO     | PID<23770>:TID<125227372189504> | __main__:<module>:73 - ================================================================================
+2026-10-10 11:05:19.686 | INFO     | PID<23770>:TID<125227372189504> | __main__:<module>:74 - Test model: CDDFuse on MSRS :
+2026-10-10 11:05:19.686 | INFO     | PID<23770>:TID<125227372189504> | __main__:<module>:75 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 11:05:19.686 | INFO     | PID<23770>:TID<125227372189504> | __main__:<module>:76 - CDDFuse		3.26	18.98	5.35	1.39	0.78	0.46	0.34	0.48
+2026-10-10 11:05:19.687 | INFO     | PID<23770>:TID<125227372189504> | __main__:<module>:85 - ================================================================================
+2026-10-10 11:40:38.867 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:79 - ================================================================================
+2026-10-10 11:40:38.868 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:80 - Test model: CDDFuse_phase2_epoch120.pth on MSRS :
+2026-10-10 11:40:38.868 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:81 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 11:40:38.868 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:82 - CDDFuse    	3.35	21.49	5.85	1.84	0.81	0.53	0.36	0.5
+2026-10-10 11:40:38.868 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:91 - ================================================================================
+2026-10-10 11:41:07.450 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:79 - ================================================================================
+2026-10-10 11:41:07.450 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:80 - Test model: CDDFuse_phase2_epoch120.pth on TNO :
+2026-10-10 11:41:07.450 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:81 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 11:41:07.450 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:82 - CDDFuse    	3.55	22.74	6.75	1.21	0.82	0.4	0.28	0.49
+2026-10-10 11:41:07.450 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:91 - ================================================================================
+2026-10-10 11:41:35.222 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:79 - ================================================================================
+2026-10-10 11:41:35.222 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:80 - Test model: CDDFuse_phase2_epoch120.pth on RoadScene :
+2026-10-10 11:41:35.222 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:81 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 11:41:35.222 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:82 - CDDFuse    	3.65	24.39	7.94	1.24	0.84	0.35	0.28	0.47
+2026-10-10 11:41:35.222 | INFO     | PID<30593>:TID<131921497204544> | __main__:<module>:91 - ================================================================================
+2026-10-10 12:23:47.279 | INFO     | PID<40912>:TID<134595968870208> | __main__:<module>:79 - ================================================================================
+2026-10-10 12:23:47.280 | INFO     | PID<40912>:TID<134595968870208> | __main__:<module>:80 - Test model: CDDFuse_phase2_epoch120.pth on MSRS :
+2026-10-10 12:23:47.280 | INFO     | PID<40912>:TID<134595968870208> | __main__:<module>:81 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 12:23:47.280 | INFO     | PID<40912>:TID<134595968870208> | __main__:<module>:82 - CDDFuse    	6.69	42.99	11.71	3.68	1.61	1.06	0.72	0.99
+2026-10-10 12:23:47.280 | INFO     | PID<40912>:TID<134595968870208> | __main__:<module>:91 - ================================================================================
+2026-10-10 12:24:27.516 | INFO     | PID<42705>:TID<138302893406016> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 12:24:27.519 | INFO     | PID<42705>:TID<138302893406016> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 12:24:27.519 | INFO     | PID<42705>:TID<138302893406016> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 12:31:06.945 | INFO     | PID<42705>:TID<138302893406016> | __main__:<module>:73 - ================================================================================
+2026-10-10 12:31:06.946 | INFO     | PID<42705>:TID<138302893406016> | __main__:<module>:74 - Test model: CDDFuse on MSRS :
+2026-10-10 12:31:06.946 | INFO     | PID<42705>:TID<138302893406016> | __main__:<module>:75 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 12:31:06.946 | INFO     | PID<42705>:TID<138302893406016> | __main__:<module>:76 - CDDFuse		6.52	37.96	10.71	2.78	1.55	0.92	0.67	0.96
+2026-10-10 12:31:06.946 | INFO     | PID<42705>:TID<138302893406016> | __main__:<module>:85 - ================================================================================
+2026-10-10 12:34:36.595 | INFO     | PID<45143>:TID<123529448011584> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 12:34:36.597 | INFO     | PID<45143>:TID<123529448011584> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 12:34:36.597 | INFO     | PID<45143>:TID<123529448011584> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 12:41:16.000 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:72 - ================================================================================
+2026-10-10 12:41:16.001 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:73 - Test model: CDDFuse on MSRS :
+2026-10-10 12:41:16.001 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:74 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 12:41:16.001 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:75 - CDDFuse		6.52	37.96	10.71	2.78	1.55	0.92	0.67	0.96
+2026-10-10 12:41:16.001 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:84 - ================================================================================
+2026-10-10 12:41:16.147 | INFO     | PID<45143>:TID<123529448011584> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 12:41:16.149 | INFO     | PID<45143>:TID<123529448011584> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 12:41:16.150 | INFO     | PID<45143>:TID<123529448011584> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 12:42:01.854 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:72 - ================================================================================
+2026-10-10 12:42:01.854 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:73 - Test model: CDDFuse on TNO :
+2026-10-10 12:42:01.854 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:74 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 12:42:01.855 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:75 - CDDFuse		7.06	43.7	13.12	2.38	1.69	0.77	0.55	0.98
+2026-10-10 12:42:01.855 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:84 - ================================================================================
+2026-10-10 12:42:01.977 | INFO     | PID<45143>:TID<123529448011584> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 12:42:01.980 | INFO     | PID<45143>:TID<123529448011584> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 12:42:01.980 | INFO     | PID<45143>:TID<123529448011584> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 12:43:17.962 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:72 - ================================================================================
+2026-10-10 12:43:17.962 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:73 - Test model: CDDFuse on RoadScene :
+2026-10-10 12:43:17.962 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:74 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 12:43:17.962 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:75 - CDDFuse		7.35	49.03	16.38	2.7	1.64	0.75	0.58	0.94
+2026-10-10 12:43:17.962 | INFO     | PID<45143>:TID<123529448011584> | __main__:<module>:84 - ================================================================================
+2026-10-10 13:15:43.372 | INFO     | PID<55793>:TID<129491161798464> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 13:15:43.375 | INFO     | PID<55793>:TID<129491161798464> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 13:15:43.375 | INFO     | PID<55793>:TID<129491161798464> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 13:16:56.935 | INFO     | PID<56305>:TID<133339619903296> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 13:16:56.937 | INFO     | PID<56305>:TID<133339619903296> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 13:16:56.937 | INFO     | PID<56305>:TID<133339619903296> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 13:23:36.236 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:76 - ================================================================================
+2026-10-10 13:23:36.236 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:77 - Test model: CDDFuse on MSRS :
+2026-10-10 13:23:36.236 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:78 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 13:23:36.237 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:79 - CDDFuse	6.52	37.96	10.71	2.78	1.55	0.92	0.67	0.96
+2026-10-10 13:23:36.237 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:90 - ================================================================================
+2026-10-10 13:23:36.366 | INFO     | PID<56305>:TID<133339619903296> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 13:23:36.368 | INFO     | PID<56305>:TID<133339619903296> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 13:23:36.368 | INFO     | PID<56305>:TID<133339619903296> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 13:24:22.503 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:76 - ================================================================================
+2026-10-10 13:24:22.503 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:77 - Test model: CDDFuse on TNO :
+2026-10-10 13:24:22.503 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:78 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 13:24:22.504 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:79 - CDDFuse	7.06	43.7	13.12	2.38	1.69	0.77	0.55	0.98
+2026-10-10 13:24:22.504 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:90 - ================================================================================
+2026-10-10 13:24:22.636 | INFO     | PID<56305>:TID<133339619903296> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 13:24:22.638 | INFO     | PID<56305>:TID<133339619903296> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 13:24:22.638 | INFO     | PID<56305>:TID<133339619903296> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 13:25:38.593 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:76 - ================================================================================
+2026-10-10 13:25:38.594 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:77 - Test model: CDDFuse on RoadScene :
+2026-10-10 13:25:38.594 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:78 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 13:25:38.594 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:79 - CDDFuse	7.35	49.03	16.38	2.7	1.64	0.75	0.58	0.94
+2026-10-10 13:25:38.594 | INFO     | PID<56305>:TID<133339619903296> | __main__:<module>:90 - ================================================================================
+2026-10-10 13:48:01.364 | INFO     | PID<63701>:TID<135442536691520> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 13:48:01.374 | INFO     | PID<63701>:TID<135442536691520> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 13:48:01.375 | INFO     | PID<63701>:TID<135442536691520> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 13:51:29.369 | INFO     | PID<65862>:TID<134745998427968> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 13:51:29.373 | INFO     | PID<65862>:TID<134745998427968> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 13:51:29.373 | INFO     | PID<65862>:TID<134745998427968> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 13:54:09.379 | INFO     | PID<67096>:TID<125438557714240> | models.cddfuse_model:load_model:226 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 13:54:09.383 | INFO     | PID<67096>:TID<125438557714240> | models.cddfuse_model:load_model:232 - Models loaded successfully from checkpoint.
+2026-10-10 13:54:09.383 | INFO     | PID<67096>:TID<125438557714240> | models.cddfuse_model:load_model:252 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 18:38:30.022 | INFO     | PID<118883>:TID<137921303578432> | models.cddfuse_model:load_model:228 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 18:38:30.026 | INFO     | PID<118883>:TID<137921303578432> | models.cddfuse_model:load_model:234 - Models loaded successfully from checkpoint.
+2026-10-10 18:38:30.027 | INFO     | PID<118883>:TID<137921303578432> | models.cddfuse_model:load_model:254 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 18:45:52.049 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:76 - ================================================================================
+2026-10-10 18:45:52.050 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:77 - Test model: CDDFuse on MSRS :
+2026-10-10 18:45:52.050 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:78 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 18:45:52.050 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:79 - CDDFuse	6.52	38.06	10.73	2.84	1.55	0.93	0.68	0.97
+2026-10-10 18:45:52.050 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:90 - ================================================================================
+2026-10-10 18:45:52.948 | INFO     | PID<118883>:TID<137921303578432> | models.cddfuse_model:load_model:228 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 18:45:52.952 | INFO     | PID<118883>:TID<137921303578432> | models.cddfuse_model:load_model:234 - Models loaded successfully from checkpoint.
+2026-10-10 18:45:52.952 | INFO     | PID<118883>:TID<137921303578432> | models.cddfuse_model:load_model:254 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 18:46:39.067 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:76 - ================================================================================
+2026-10-10 18:46:39.068 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:77 - Test model: CDDFuse on TNO :
+2026-10-10 18:46:39.068 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:78 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 18:46:39.068 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:79 - CDDFuse	7.06	43.77	13.19	2.39	1.69	0.77	0.54	0.98
+2026-10-10 18:46:39.068 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:90 - ================================================================================
+2026-10-10 18:46:40.007 | INFO     | PID<118883>:TID<137921303578432> | models.cddfuse_model:load_model:228 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 18:46:40.011 | INFO     | PID<118883>:TID<137921303578432> | models.cddfuse_model:load_model:234 - Models loaded successfully from checkpoint.
+2026-10-10 18:46:40.011 | INFO     | PID<118883>:TID<137921303578432> | models.cddfuse_model:load_model:254 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 18:47:57.507 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:76 - ================================================================================
+2026-10-10 18:47:57.507 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:77 - Test model: CDDFuse on RoadScene :
+2026-10-10 18:47:57.507 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:78 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 18:47:57.507 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:79 - CDDFuse	7.35	49.06	16.41	2.69	1.64	0.75	0.58	0.94
+2026-10-10 18:47:57.508 | INFO     | PID<118883>:TID<137921303578432> | __main__:<module>:90 - ================================================================================
+2026-10-10 18:59:22.553 | INFO     | PID<123018>:TID<127217622648640> | __main__:<module>:79 - ================================================================================
+2026-10-10 18:59:22.554 | INFO     | PID<123018>:TID<127217622648640> | __main__:<module>:80 - Test model: CDDFuse_phase2_epoch120.pth on MSRS :
+2026-10-10 18:59:22.554 | INFO     | PID<123018>:TID<127217622648640> | __main__:<module>:81 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 18:59:22.554 | INFO     | PID<123018>:TID<127217622648640> | __main__:<module>:82 - CDDFuse    	6.69	42.99	11.71	3.68	1.61	1.06	0.72	0.99
+2026-10-10 18:59:22.554 | INFO     | PID<123018>:TID<127217622648640> | __main__:<module>:91 - ================================================================================
+2026-10-10 19:16:25.438 | INFO     | PID<128052>:TID<128452495107904> | models.cddfuse_model:load_model:228 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 19:16:25.440 | INFO     | PID<128052>:TID<128452495107904> | models.cddfuse_model:load_model:234 - Models loaded successfully from checkpoint.
+2026-10-10 19:16:25.440 | INFO     | PID<128052>:TID<128452495107904> | models.cddfuse_model:load_model:254 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 19:23:05.152 | INFO     | PID<128052>:TID<128452495107904> | __main__:<module>:75 - ================================================================================
+2026-10-10 19:23:05.153 | INFO     | PID<128052>:TID<128452495107904> | __main__:<module>:76 - Test model: CDDFuse on MSRS :
+2026-10-10 19:23:05.153 | INFO     | PID<128052>:TID<128452495107904> | __main__:<module>:77 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-10 19:23:05.153 | INFO     | PID<128052>:TID<128452495107904> | __main__:<module>:78 - CDDFuse	6.69	42.99	11.71	3.68	1.61	1.06	0.72	0.99
+2026-10-10 19:23:05.153 | INFO     | PID<128052>:TID<128452495107904> | __main__:<module>:89 - ================================================================================
+2026-10-10 19:54:55.862 | INFO     | PID<139018>:TID<136319586330432> | models.cddfuse_model:load_model:228 - Loading CDDFuse checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-10 19:54:55.864 | INFO     | PID<139018>:TID<136319586330432> | models.cddfuse_model:load_model:234 - Models loaded successfully from checkpoint.
+2026-10-10 19:54:55.864 | INFO     | PID<139018>:TID<136319586330432> | models.cddfuse_model:load_model:254 - CDDFuse_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-10 19:54:55.866 | INFO     | PID<139018>:TID<136319586330432> | __main__:<module>:85 - ==> [MSRS] Starting Inference & Evaluation (Total Dataset Size: 361 samples)...
+2026-10-10 19:57:12.575 | INFO     | PID<139018>:TID<136319586330432> | __main__:print_metrics_table:58 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse
+  Checkpoint       : CDDFuse_phase2_epoch120.pth
+  Target Dataset   : MSRS
+  Dataset Size     : 361 images
+  Average Loss     : 0.1757
+  Total Duration   : 136.71 s  (2.64 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   6.69   |  42.98   |  11.70   |   3.71   |   1.61   |   1.06   |   0.72   |   1.42   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 10:07:35.512 | ERROR    | PID<140935>:TID<138962983298880> | models.cddfuse_model:load_model:263 - Error occurred while loading checkpoint: unsupported operand type(s) for /: 'PosixPath' and 'int'
+2026-10-14 10:08:42.021 | INFO     | PID<141469>:TID<125087421667136> | models.cddfuse_model:load_model:240 - Loading CDDFuse_Exp1 checkpoint from checkpoints/20261014_060329/CDDFuse_Exp1_epoch_120.pth...
+2026-10-14 10:08:42.025 | INFO     | PID<141469>:TID<125087421667136> | models.cddfuse_model:load_model:246 - Models loaded successfully from checkpoint.
+2026-10-14 10:08:42.025 | INFO     | PID<141469>:TID<125087421667136> | models.cddfuse_model:load_model:266 - CDDFuse_Exp1_phase2_epoch120 loaded successfully from checkpoints/20261014_060329/CDDFuse_Exp1_epoch_120.pth.
+2026-10-14 10:08:42.028 | INFO     | PID<141469>:TID<125087421667136> | __main__:<module>:87 - ==> [MSRS] Starting Inference & Evaluation (Total Dataset Size: 361 samples)...
+2026-10-14 10:09:58.874 | INFO     | PID<141469>:TID<125087421667136> | __main__:print_metrics_table:60 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp1
+  Checkpoint       : CDDFuse_Exp1_epoch_120.pth
+  Target Dataset   : MSRS
+  Dataset Size     : 361 images
+  Average Loss     : 0.1837
+  Pure Inference   : 52.43 s  (145.25 ms/img | 6.88 FPS)
+  Total Eval Time  : 76.85 s  (4.70 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   6.70   |  43.16   |  11.66   |   3.58   |   1.65   |   1.07   |   0.71   |   1.42   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 10:35:54.500 | INFO     | PID<147566>:TID<133119151449920> | models.cddfuse_model:load_model:240 - Loading CDDFuse_Exp1 checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-14 10:35:54.502 | ERROR    | PID<147566>:TID<133119151449920> | models.cddfuse_model:load_model:263 - Error occurred while loading checkpoint: Error(s) in loading state_dict for Restormer_Encoder:
+	Missing key(s) in state_dict: "encoder_level1.0.proj_in.weight", "encoder_level1.0.dwconv3x3.weight", "encoder_level1.0.dwconv5x5.weight", "encoder_level1.0.sca.1.weight", "encoder_level1.0.sca.1.bias", "encoder_level1.0.proj_out.weight", "encoder_level1.1.proj_in.weight", "encoder_level1.1.dwconv3x3.weight", "encoder_level1.1.dwconv5x5.weight", "encoder_level1.1.sca.1.weight", "encoder_level1.1.sca.1.bias", "encoder_level1.1.proj_out.weight". 
+	Unexpected key(s) in state_dict: "encoder_level1.2.norm1.body.weight", "encoder_level1.2.norm1.body.bias", "encoder_level1.2.attn.temperature", "encoder_level1.2.attn.qkv.weight", "encoder_level1.2.attn.qkv_dwconv.weight", "encoder_level1.2.attn.project_out.weight", "encoder_level1.2.norm2.body.weight", "encoder_level1.2.norm2.body.bias", "encoder_level1.2.ffn.project_in.weight", "encoder_level1.2.ffn.dwconv.weight", "encoder_level1.2.ffn.project_out.weight", "encoder_level1.3.norm1.body.weight", "encoder_level1.3.norm1.body.bias", "encoder_level1.3.attn.temperature", "encoder_level1.3.attn.qkv.weight", "encoder_level1.3.attn.qkv_dwconv.weight", "encoder_level1.3.attn.project_out.weight", "encoder_level1.3.norm2.body.weight", "encoder_level1.3.norm2.body.bias", "encoder_level1.3.ffn.project_in.weight", "encoder_level1.3.ffn.dwconv.weight", "encoder_level1.3.ffn.project_out.weight", "encoder_level1.0.attn.temperature", "encoder_level1.0.attn.qkv.weight", "encoder_level1.0.attn.qkv_dwconv.weight", "encoder_level1.0.attn.project_out.weight", "encoder_level1.1.attn.temperature", "encoder_level1.1.attn.qkv.weight", "encoder_level1.1.attn.qkv_dwconv.weight", "encoder_level1.1.attn.project_out.weight". 
+	size mismatch for baseFeature.mlp.dwconv.weight: copying a param with shape torch.Size([128, 2, 3, 3]) from checkpoint, the shape in current model is torch.Size([128, 1, 3, 3]).
+2026-10-14 10:37:02.567 | INFO     | PID<148126>:TID<137706568578880> | models.cddfuse_model:load_model:240 - Loading CDDFuse_Exp1 checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-14 10:37:02.569 | ERROR    | PID<148126>:TID<137706568578880> | models.cddfuse_model:load_model:263 - Error occurred while loading checkpoint: Error(s) in loading state_dict for Restormer_Encoder:
+	Missing key(s) in state_dict: "encoder_level1.0.proj_in.weight", "encoder_level1.0.dwconv3x3.weight", "encoder_level1.0.dwconv5x5.weight", "encoder_level1.0.sca.1.weight", "encoder_level1.0.sca.1.bias", "encoder_level1.0.proj_out.weight", "encoder_level1.1.proj_in.weight", "encoder_level1.1.dwconv3x3.weight", "encoder_level1.1.dwconv5x5.weight", "encoder_level1.1.sca.1.weight", "encoder_level1.1.sca.1.bias", "encoder_level1.1.proj_out.weight". 
+	Unexpected key(s) in state_dict: "encoder_level1.2.norm1.body.weight", "encoder_level1.2.norm1.body.bias", "encoder_level1.2.attn.temperature", "encoder_level1.2.attn.qkv.weight", "encoder_level1.2.attn.qkv_dwconv.weight", "encoder_level1.2.attn.project_out.weight", "encoder_level1.2.norm2.body.weight", "encoder_level1.2.norm2.body.bias", "encoder_level1.2.ffn.project_in.weight", "encoder_level1.2.ffn.dwconv.weight", "encoder_level1.2.ffn.project_out.weight", "encoder_level1.3.norm1.body.weight", "encoder_level1.3.norm1.body.bias", "encoder_level1.3.attn.temperature", "encoder_level1.3.attn.qkv.weight", "encoder_level1.3.attn.qkv_dwconv.weight", "encoder_level1.3.attn.project_out.weight", "encoder_level1.3.norm2.body.weight", "encoder_level1.3.norm2.body.bias", "encoder_level1.3.ffn.project_in.weight", "encoder_level1.3.ffn.dwconv.weight", "encoder_level1.3.ffn.project_out.weight", "encoder_level1.0.attn.temperature", "encoder_level1.0.attn.qkv.weight", "encoder_level1.0.attn.qkv_dwconv.weight", "encoder_level1.0.attn.project_out.weight", "encoder_level1.1.attn.temperature", "encoder_level1.1.attn.qkv.weight", "encoder_level1.1.attn.qkv_dwconv.weight", "encoder_level1.1.attn.project_out.weight". 
+	size mismatch for baseFeature.mlp.dwconv.weight: copying a param with shape torch.Size([128, 2, 3, 3]) from checkpoint, the shape in current model is torch.Size([128, 1, 3, 3]).
+2026-10-14 10:37:33.463 | INFO     | PID<148517>:TID<132642200540992> | models.cddfuse_model:load_model:240 - Loading CDDFuse_Exp1 checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-14 10:37:33.469 | INFO     | PID<148517>:TID<132642200540992> | models.cddfuse_model:load_model:246 - Models loaded successfully from checkpoint.
+2026-10-14 10:37:33.469 | INFO     | PID<148517>:TID<132642200540992> | models.cddfuse_model:load_model:266 - CDDFuse_Exp1_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-14 10:37:35.586 | INFO     | PID<148517>:TID<132642200540992> | __main__:<module>:101 - ==> [MSRS] Starting Inference & Evaluation (Total Dataset Size: 361 samples)...
+2026-10-14 10:39:48.261 | INFO     | PID<148517>:TID<132642200540992> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp1
+  Checkpoint       : CDDFuse_phase2_epoch120.pth
+  Target Dataset   : MSRS
+  Dataset Size     : 361 images
+  Average Loss     : 0.1757
+  Pure Inference   : 111.59 s  (309.11 ms/img | 3.24 FPS)
+  Total Eval Time  : 132.68 s  (2.72 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   6.69   |  42.99   |  11.71   |   3.68   |   1.61   |   1.06   |   0.72   |   0.99   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 10:39:48.263 | INFO     | PID<148517>:TID<132642200540992> | __main__:<module>:101 - ==> [TNO] Starting Inference & Evaluation (Total Dataset Size: 25 samples)...
+2026-10-14 10:40:21.421 | INFO     | PID<148517>:TID<132642200540992> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp1
+  Checkpoint       : CDDFuse_phase2_epoch120.pth
+  Target Dataset   : TNO
+  Dataset Size     : 25 images
+  Average Loss     : 0.6283
+  Pure Inference   : 25.43 s  (1017.29 ms/img | 0.98 FPS)
+  Total Eval Time  : 33.16 s  (0.75 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.10   |  45.47   |  13.49   |   2.41   |   1.64   |   0.79   |   0.56   |   0.98   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 10:40:21.423 | INFO     | PID<148517>:TID<132642200540992> | __main__:<module>:101 - ==> [RoadScene] Starting Inference & Evaluation (Total Dataset Size: 50 samples)...
+2026-10-14 10:41:39.120 | INFO     | PID<148517>:TID<132642200540992> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp1
+  Checkpoint       : CDDFuse_phase2_epoch120.pth
+  Target Dataset   : RoadScene
+  Dataset Size     : 50 images
+  Average Loss     : 0.8392
+  Pure Inference   : 57.69 s  (1153.76 ms/img | 0.87 FPS)
+  Total Eval Time  : 77.70 s  (0.64 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.30   |  48.78   |  15.88   |   2.47   |   1.68   |   0.69   |   0.56   |   0.95   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 10:43:42.819 | ERROR    | PID<151378>:TID<127244090300224> | models.cddfuse_model:load_model:263 - Error occurred while loading checkpoint: unsupported operand type(s) for /: 'PosixPath' and 'NoneType'
+2026-10-14 10:44:20.489 | ERROR    | PID<151761>:TID<125489088411456> | models.cddfuse_model:load_model:263 - Error occurred while loading checkpoint: ModelCkp.__init__() got an unexpected keyword argument 'DIDF_Encoder'
+2026-10-14 10:51:54.356 | INFO     | PID<152177>:TID<127999712556864> | __main__:<module>:79 - ================================================================================
+2026-10-14 10:51:54.357 | INFO     | PID<152177>:TID<127999712556864> | __main__:<module>:80 - Test model: CDDFuse_phase2_epoch120.pth on MSRS :
+2026-10-14 10:51:54.357 | INFO     | PID<152177>:TID<127999712556864> | __main__:<module>:81 - 		 EN	 SD	 SF	 MI	SCD	VIF	Qabf	SSIM
+2026-10-14 10:51:54.357 | INFO     | PID<152177>:TID<127999712556864> | __main__:<module>:82 - CDDFuse    	6.69	42.99	11.71	3.68	1.61	1.06	0.72	0.99
+2026-10-14 10:51:54.357 | INFO     | PID<152177>:TID<127999712556864> | __main__:<module>:91 - ================================================================================
+2026-10-14 10:58:47.757 | INFO     | PID<155096>:TID<132111289800512> | models.cddfuse_model:load_model:240 - Loading CDDFuse_Exp1 checkpoint from checkpoints/Exp1/CDDFuse_Exp1_epoch_120.pth...
+2026-10-14 10:58:47.761 | INFO     | PID<155096>:TID<132111289800512> | models.cddfuse_model:load_model:246 - Models loaded successfully from checkpoint.
+2026-10-14 10:58:47.761 | INFO     | PID<155096>:TID<132111289800512> | models.cddfuse_model:load_model:266 - CDDFuse_Exp1_phase2_epoch120 loaded successfully from checkpoints/Exp1/CDDFuse_Exp1_epoch_120.pth.
+2026-10-14 10:58:49.041 | INFO     | PID<155096>:TID<132111289800512> | __main__:<module>:101 - ==> [MSRS] Starting Inference & Evaluation (Total Dataset Size: 361 samples)...
+2026-10-14 11:00:01.146 | INFO     | PID<155096>:TID<132111289800512> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp1
+  Checkpoint       : CDDFuse_Exp1_epoch_120.pth
+  Target Dataset   : MSRS
+  Dataset Size     : 361 images
+  Average Loss     : 0.1837
+  Pure Inference   : 51.47 s  (142.57 ms/img | 7.01 FPS)
+  Total Eval Time  : 72.10 s  (5.01 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   6.70   |  43.16   |  11.67   |   3.62   |   1.65   |   1.06   |   0.72   |   1.00   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 11:00:01.147 | INFO     | PID<155096>:TID<132111289800512> | __main__:<module>:101 - ==> [TNO] Starting Inference & Evaluation (Total Dataset Size: 25 samples)...
+2026-10-14 11:00:16.978 | INFO     | PID<155096>:TID<132111289800512> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp1
+  Checkpoint       : CDDFuse_Exp1_epoch_120.pth
+  Target Dataset   : TNO
+  Dataset Size     : 25 images
+  Average Loss     : 0.5782
+  Pure Inference   : 8.34 s  (333.56 ms/img | 3.00 FPS)
+  Total Eval Time  : 15.83 s  (1.58 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.11   |  45.73   |  13.50   |   2.35   |   1.72   |   0.81   |   0.56   |   1.01   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 11:00:16.979 | INFO     | PID<155096>:TID<132111289800512> | __main__:<module>:101 - ==> [RoadScene] Starting Inference & Evaluation (Total Dataset Size: 50 samples)...
+2026-10-14 11:01:07.405 | INFO     | PID<155096>:TID<132111289800512> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp1
+  Checkpoint       : CDDFuse_Exp1_epoch_120.pth
+  Target Dataset   : RoadScene
+  Dataset Size     : 50 images
+  Average Loss     : 0.8705
+  Pure Inference   : 27.13 s  (542.68 ms/img | 1.84 FPS)
+  Total Eval Time  : 50.43 s  (0.99 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.37   |  51.35   |  15.73   |   2.39   |   1.76   |   0.70   |   0.55   |   0.96   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 11:27:55.899 | INFO     | PID<161664>:TID<137502858356544> | models.cddfuse_model:load_model:240 - Loading CDDFuse_Exp1 checkpoint from checkpoints/base_model/CDDFuse_phase2_epoch120.pth...
+2026-10-14 11:27:55.908 | INFO     | PID<161664>:TID<137502858356544> | models.cddfuse_model:load_model:246 - Models loaded successfully from checkpoint.
+2026-10-14 11:27:55.908 | INFO     | PID<161664>:TID<137502858356544> | models.cddfuse_model:load_model:266 - CDDFuse_Exp1_phase2_epoch120 loaded successfully from checkpoints/base_model/CDDFuse_phase2_epoch120.pth.
+2026-10-14 11:27:58.025 | INFO     | PID<161664>:TID<137502858356544> | __main__:<module>:101 - ==> [MSRS] Starting Inference & Evaluation (Total Dataset Size: 361 samples)...
+2026-10-14 11:30:10.576 | INFO     | PID<161664>:TID<137502858356544> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp1
+  Checkpoint       : CDDFuse_phase2_epoch120.pth
+  Target Dataset   : MSRS
+  Dataset Size     : 361 images
+  Average Loss     : 0.1757
+  Pure Inference   : 109.85 s  (304.28 ms/img | 3.29 FPS)
+  Total Eval Time  : 132.55 s  (2.72 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   6.69   |  42.99   |  11.71   |   3.68   |   1.61   |   1.06   |   0.72   |   0.99   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 11:30:10.577 | INFO     | PID<161664>:TID<137502858356544> | __main__:<module>:101 - ==> [TNO] Starting Inference & Evaluation (Total Dataset Size: 25 samples)...
+2026-10-14 11:30:43.567 | INFO     | PID<161664>:TID<137502858356544> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp1
+  Checkpoint       : CDDFuse_phase2_epoch120.pth
+  Target Dataset   : TNO
+  Dataset Size     : 25 images
+  Average Loss     : 0.6283
+  Pure Inference   : 24.98 s  (999.22 ms/img | 1.00 FPS)
+  Total Eval Time  : 32.99 s  (0.76 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.10   |  45.47   |  13.49   |   2.41   |   1.64   |   0.79   |   0.56   |   0.98   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 11:30:43.568 | INFO     | PID<161664>:TID<137502858356544> | __main__:<module>:101 - ==> [RoadScene] Starting Inference & Evaluation (Total Dataset Size: 50 samples)...
+2026-10-14 18:27:55.980 | INFO     | PID<276925>:TID<128365855582016> | models.cddfuse_model:load_model:249 - Loading CDDFuse_Exp2 checkpoint from checkpoints/Exp2/CDDFuse_Exp2_epoch_120.pth...
+2026-10-14 18:27:55.984 | INFO     | PID<276925>:TID<128365855582016> | models.cddfuse_model:load_model:255 - Models loaded successfully from checkpoint.
+2026-10-14 18:27:55.984 | INFO     | PID<276925>:TID<128365855582016> | models.cddfuse_model:load_model:275 - CDDFuse_Exp2_phase2_epoch120 loaded successfully from checkpoints/Exp2/CDDFuse_Exp2_epoch_120.pth.
+2026-10-14 18:27:57.807 | INFO     | PID<276925>:TID<128365855582016> | __main__:<module>:101 - ==> [MSRS] Starting Inference & Evaluation (Total Dataset Size: 361 samples)...
+2026-10-14 18:29:02.037 | INFO     | PID<276925>:TID<128365855582016> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp2
+  Checkpoint       : CDDFuse_Exp2_epoch_120.pth
+  Target Dataset   : MSRS
+  Dataset Size     : 361 images
+  Average Loss     : 0.1613
+  Pure Inference   : 41.91 s  (116.11 ms/img | 8.61 FPS)
+  Total Eval Time  : 64.23 s  (5.62 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   6.70   |  42.94   |  11.68   |   3.26   |   1.61   |   1.06   |   0.72   |   0.99   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 18:29:02.038 | INFO     | PID<276925>:TID<128365855582016> | __main__:<module>:101 - ==> [TNO] Starting Inference & Evaluation (Total Dataset Size: 25 samples)...
+2026-10-14 18:29:17.661 | INFO     | PID<276925>:TID<128365855582016> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp2
+  Checkpoint       : CDDFuse_Exp2_epoch_120.pth
+  Target Dataset   : TNO
+  Dataset Size     : 25 images
+  Average Loss     : 0.5700
+  Pure Inference   : 8.28 s  (331.35 ms/img | 3.02 FPS)
+  Total Eval Time  : 15.62 s  (1.60 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.13   |  44.95   |  13.73   |   2.06   |   1.62   |   0.75   |   0.56   |   0.97   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 18:29:17.663 | INFO     | PID<276925>:TID<128365855582016> | __main__:<module>:101 - ==> [RoadScene] Starting Inference & Evaluation (Total Dataset Size: 50 samples)...
+2026-10-14 18:30:08.659 | INFO     | PID<276925>:TID<128365855582016> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp2
+  Checkpoint       : CDDFuse_Exp2_epoch_120.pth
+  Target Dataset   : RoadScene
+  Dataset Size     : 50 images
+  Average Loss     : 0.7929
+  Pure Inference   : 31.22 s  (624.41 ms/img | 1.60 FPS)
+  Total Eval Time  : 51.00 s  (0.98 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.37   |  50.18   |  15.65   |   2.28   |   1.65   |   0.67   |   0.57   |   0.89   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 23:14:37.207 | INFO     | PID<373616>:TID<127549416548160> | models.cddfuse_model:load_model:249 - Loading CDDFuse_Exp2_v2 checkpoint from checkpoints/Exp2_v2/CDDFuse_Exp2_v2_epoch_120.pth...
+2026-10-14 23:14:37.211 | INFO     | PID<373616>:TID<127549416548160> | models.cddfuse_model:load_model:255 - Models loaded successfully from checkpoint.
+2026-10-14 23:14:37.211 | INFO     | PID<373616>:TID<127549416548160> | models.cddfuse_model:load_model:275 - CDDFuse_Exp2_v2_phase2_epoch120 loaded successfully from checkpoints/Exp2_v2/CDDFuse_Exp2_v2_epoch_120.pth.
+2026-10-14 23:14:39.245 | INFO     | PID<373616>:TID<127549416548160> | __main__:<module>:101 - ==> [MSRS] Starting Inference & Evaluation (Total Dataset Size: 361 samples)...
+2026-10-14 23:15:47.246 | INFO     | PID<373616>:TID<127549416548160> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp2_v2
+  Checkpoint       : CDDFuse_Exp2_v2_epoch_120.pth
+  Target Dataset   : MSRS
+  Dataset Size     : 361 images
+  Average Loss     : 0.1720
+  Pure Inference   : 46.15 s  (127.85 ms/img | 7.82 FPS)
+  Total Eval Time  : 68.00 s  (5.31 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   6.70   |  43.15   |  11.70   |   3.45   |   1.63   |   1.06   |   0.72   |   0.99   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 23:15:47.247 | INFO     | PID<373616>:TID<127549416548160> | __main__:<module>:101 - ==> [TNO] Starting Inference & Evaluation (Total Dataset Size: 25 samples)...
+2026-10-14 23:16:04.841 | INFO     | PID<373616>:TID<127549416548160> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp2_v2
+  Checkpoint       : CDDFuse_Exp2_v2_epoch_120.pth
+  Target Dataset   : TNO
+  Dataset Size     : 25 images
+  Average Loss     : 0.6275
+  Pure Inference   : 9.39 s  (375.42 ms/img | 2.66 FPS)
+  Total Eval Time  : 17.59 s  (1.42 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.10   |  44.71   |  14.30   |   2.38   |   1.59   |   0.81   |   0.56   |   0.94   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-14 23:16:04.843 | INFO     | PID<373616>:TID<127549416548160> | __main__:<module>:101 - ==> [RoadScene] Starting Inference & Evaluation (Total Dataset Size: 50 samples)...
+2026-10-14 23:17:02.984 | INFO     | PID<373616>:TID<127549416548160> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp2_v2
+  Checkpoint       : CDDFuse_Exp2_v2_epoch_120.pth
+  Target Dataset   : RoadScene
+  Dataset Size     : 50 images
+  Average Loss     : 0.7579
+  Pure Inference   : 36.85 s  (737.04 ms/img | 1.36 FPS)
+  Total Eval Time  : 58.14 s  (0.86 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.29   |  48.51   |  15.56   |   2.50   |   1.67   |   0.72   |   0.58   |   0.93   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
