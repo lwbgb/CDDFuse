@@ -13,7 +13,6 @@ os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 class H5Dataset(Data.Dataset):
     def __init__(self, h5file_path):
         self.h5file_path = str(h5file_path)
-        # 不再需要读取复杂的 keys 列表，只需要知道多维数组的长度 N
         with h5py.File(self.h5file_path, 'r') as h5f:
             self.dataset_len = h5f['ir_patchs'].shape[0]
         self.h5f = None
@@ -25,7 +24,6 @@ class H5Dataset(Data.Dataset):
         if self.h5f is None:
             self.h5f = h5py.File(self.h5file_path, 'r', swmr=True)
             
-        # 直接通过索引在连续数组上进行切片
         IR = self.h5f['ir_patchs'][index]
         VIS = self.h5f['vis_patchs'][index]
         

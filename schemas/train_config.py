@@ -34,6 +34,8 @@ class TrainConfig(BaseConfig):
     optim_gamma: float = 0.5
 
     device: str = "cpu"
+    use_bf16: bool = True
+    seed: int = 3407
 
     batch_size: int = 4
     shuffle: bool = True

@@ -1,5 +1,7 @@
+import random
 import time
 
+import numpy as np
 from omegaconf import DictConfig, OmegaConf
 from torch.utils.data import DataLoader
 import torch
@@ -12,11 +14,19 @@ from utils.device import cleanup_ddp
 from utils.logger_initializer import logger
 from hydra import initialize, compose
 
+def seed_everything(seed: int = 3407):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
 if __name__ == "__main__":
 
     with initialize(version_base=None, config_path="./configs"):
         opt: BaseConfig | TrainConfig = compose(config_name="config", 
                                                 overrides=["+mode@_global_=train"])
+
+    seed_everything(opt.get("seed", 3407))
 
     dataLoader: DataLoader = create_dataset(opt, "MSRS_train_imgsize_128_stride_200.h5")
     dataset_size = len(dataLoader.dataset)  # get the number of images in the dataset.
@@ -30,7 +40,10 @@ if __name__ == "__main__":
     total_epochs = opt.start_epoch - 1  # the total number of training epochs
     epoch_batches: int = dataset_size // opt.batch_size
 
-    logger.info(f"Starting training from epoch {opt.start_epoch} to {opt.n_epochs}, total epochs: {opt.n_epochs - opt.start_epoch + 1}")
+    logger.info(
+        f"Starting [{opt.model}] training from epoch {opt.start_epoch} to {opt.n_epochs}, "
+        f"batch_size={opt.batch_size}, lr={opt.lr}, use_bf16={opt.get('use_bf16', True)}"
+    )
     for epoch in range(opt.start_epoch, opt.n_epochs + 1):
         epoch_start_time = time.time()  # timer for entire epoch
         iter_data_time = time.time()  # timer for data loading per iteration
@@ -48,28 +61,30 @@ if __name__ == "__main__":
         )
 
         for batch_idx, data in enumerate(pbar):  # inner loop within one epoch
-
             iter_start_time = time.time()  # timer for computation per iteration
+            current_bs = data[0].size(0)
             if total_iters % opt.print_epoch_freq == 0:
                 t_data = iter_start_time - iter_data_time
 
             model.set_input(data)  # unpack data from dataset and apply preprocessing
             model.optimize_parameters()  # calculate loss functions, get gradients, update network weights
 
-            epoch_iters += opt.batch_size
+            epoch_iters += current_bs
             loss = model.get_current_loss()
-            epoch_loss += loss * opt.batch_size
+            epoch_loss += loss * current_bs
 
             # if total_iters % opt.display_freq == 0:  # display images on visdom and save images to a HTML file
             #     save_result = total_iters % opt.update_html_freq == 0
             #     model.compute_visuals()
             #     visualizer.display_current_results(model.get_current_visuals(), epoch, total_iters, save_result)
 
-            if (total_iters + epoch_iters) % opt.print_iter_freq == 0:  # print training losses and save logging information to the disk
+            if (batch_idx + 1) % max(1, opt.print_iter_freq // opt.batch_size) == 0:  # print training losses and save logging information to the disk
                 t_comp = (time.time() - iter_start_time) / opt.batch_size
+                decomp_val = model.losses.get("loss_decomp", 0.0)
                 pbar.set_postfix(
                     {
                         "loss": f"{loss:.8f}",
+                        "decomp": f"{decomp_val:.4f}", 
                     }
                 )
                 # visualizer.print_current_losses(epoch, epoch_iter, losses, t_comp, t_data)
@@ -92,7 +107,7 @@ if __name__ == "__main__":
         
         if epoch % opt.save_latest_freq == 0:
             model.save_model(f"{opt.model}_latest.pth")
-            logger.info(f"The latest model saved at the end of epoch: {epoch}, iters: {total_iters}")
+            print(f"The latest model saved at the end of epoch: {epoch}, iters: {total_iters}")
 
         if epoch % opt.save_epoch_freq == 0 or epoch == opt.epoch_gap or epoch == opt.n_epochs:
             model.save_model(f"{opt.model}_epoch_{epoch}.pth")

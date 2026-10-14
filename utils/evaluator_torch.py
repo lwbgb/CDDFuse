@@ -10,10 +10,11 @@ class EvaluatorTorch:
     所有指标数学逻辑与原版 Evaluator.py 完全一致，支持 GPU 纯张量并行加速。
     """
     _viff_filters: dict[tuple[int, str, torch.dtype], list[torch.Tensor]] = {}
+    _ssim_kernel: dict[tuple[int, str, torch.dtype], torch.Tensor] = {}
 
     @classmethod
     def _to_tensor(cls, img: np.ndarray | torch.Tensor, device: torch.device) -> torch.Tensor:
-        """确保输入为 shape [1, 1, H, W] 的 float64 张量（使用 float64 保证与 scipy 卷积精度完全对齐）"""
+        """确保输入为 shape [1, 1, H, W] 的 float64 张量（保证与 scipy/skimage 双精度完全对齐）"""
         if isinstance(img, np.ndarray):
             t = torch.from_numpy(img).to(device=device, dtype=torch.float64)
         else:
@@ -32,8 +33,7 @@ class EvaluatorTorch:
             t = torch.from_numpy(img).to(device)
         else:
             t = img.to(device)
-        a = torch.round(t).to(torch.long).flatten()
-        # 限制在 [0, 255] 灰度区间统计
+        a = torch.round(t).clamp(0, 255).to(torch.long).flatten()
         h = torch.bincount(a, minlength=256).to(torch.float64) / a.numel()
         h_nz = h[h > 0]
         return float(-torch.sum(h_nz * torch.log2(h_nz)).item())
@@ -55,9 +55,9 @@ class EvaluatorTorch:
     # ------------------- 4. MI: 互信息 -------------------
     @classmethod
     def _mutual_info(cls, x: torch.Tensor, y: torch.Tensor) -> float:
-        """等价于 sklearn.metrics.mutual_info_score"""
-        x_flat = torch.round(x).to(torch.long).flatten()
-        y_flat = torch.round(y).to(torch.long).flatten()
+        """严格等价于 sklearn.metrics.mutual_info_score"""
+        x_flat = torch.round(x).clamp(0, 255).to(torch.long).flatten()
+        y_flat = torch.round(y).clamp(0, 255).to(torch.long).flatten()
         n = x_flat.numel()
 
         idx = x_flat * 256 + y_flat
@@ -78,7 +78,6 @@ class EvaluatorTorch:
         p_joint = pxy[mask]
         p_indep = px[xi] * py[yi]
 
-        # sklearn.metrics.mutual_info_score 默认底数为 e
         mi = torch.sum(p_joint * torch.log(p_joint / p_indep))
         return float(mi.item())
 
@@ -193,8 +192,9 @@ class EvaluatorTorch:
     # ------------------- 7. Qabf: 梯度边缘保留度 -------------------
     @classmethod
     def _qabf_get_array(cls, img: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        h1 = torch.tensor([[1, 2, 1], [0, 0, 0], [-1, -2, -1]], dtype=img.dtype, device=img.device).view(1, 1, 3, 3)
-        h3 = torch.tensor([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]], dtype=img.dtype, device=img.device).view(1, 1, 3, 3)
+        # 对齐 scipy.signal.convolve2d 翻转 180 度后的卷积核
+        h1 = torch.tensor([[-1, -2, -1], [0, 0, 0], [1, 2, 1]], dtype=img.dtype, device=img.device).view(1, 1, 3, 3)
+        h3 = torch.tensor([[1, 0, -1], [2, 0, -2], [1, 0, -1]], dtype=img.dtype, device=img.device).view(1, 1, 3, 3)
 
         SAx = F.conv2d(img, h3, padding=1)
         SAy = F.conv2d(img, h1, padding=1)
@@ -216,9 +216,9 @@ class EvaluatorTorch:
         mask_eq = gA == gF
         mask_lt = gA < gF
 
-        GAF[mask_gt] = gF[mask_gt] / (gA[mask_gt] + 1e-12)
+        GAF[mask_gt] = gF[mask_gt] / gA[mask_gt]
         GAF[mask_eq] = gF[mask_eq]
-        GAF[mask_lt] = gA[mask_lt] / (gF[mask_lt] + 1e-12)
+        GAF[mask_lt] = gA[mask_lt] / gF[mask_lt]
 
         AAF = 1.0 - torch.abs(aA - aF) / (math.pi / 2)
         QgAF = Tg / (1.0 + torch.exp(kg * (GAF - Dg)))
@@ -240,45 +240,55 @@ class EvaluatorTorch:
 
         deno = torch.sum(gA + gB)
         nume = torch.sum(QAF * gA + QBF * gB)
-        return float((nume / (deno + 1e-12)).item())
+        return float((nume / deno).item())
 
     # ------------------- 8. SSIM: 结构相似性 -------------------
     @classmethod
     def _ssim_single(cls, x: torch.Tensor, y: torch.Tensor) -> float:
-        """等价于 skimage.metrics.structural_similarity(x, y, data_range=1.0)"""
-        # skimage 默认 11x11 高斯窗口，标准差 1.5
-        win_size = 11
-        sigma = 1.5
-        coords = torch.arange(win_size, dtype=x.dtype, device=x.device) - (win_size - 1) / 2
-        g = torch.exp(-(coords ** 2) / (2 * sigma ** 2))
-        kernel = (g.unsqueeze(1) @ g.unsqueeze(0))
-        kernel = (kernel / kernel.sum()).view(1, 1, win_size, win_size)
+        """
+        严格复现 skimage.metrics.structural_similarity(x, y, data_range=1)：
+        1. 默认 gaussian_weights=False, win_size=7 (7x7 均值滤波)
+        2. 默认 use_sample_covariance=True (乘以 NP / (NP - 1) = 49 / 48)
+        3. 裁剪四周 pad=(win_size-1)//2=3 的边界后再求均值 (等价于 padding=0 的 valid 卷积)
+        """
+        win_size = 7
+        key = (x.device.index or 0, str(x.device.type), x.dtype)
+        if key not in cls._ssim_kernel:
+            cls._ssim_kernel[key] = torch.ones((1, 1, win_size, win_size), dtype=x.dtype, device=x.device) / (win_size * win_size)
+        kernel = cls._ssim_kernel[key]
 
-        pad = win_size // 2
-        mu_x = F.conv2d(x, kernel, padding=pad)
-        mu_y = F.conv2d(y, kernel, padding=pad)
+        ux = F.conv2d(x, kernel, padding=0)
+        uy = F.conv2d(y, kernel, padding=0)
 
-        mu_x_sq = mu_x.pow(2)
-        mu_y_sq = mu_y.pow(2)
-        mu_xy = mu_x * mu_y
+        uxx = F.conv2d(x * x, kernel, padding=0)
+        uyy = F.conv2d(y * y, kernel, padding=0)
+        uxy = F.conv2d(x * y, kernel, padding=0)
 
-        sigma_x_sq = F.conv2d(x * x, kernel, padding=pad) - mu_x_sq
-        sigma_y_sq = F.conv2d(y * y, kernel, padding=pad) - mu_y_sq
-        sigma_xy = F.conv2d(x * y, kernel, padding=pad) - mu_xy
+        np_pts = win_size * win_size
+        cov_norm = np_pts / (np_pts - 1.0)  # 49 / 48 无偏样本协方差修正
 
-        # data_range = 1.0 时常数设定
-        C1 = (0.01 * 1.0) ** 2
-        C2 = (0.03 * 1.0) ** 2
+        vx = cov_norm * (uxx - ux * ux)
+        vy = cov_norm * (uyy - uy * uy)
+        vxy = cov_norm * (uxy - ux * uy)
 
-        ssim_map = ((2 * mu_xy + C1) * (2 * sigma_xy + C2)) / ((mu_x_sq + mu_y_sq + C1) * (sigma_x_sq + sigma_y_sq + C2))
+        data_range = 1.0
+        C1 = (0.01 * data_range) ** 2
+        C2 = (0.03 * data_range) ** 2
+
+        a1 = 2 * ux * uy + C1
+        a2 = 2 * vxy + C2
+        b1 = ux * ux + uy * uy + C1
+        b2 = vx + vy + C2
+
+        ssim_map = (a1 * a2) / (b1 * b2)
         return float(ssim_map.mean().item())
 
     @classmethod
     def SSIM(cls, image_F: np.ndarray | torch.Tensor, image_A: np.ndarray | torch.Tensor, image_B: np.ndarray | torch.Tensor, device: torch.device = torch.device('cuda:0')) -> float:
-        # skimage 接收归一化到 [0, 1] 的图像
-        tF = cls._to_tensor(image_F, device) / 255.0 if image_F.max() > 1.0 else cls._to_tensor(image_F, device)
-        tA = cls._to_tensor(image_A, device) / 255.0 if image_A.max() > 1.0 else cls._to_tensor(image_A, device)
-        tB = cls._to_tensor(image_B, device) / 255.0 if image_B.max() > 1.0 else cls._to_tensor(image_B, device)
+        # 严格保持与原仓库 Evaluator.py 一致：直接传入 [0, 255] 图像，不除以 255.0
+        tF = cls._to_tensor(image_F, device)
+        tA = cls._to_tensor(image_A, device)
+        tB = cls._to_tensor(image_B, device)
         return cls._ssim_single(tF, tA) + cls._ssim_single(tF, tB)
 
     # ------------------- 批量评估接口 -------------------

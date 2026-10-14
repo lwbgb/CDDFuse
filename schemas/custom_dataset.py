@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import pandas as pd
 import torch
+from torch import nn
 from torchvision.io import decode_image
 from torch.utils.data import Dataset
 from PIL import Image
