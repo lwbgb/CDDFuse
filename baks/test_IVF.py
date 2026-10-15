@@ -16,7 +16,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 ckpt_path = Path("checkpoints/base_model/CDDFuse_phase2_epoch120.pth")
 
 if __name__ == '__main__':
-    for dataset_name in ["MSRS"]:
+    for dataset_name in ["RoadScene"]:
         model_name="CDDFuse    "
         test_folder=os.path.join('test_img',dataset_name) 
         test_out_folder=os.path.join('test_result',dataset_name)

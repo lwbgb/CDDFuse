@@ -1,0 +1,176 @@
+026-10-15 00:24:35.764 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:43 - Starting [CDDFuse_Exp3] training from epoch 41 to 120, batch_size=8, lr=0.00015, use_bf16=True
+2026-10-15 00:26:44.503 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 41/120 completed. Average loss: 0.337702. Time taken: 128.74 sec
+2026-10-15 00:26:44.584 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch41 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:28:46.030 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 42/120 completed. Average loss: 0.264074. Time taken: 121.44 sec
+2026-10-15 00:28:46.107 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch42 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:30:44.508 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 43/120 completed. Average loss: 0.250445. Time taken: 118.40 sec
+2026-10-15 00:30:44.582 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch43 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:32:43.939 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 44/120 completed. Average loss: 0.241240. Time taken: 119.36 sec
+2026-10-15 00:32:44.011 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch44 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:34:43.266 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 45/120 completed. Average loss: 0.228997. Time taken: 119.25 sec
+2026-10-15 00:34:43.340 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch45 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:36:43.045 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 46/120 completed. Average loss: 0.219790. Time taken: 119.70 sec
+2026-10-15 00:36:43.129 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch46 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:38:43.564 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 47/120 completed. Average loss: 0.212349. Time taken: 120.43 sec
+2026-10-15 00:38:43.636 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch47 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:40:43.847 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 48/120 completed. Average loss: 0.206682. Time taken: 120.21 sec
+2026-10-15 00:40:43.926 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch48 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:42:42.805 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 49/120 completed. Average loss: 0.200507. Time taken: 118.88 sec
+2026-10-15 00:42:42.878 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch49 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:44:41.978 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 50/120 completed. Average loss: 0.195917. Time taken: 119.10 sec
+2026-10-15 00:44:42.048 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch50 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:44:42.121 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch50 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_epoch_50.pth".
+2026-10-15 00:44:42.122 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:114 - The model saved at the end of epoch: 50, iters: 324350
+2026-10-15 00:46:42.412 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 51/120 completed. Average loss: 0.192412. Time taken: 120.29 sec
+2026-10-15 00:46:42.510 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch51 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:48:42.808 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 52/120 completed. Average loss: 0.189128. Time taken: 120.30 sec
+2026-10-15 00:48:42.881 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch52 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:50:41.840 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 53/120 completed. Average loss: 0.186604. Time taken: 118.96 sec
+2026-10-15 00:50:41.910 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch53 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:52:43.715 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 54/120 completed. Average loss: 0.184708. Time taken: 121.80 sec
+2026-10-15 00:52:43.801 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch54 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:54:45.625 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 55/120 completed. Average loss: 0.182335. Time taken: 121.82 sec
+2026-10-15 00:54:45.732 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch55 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:56:45.552 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 56/120 completed. Average loss: 0.180956. Time taken: 119.82 sec
+2026-10-15 00:56:45.628 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch56 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 00:58:45.876 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 57/120 completed. Average loss: 0.179368. Time taken: 120.25 sec
+2026-10-15 00:58:45.948 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch57 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:00:44.126 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 58/120 completed. Average loss: 0.178132. Time taken: 118.18 sec
+2026-10-15 01:00:44.220 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch58 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:02:44.311 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 59/120 completed. Average loss: 0.176494. Time taken: 120.09 sec
+2026-10-15 01:02:44.381 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch59 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:04:43.057 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 60/120 completed. Average loss: 0.175505. Time taken: 118.68 sec
+2026-10-15 01:04:43.142 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch60 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:04:43.221 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch60 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_epoch_60.pth".
+2026-10-15 01:04:43.222 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:114 - The model saved at the end of epoch: 60, iters: 389220
+2026-10-15 01:06:41.074 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 61/120 completed. Average loss: 0.172527. Time taken: 117.85 sec
+2026-10-15 01:06:41.142 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch61 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:08:39.484 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 62/120 completed. Average loss: 0.171810. Time taken: 118.34 sec
+2026-10-15 01:08:39.577 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch62 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:10:38.760 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 63/120 completed. Average loss: 0.171088. Time taken: 119.18 sec
+2026-10-15 01:10:38.857 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch63 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:12:37.890 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 64/120 completed. Average loss: 0.170580. Time taken: 119.03 sec
+2026-10-15 01:12:37.965 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch64 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:14:35.875 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 65/120 completed. Average loss: 0.170156. Time taken: 117.91 sec
+2026-10-15 01:14:35.950 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch65 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:16:34.675 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 66/120 completed. Average loss: 0.169502. Time taken: 118.72 sec
+2026-10-15 01:16:34.742 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch66 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:18:33.278 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 67/120 completed. Average loss: 0.169088. Time taken: 118.54 sec
+2026-10-15 01:18:33.348 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch67 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:20:32.735 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 68/120 completed. Average loss: 0.168694. Time taken: 119.39 sec
+2026-10-15 01:20:32.805 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch68 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:22:31.965 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 69/120 completed. Average loss: 0.168242. Time taken: 119.16 sec
+2026-10-15 01:22:32.035 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch69 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:24:31.526 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 70/120 completed. Average loss: 0.167870. Time taken: 119.49 sec
+2026-10-15 01:24:31.597 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch70 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:24:31.674 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch70 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_epoch_70.pth".
+2026-10-15 01:24:31.675 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:114 - The model saved at the end of epoch: 70, iters: 454090
+2026-10-15 01:26:31.144 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 71/120 completed. Average loss: 0.167651. Time taken: 119.47 sec
+2026-10-15 01:26:31.258 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch71 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:28:29.296 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 72/120 completed. Average loss: 0.167095. Time taken: 118.04 sec
+2026-10-15 01:28:29.366 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch72 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:30:29.099 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 73/120 completed. Average loss: 0.166614. Time taken: 119.73 sec
+2026-10-15 01:30:29.171 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch73 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:32:27.371 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 74/120 completed. Average loss: 0.166325. Time taken: 118.20 sec
+2026-10-15 01:32:27.459 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch74 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:34:27.401 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 75/120 completed. Average loss: 0.166032. Time taken: 119.94 sec
+2026-10-15 01:34:27.471 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch75 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:36:26.694 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 76/120 completed. Average loss: 0.165645. Time taken: 119.22 sec
+2026-10-15 01:36:26.765 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch76 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:38:25.509 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 77/120 completed. Average loss: 0.165332. Time taken: 118.74 sec
+2026-10-15 01:38:25.604 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch77 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:40:25.346 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 78/120 completed. Average loss: 0.164916. Time taken: 119.74 sec
+2026-10-15 01:40:25.416 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch78 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:42:24.809 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 79/120 completed. Average loss: 0.164590. Time taken: 119.39 sec
+2026-10-15 01:42:24.881 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch79 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:44:23.715 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 80/120 completed. Average loss: 0.164423. Time taken: 118.83 sec
+2026-10-15 01:44:23.783 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch80 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:44:23.855 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch80 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_epoch_80.pth".
+2026-10-15 01:44:23.856 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:114 - The model saved at the end of epoch: 80, iters: 518960
+2026-10-15 01:46:24.009 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 81/120 completed. Average loss: 0.163157. Time taken: 120.15 sec
+2026-10-15 01:46:24.081 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch81 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:48:22.439 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 82/120 completed. Average loss: 0.162924. Time taken: 118.36 sec
+2026-10-15 01:48:22.544 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch82 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:50:22.365 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 83/120 completed. Average loss: 0.162644. Time taken: 119.82 sec
+2026-10-15 01:50:22.434 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch83 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:52:22.014 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 84/120 completed. Average loss: 0.162526. Time taken: 119.58 sec
+2026-10-15 01:52:22.085 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch84 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:54:19.606 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 85/120 completed. Average loss: 0.162355. Time taken: 117.52 sec
+2026-10-15 01:54:19.675 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch85 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:56:19.753 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 86/120 completed. Average loss: 0.162077. Time taken: 120.08 sec
+2026-10-15 01:56:19.878 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch86 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 01:58:17.821 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 87/120 completed. Average loss: 0.161942. Time taken: 117.94 sec
+2026-10-15 01:58:17.889 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch87 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:00:17.570 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 88/120 completed. Average loss: 0.161792. Time taken: 119.68 sec
+2026-10-15 02:00:17.666 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch88 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:02:15.794 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 89/120 completed. Average loss: 0.161586. Time taken: 118.13 sec
+2026-10-15 02:02:15.862 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch89 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:04:14.599 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 90/120 completed. Average loss: 0.161438. Time taken: 118.74 sec
+2026-10-15 02:04:14.682 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch90 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:04:14.778 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch90 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_epoch_90.pth".
+2026-10-15 02:04:14.778 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:114 - The model saved at the end of epoch: 90, iters: 583830
+2026-10-15 02:06:13.990 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 91/120 completed. Average loss: 0.161236. Time taken: 119.21 sec
+2026-10-15 02:06:14.059 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch91 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:08:13.830 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 92/120 completed. Average loss: 0.161098. Time taken: 119.77 sec
+2026-10-15 02:08:13.902 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch92 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:10:12.313 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 93/120 completed. Average loss: 0.160894. Time taken: 118.41 sec
+2026-10-15 02:10:12.379 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch93 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:12:12.079 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 94/120 completed. Average loss: 0.160810. Time taken: 119.70 sec
+2026-10-15 02:12:12.150 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch94 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:14:09.674 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 95/120 completed. Average loss: 0.160665. Time taken: 117.52 sec
+2026-10-15 02:14:09.745 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch95 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:16:10.178 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 96/120 completed. Average loss: 0.160534. Time taken: 120.43 sec
+2026-10-15 02:16:10.249 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch96 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:18:08.775 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 97/120 completed. Average loss: 0.160358. Time taken: 118.53 sec
+2026-10-15 02:18:08.846 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch97 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:20:08.305 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 98/120 completed. Average loss: 0.160249. Time taken: 119.46 sec
+2026-10-15 02:20:08.374 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch98 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:22:06.290 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 99/120 completed. Average loss: 0.160108. Time taken: 117.91 sec
+2026-10-15 02:22:06.359 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch99 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:24:06.577 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 100/120 completed. Average loss: 0.159879. Time taken: 120.22 sec
+2026-10-15 02:24:06.672 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch100 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:24:06.742 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch100 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_epoch_100.pth".
+2026-10-15 02:24:06.743 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:114 - The model saved at the end of epoch: 100, iters: 648700
+2026-10-15 02:26:05.848 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 101/120 completed. Average loss: 0.159409. Time taken: 119.11 sec
+2026-10-15 02:26:05.919 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch101 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:28:04.712 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 102/120 completed. Average loss: 0.159305. Time taken: 118.79 sec
+2026-10-15 02:28:04.960 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch102 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:30:04.463 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 103/120 completed. Average loss: 0.159217. Time taken: 119.50 sec
+2026-10-15 02:30:04.548 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch103 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:32:03.659 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 104/120 completed. Average loss: 0.159145. Time taken: 119.11 sec
+2026-10-15 02:32:03.729 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch104 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:34:03.594 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 105/120 completed. Average loss: 0.159034. Time taken: 119.86 sec
+2026-10-15 02:34:03.665 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch105 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:36:01.121 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 106/120 completed. Average loss: 0.158974. Time taken: 117.46 sec
+2026-10-15 02:36:01.191 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch106 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:38:00.931 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 107/120 completed. Average loss: 0.158868. Time taken: 119.74 sec
+2026-10-15 02:38:01.003 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch107 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:39:58.460 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 108/120 completed. Average loss: 0.158813. Time taken: 117.46 sec
+2026-10-15 02:39:58.530 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch108 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:41:58.046 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 109/120 completed. Average loss: 0.158739. Time taken: 119.52 sec
+2026-10-15 02:41:58.115 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch109 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:43:55.954 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 110/120 completed. Average loss: 0.158648. Time taken: 117.84 sec
+2026-10-15 02:43:56.023 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch110 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:43:56.094 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch110 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_epoch_110.pth".
+2026-10-15 02:43:56.094 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:114 - The model saved at the end of epoch: 110, iters: 713570
+2026-10-15 02:45:56.954 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 111/120 completed. Average loss: 0.158576. Time taken: 120.86 sec
+2026-10-15 02:45:57.053 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch111 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:47:55.734 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 112/120 completed. Average loss: 0.158493. Time taken: 118.68 sec
+2026-10-15 02:47:55.840 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch112 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:49:55.760 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 113/120 completed. Average loss: 0.158409. Time taken: 119.92 sec
+2026-10-15 02:49:55.828 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch113 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:51:55.769 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 114/120 completed. Average loss: 0.158349. Time taken: 119.94 sec
+2026-10-15 02:51:55.839 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch114 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:53:54.025 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 115/120 completed. Average loss: 0.158261. Time taken: 118.18 sec
+2026-10-15 02:53:54.095 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch115 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:55:53.364 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 116/120 completed. Average loss: 0.158204. Time taken: 119.27 sec
+2026-10-15 02:55:53.432 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch116 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:57:51.679 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 117/120 completed. Average loss: 0.158112. Time taken: 118.25 sec
+2026-10-15 02:57:51.776 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch117 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 02:59:51.732 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 118/120 completed. Average loss: 0.158019. Time taken: 119.96 sec
+2026-10-15 02:59:51.801 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch118 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 03:01:49.464 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 119/120 completed. Average loss: 0.157957. Time taken: 117.66 sec
+2026-10-15 03:01:49.535 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch119 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 03:03:49.469 | INFO     | PID<391326>:TID<124046631855936> | __main__:<module>:104 - Epoch 120/120 completed. Average loss: 0.157891. Time taken: 119.93 sec
+2026-10-15 03:03:49.537 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch120 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_latest.pth".
+2026-10-15 03:03:49.606 | INFO     | PID<391326>:TID<124046631855936> | models.cddfuse_model:save_model:355 - CDDFuse_Exp3_phase2_epoch120 checkpoint saved successfully at "checkpoints/20261015_002435/CDDFuse_Exp3_epoch_120.pth".
