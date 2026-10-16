@@ -6,7 +6,6 @@ from omegaconf import DictConfig
 class BaseConfig(DictConfig):
 
     model: str = "CDDFuse"
-    isTrain: bool = True
     verbose: bool = True
     checkpoint_root: str = r"checkpoints/"
     ...

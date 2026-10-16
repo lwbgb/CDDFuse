@@ -9,5 +9,5 @@ num_test: 500
 
 root: test_img/
 output_dir: test_result/
-load_dir: Exp4
-ckp_name: CDDFuse_Exp4_epoch_120.pth
+load_dir: "20261016_234916"
+ckp_name: CDDFuse_Exp3_v2_epoch_120.pth

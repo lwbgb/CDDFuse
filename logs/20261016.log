@@ -1,0 +1,804 @@
+2026-10-16 05:29:45.332 | INFO     | PID<861863>:TID<132049080952640> | models.cddfuse_model:__init__:83 - [Loss Mode] Using Original CDDFuse Baseline Loss (for clean architecture ablation)
+2026-10-16 05:29:45.462 | INFO     | PID<861863>:TID<132049080952640> | models.cddfuse_model:load_model:310 - Loading CDDFuse_Exp3_v2 checkpoint from checkpoints/Exp3_v2/CDDFuse_Exp3_v2_epoch_100.pth (ckp phase=2, epoch=100)...
+2026-10-16 05:29:45.466 | INFO     | PID<861863>:TID<132049080952640> | models.cddfuse_model:load_model:321 - Models loaded successfully from checkpoint.
+2026-10-16 05:29:45.468 | INFO     | PID<861863>:TID<132049080952640> | models.cddfuse_model:load_model:348 - Checkpoint (phase=2, epoch=100) loaded successfully from checkpoints/Exp3_v2/CDDFuse_Exp3_v2_epoch_100.pth.
+2026-10-16 05:29:45.470 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:43 - Starting [CDDFuse_Exp3_v2] training from epoch 101 to 120, batch_size=8, lr=0.00015, use_bf16=True
+2026-10-16 05:32:17.886 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:104 - Epoch 101/120 completed. Average loss: 0.169658. Time taken: 152.42 sec
+2026-10-16 05:32:17.970 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:110 - The latest model saved at the end of epoch: 101, iters: 655187
+2026-10-16 05:34:45.817 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:104 - Epoch 102/120 completed. Average loss: 0.169406. Time taken: 147.85 sec
+2026-10-16 05:34:45.912 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:110 - The latest model saved at the end of epoch: 102, iters: 661674
+2026-10-16 05:38:36.870 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:104 - Epoch 103/120 completed. Average loss: 0.169196. Time taken: 230.96 sec
+2026-10-16 05:38:36.982 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:110 - The latest model saved at the end of epoch: 103, iters: 668161
+2026-10-16 05:41:22.671 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:104 - Epoch 104/120 completed. Average loss: 0.168956. Time taken: 165.69 sec
+2026-10-16 05:41:22.754 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:110 - The latest model saved at the end of epoch: 104, iters: 674648
+2026-10-16 05:44:32.178 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:104 - Epoch 105/120 completed. Average loss: 0.168761. Time taken: 189.42 sec
+2026-10-16 05:44:32.258 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:110 - The latest model saved at the end of epoch: 105, iters: 681135
+2026-10-16 05:47:02.541 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:104 - Epoch 106/120 completed. Average loss: 0.168540. Time taken: 150.28 sec
+2026-10-16 05:47:02.617 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:110 - The latest model saved at the end of epoch: 106, iters: 687622
+2026-10-16 05:49:32.753 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:104 - Epoch 107/120 completed. Average loss: 0.168348. Time taken: 150.14 sec
+2026-10-16 05:49:32.864 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:110 - The latest model saved at the end of epoch: 107, iters: 694109
+2026-10-16 05:52:00.917 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:104 - Epoch 108/120 completed. Average loss: 0.168156. Time taken: 148.05 sec
+2026-10-16 05:52:01.006 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:110 - The latest model saved at the end of epoch: 108, iters: 700596
+2026-10-16 05:55:30.788 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:104 - Epoch 109/120 completed. Average loss: 0.167984. Time taken: 209.78 sec
+2026-10-16 05:55:30.867 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:110 - The latest model saved at the end of epoch: 109, iters: 707083
+2026-10-16 05:57:57.145 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:104 - Epoch 110/120 completed. Average loss: 0.167805. Time taken: 146.28 sec
+2026-10-16 05:57:57.231 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:110 - The latest model saved at the end of epoch: 110, iters: 713570
+2026-10-16 05:57:57.320 | INFO     | PID<861863>:TID<132049080952640> | __main__:<module>:114 - The model saved at the end of epoch: 110, iters: 713570
+2026-10-16 06:06:08.517 | INFO     | PID<881831>:TID<125608290408256> | models.cddfuse_model:__init__:83 - [Loss Mode] Using Original CDDFuse Baseline Loss (for clean architecture ablation)
+2026-10-16 06:06:09.308 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:43 - Starting [CDDFuse_Exp2_v3] training from epoch 1 to 120, batch_size=8, lr=0.00015, use_bf16=True
+2026-10-16 06:08:35.564 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 1/120 completed. Average loss: 0.197271. Time taken: 146.26 sec
+2026-10-16 06:08:35.787 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 1, iters: 6487
+2026-10-16 06:10:53.568 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 2/120 completed. Average loss: 0.022545. Time taken: 137.78 sec
+2026-10-16 06:10:53.622 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 2, iters: 12974
+2026-10-16 06:13:11.704 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 3/120 completed. Average loss: 0.012793. Time taken: 138.08 sec
+2026-10-16 06:13:11.761 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 3, iters: 19461
+2026-10-16 06:15:30.157 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 4/120 completed. Average loss: 0.009848. Time taken: 138.40 sec
+2026-10-16 06:15:30.254 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 4, iters: 25948
+2026-10-16 06:17:47.892 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 5/120 completed. Average loss: 0.007980. Time taken: 137.64 sec
+2026-10-16 06:17:47.945 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 5, iters: 32435
+2026-10-16 06:20:05.537 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 6/120 completed. Average loss: 0.006533. Time taken: 137.59 sec
+2026-10-16 06:20:05.591 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 6, iters: 38922
+2026-10-16 06:22:23.992 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 7/120 completed. Average loss: 0.009548. Time taken: 138.40 sec
+2026-10-16 06:22:24.085 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 7, iters: 45409
+2026-10-16 06:24:41.816 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 8/120 completed. Average loss: 0.005962. Time taken: 137.73 sec
+2026-10-16 06:24:41.870 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 8, iters: 51896
+2026-10-16 06:27:00.125 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 9/120 completed. Average loss: 0.007134. Time taken: 138.25 sec
+2026-10-16 06:27:00.177 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 9, iters: 58383
+2026-10-16 06:29:17.022 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 10/120 completed. Average loss: 0.005196. Time taken: 136.84 sec
+2026-10-16 06:29:17.075 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 10, iters: 64870
+2026-10-16 06:29:17.128 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:114 - The model saved at the end of epoch: 10, iters: 64870
+2026-10-16 06:31:35.448 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 11/120 completed. Average loss: 0.005489. Time taken: 138.32 sec
+2026-10-16 06:31:35.511 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 11, iters: 71357
+2026-10-16 06:33:53.690 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 12/120 completed. Average loss: 0.004610. Time taken: 138.18 sec
+2026-10-16 06:33:53.742 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 12, iters: 77844
+2026-10-16 06:36:11.539 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 13/120 completed. Average loss: 0.004710. Time taken: 137.80 sec
+2026-10-16 06:36:11.590 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 13, iters: 84331
+2026-10-16 06:38:29.538 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 14/120 completed. Average loss: 0.004344. Time taken: 137.95 sec
+2026-10-16 06:38:29.597 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 14, iters: 90818
+2026-10-16 06:40:48.160 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 15/120 completed. Average loss: 0.004322. Time taken: 138.56 sec
+2026-10-16 06:40:48.221 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 15, iters: 97305
+2026-10-16 06:43:06.732 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 16/120 completed. Average loss: 0.004039. Time taken: 138.51 sec
+2026-10-16 06:43:06.784 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 16, iters: 103792
+2026-10-16 06:45:24.809 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 17/120 completed. Average loss: 0.003433. Time taken: 138.02 sec
+2026-10-16 06:45:24.861 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 17, iters: 110279
+2026-10-16 06:47:43.614 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 18/120 completed. Average loss: 0.003341. Time taken: 138.75 sec
+2026-10-16 06:47:43.671 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 18, iters: 116766
+2026-10-16 06:50:02.048 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 19/120 completed. Average loss: 0.003545. Time taken: 138.38 sec
+2026-10-16 06:50:02.109 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 19, iters: 123253
+2026-10-16 06:52:20.754 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 20/120 completed. Average loss: 0.003400. Time taken: 138.64 sec
+2026-10-16 06:52:20.827 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 20, iters: 129740
+2026-10-16 06:52:20.920 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:114 - The model saved at the end of epoch: 20, iters: 129740
+2026-10-16 06:54:38.416 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 21/120 completed. Average loss: 0.002266. Time taken: 137.50 sec
+2026-10-16 06:54:38.488 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 21, iters: 136227
+2026-10-16 06:56:56.830 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 22/120 completed. Average loss: 0.002294. Time taken: 138.34 sec
+2026-10-16 06:56:56.882 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 22, iters: 142714
+2026-10-16 06:59:14.759 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 23/120 completed. Average loss: 0.002145. Time taken: 137.88 sec
+2026-10-16 06:59:14.811 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 23, iters: 149201
+2026-10-16 07:01:31.899 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 24/120 completed. Average loss: 0.002159. Time taken: 137.09 sec
+2026-10-16 07:01:31.964 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 24, iters: 155688
+2026-10-16 07:03:48.951 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 25/120 completed. Average loss: 0.002772. Time taken: 136.99 sec
+2026-10-16 07:03:49.004 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 25, iters: 162175
+2026-10-16 07:06:06.818 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 26/120 completed. Average loss: 0.002313. Time taken: 137.81 sec
+2026-10-16 07:06:06.871 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 26, iters: 168662
+2026-10-16 07:08:25.130 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 27/120 completed. Average loss: 0.002095. Time taken: 138.26 sec
+2026-10-16 07:08:25.182 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 27, iters: 175149
+2026-10-16 07:10:43.053 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 28/120 completed. Average loss: 0.002129. Time taken: 137.87 sec
+2026-10-16 07:10:43.106 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 28, iters: 181636
+2026-10-16 07:13:01.449 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 29/120 completed. Average loss: 0.002061. Time taken: 138.34 sec
+2026-10-16 07:13:01.525 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 29, iters: 188123
+2026-10-16 07:15:19.141 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 30/120 completed. Average loss: 0.002150. Time taken: 137.62 sec
+2026-10-16 07:15:19.194 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 30, iters: 194610
+2026-10-16 07:15:19.248 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:114 - The model saved at the end of epoch: 30, iters: 194610
+2026-10-16 07:17:37.194 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 31/120 completed. Average loss: 0.002084. Time taken: 137.95 sec
+2026-10-16 07:17:37.257 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 31, iters: 201097
+2026-10-16 07:19:55.059 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 32/120 completed. Average loss: 0.002053. Time taken: 137.80 sec
+2026-10-16 07:19:55.193 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 32, iters: 207584
+2026-10-16 07:22:11.797 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 33/120 completed. Average loss: 0.002124. Time taken: 136.60 sec
+2026-10-16 07:22:11.852 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 33, iters: 214071
+2026-10-16 07:24:28.801 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 34/120 completed. Average loss: 0.001972. Time taken: 136.95 sec
+2026-10-16 07:24:28.853 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 34, iters: 220558
+2026-10-16 07:26:47.015 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 35/120 completed. Average loss: 0.002089. Time taken: 138.16 sec
+2026-10-16 07:26:47.088 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 35, iters: 227045
+2026-10-16 07:29:04.836 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 36/120 completed. Average loss: 0.002063. Time taken: 137.75 sec
+2026-10-16 07:29:04.890 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 36, iters: 233532
+2026-10-16 07:31:22.509 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 37/120 completed. Average loss: 0.002074. Time taken: 137.62 sec
+2026-10-16 07:31:22.560 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 37, iters: 240019
+2026-10-16 07:33:40.372 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 38/120 completed. Average loss: 0.001972. Time taken: 137.81 sec
+2026-10-16 07:33:40.427 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 38, iters: 246506
+2026-10-16 07:35:58.757 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 39/120 completed. Average loss: 0.001992. Time taken: 138.33 sec
+2026-10-16 07:35:58.809 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 39, iters: 252993
+2026-10-16 07:38:16.115 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 40/120 completed. Average loss: 0.002131. Time taken: 137.31 sec
+2026-10-16 07:38:16.168 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 40, iters: 259480
+2026-10-16 07:38:16.221 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:114 - The model saved at the end of epoch: 40, iters: 259480
+2026-10-16 07:40:25.188 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 41/120 completed. Average loss: 0.409088. Time taken: 128.97 sec
+2026-10-16 07:40:25.257 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 41, iters: 265967
+2026-10-16 07:42:34.042 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 42/120 completed. Average loss: 0.313204. Time taken: 128.78 sec
+2026-10-16 07:42:34.102 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 42, iters: 272454
+2026-10-16 07:44:42.827 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 43/120 completed. Average loss: 0.288999. Time taken: 128.72 sec
+2026-10-16 07:44:42.894 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 43, iters: 278941
+2026-10-16 07:46:51.704 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 44/120 completed. Average loss: 0.274678. Time taken: 128.81 sec
+2026-10-16 07:46:51.771 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 44, iters: 285428
+2026-10-16 07:49:00.668 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 45/120 completed. Average loss: 0.264522. Time taken: 128.90 sec
+2026-10-16 07:49:00.730 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 45, iters: 291915
+2026-10-16 07:51:09.678 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 46/120 completed. Average loss: 0.257597. Time taken: 128.95 sec
+2026-10-16 07:51:09.741 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 46, iters: 298402
+2026-10-16 07:53:19.084 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 47/120 completed. Average loss: 0.252306. Time taken: 129.34 sec
+2026-10-16 07:53:19.144 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 47, iters: 304889
+2026-10-16 07:55:28.384 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 48/120 completed. Average loss: 0.248747. Time taken: 129.24 sec
+2026-10-16 07:55:28.446 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 48, iters: 311376
+2026-10-16 07:57:37.548 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 49/120 completed. Average loss: 0.244327. Time taken: 129.10 sec
+2026-10-16 07:57:37.614 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 49, iters: 317863
+2026-10-16 07:59:46.000 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 50/120 completed. Average loss: 0.240556. Time taken: 128.39 sec
+2026-10-16 07:59:46.091 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 50, iters: 324350
+2026-10-16 07:59:46.152 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:114 - The model saved at the end of epoch: 50, iters: 324350
+2026-10-16 08:01:55.577 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 51/120 completed. Average loss: 0.238052. Time taken: 129.42 sec
+2026-10-16 08:01:55.687 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 51, iters: 330837
+2026-10-16 08:04:04.661 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 52/120 completed. Average loss: 0.234852. Time taken: 128.97 sec
+2026-10-16 08:04:04.723 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 52, iters: 337324
+2026-10-16 08:06:13.895 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 53/120 completed. Average loss: 0.232364. Time taken: 129.17 sec
+2026-10-16 08:06:13.963 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 53, iters: 343811
+2026-10-16 08:08:22.960 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 54/120 completed. Average loss: 0.229691. Time taken: 129.00 sec
+2026-10-16 08:08:23.021 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 54, iters: 350298
+2026-10-16 08:10:31.809 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 55/120 completed. Average loss: 0.227696. Time taken: 128.79 sec
+2026-10-16 08:10:31.888 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 55, iters: 356785
+2026-10-16 08:12:40.818 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 56/120 completed. Average loss: 0.225378. Time taken: 128.93 sec
+2026-10-16 08:12:40.879 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 56, iters: 363272
+2026-10-16 08:14:50.009 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 57/120 completed. Average loss: 0.223179. Time taken: 129.13 sec
+2026-10-16 08:14:50.071 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 57, iters: 369759
+2026-10-16 08:16:58.968 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 58/120 completed. Average loss: 0.221504. Time taken: 128.90 sec
+2026-10-16 08:16:59.028 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 58, iters: 376246
+2026-10-16 08:19:08.094 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 59/120 completed. Average loss: 0.219319. Time taken: 129.06 sec
+2026-10-16 08:19:08.153 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 59, iters: 382733
+2026-10-16 08:21:16.953 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 60/120 completed. Average loss: 0.217112. Time taken: 128.80 sec
+2026-10-16 08:21:17.015 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 60, iters: 389220
+2026-10-16 08:21:17.074 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:114 - The model saved at the end of epoch: 60, iters: 389220
+2026-10-16 08:23:25.980 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 61/120 completed. Average loss: 0.212356. Time taken: 128.91 sec
+2026-10-16 08:23:26.042 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 61, iters: 395707
+2026-10-16 08:25:35.163 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 62/120 completed. Average loss: 0.210792. Time taken: 129.12 sec
+2026-10-16 08:25:35.223 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 62, iters: 402194
+2026-10-16 08:27:44.585 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 63/120 completed. Average loss: 0.209563. Time taken: 129.36 sec
+2026-10-16 08:27:44.645 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 63, iters: 408681
+2026-10-16 08:29:53.224 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 64/120 completed. Average loss: 0.208451. Time taken: 128.58 sec
+2026-10-16 08:29:53.286 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 64, iters: 415168
+2026-10-16 08:32:02.398 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 65/120 completed. Average loss: 0.207445. Time taken: 129.11 sec
+2026-10-16 08:32:02.457 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 65, iters: 421655
+2026-10-16 08:34:11.745 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 66/120 completed. Average loss: 0.206655. Time taken: 129.29 sec
+2026-10-16 08:34:11.805 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 66, iters: 428142
+2026-10-16 08:36:21.149 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 67/120 completed. Average loss: 0.205478. Time taken: 129.34 sec
+2026-10-16 08:36:21.221 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 67, iters: 434629
+2026-10-16 08:38:30.504 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 68/120 completed. Average loss: 0.204397. Time taken: 129.28 sec
+2026-10-16 08:38:30.565 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 68, iters: 441116
+2026-10-16 08:40:39.729 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 69/120 completed. Average loss: 0.203526. Time taken: 129.16 sec
+2026-10-16 08:40:39.816 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 69, iters: 447603
+2026-10-16 08:42:49.085 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 70/120 completed. Average loss: 0.202579. Time taken: 129.27 sec
+2026-10-16 08:42:49.146 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 70, iters: 454090
+2026-10-16 08:42:49.207 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:114 - The model saved at the end of epoch: 70, iters: 454090
+2026-10-16 08:44:58.389 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 71/120 completed. Average loss: 0.201664. Time taken: 129.18 sec
+2026-10-16 08:44:58.449 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 71, iters: 460577
+2026-10-16 08:47:06.960 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 72/120 completed. Average loss: 0.200759. Time taken: 128.51 sec
+2026-10-16 08:47:07.020 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 72, iters: 467064
+2026-10-16 08:49:15.980 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 73/120 completed. Average loss: 0.199987. Time taken: 128.96 sec
+2026-10-16 08:49:16.047 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 73, iters: 473551
+2026-10-16 08:51:25.130 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 74/120 completed. Average loss: 0.199160. Time taken: 129.08 sec
+2026-10-16 08:51:25.190 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 74, iters: 480038
+2026-10-16 08:53:34.400 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 75/120 completed. Average loss: 0.198233. Time taken: 129.21 sec
+2026-10-16 08:53:34.462 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 75, iters: 486525
+2026-10-16 08:55:43.390 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 76/120 completed. Average loss: 0.197221. Time taken: 128.93 sec
+2026-10-16 08:55:43.451 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 76, iters: 493012
+2026-10-16 08:57:52.658 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 77/120 completed. Average loss: 0.196599. Time taken: 129.21 sec
+2026-10-16 08:57:52.719 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 77, iters: 499499
+2026-10-16 09:00:01.932 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 78/120 completed. Average loss: 0.195784. Time taken: 129.21 sec
+2026-10-16 09:00:01.992 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 78, iters: 505986
+2026-10-16 09:02:10.908 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 79/120 completed. Average loss: 0.194889. Time taken: 128.92 sec
+2026-10-16 09:02:11.016 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 79, iters: 512473
+2026-10-16 09:04:20.378 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 80/120 completed. Average loss: 0.193828. Time taken: 129.36 sec
+2026-10-16 09:04:20.438 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 80, iters: 518960
+2026-10-16 09:04:20.502 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:114 - The model saved at the end of epoch: 80, iters: 518960
+2026-10-16 09:06:29.015 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 81/120 completed. Average loss: 0.191921. Time taken: 128.51 sec
+2026-10-16 09:06:29.075 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 81, iters: 525447
+2026-10-16 09:08:38.362 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 82/120 completed. Average loss: 0.191439. Time taken: 129.29 sec
+2026-10-16 09:08:38.429 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 82, iters: 531934
+2026-10-16 09:10:47.554 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 83/120 completed. Average loss: 0.190855. Time taken: 129.12 sec
+2026-10-16 09:10:47.628 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 83, iters: 538421
+2026-10-16 09:12:56.806 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 84/120 completed. Average loss: 0.190340. Time taken: 129.18 sec
+2026-10-16 09:12:56.866 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 84, iters: 544908
+2026-10-16 09:15:05.747 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 85/120 completed. Average loss: 0.189822. Time taken: 128.88 sec
+2026-10-16 09:15:05.807 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 85, iters: 551395
+2026-10-16 09:17:15.062 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 86/120 completed. Average loss: 0.189507. Time taken: 129.25 sec
+2026-10-16 09:17:15.122 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 86, iters: 557882
+2026-10-16 09:19:23.940 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 87/120 completed. Average loss: 0.189025. Time taken: 128.82 sec
+2026-10-16 09:19:23.999 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 87, iters: 564369
+2026-10-16 09:21:33.008 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 88/120 completed. Average loss: 0.188564. Time taken: 129.01 sec
+2026-10-16 09:21:33.068 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 88, iters: 570856
+2026-10-16 09:23:41.872 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 89/120 completed. Average loss: 0.188232. Time taken: 128.80 sec
+2026-10-16 09:23:41.942 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 89, iters: 577343
+2026-10-16 09:25:51.068 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 90/120 completed. Average loss: 0.187839. Time taken: 129.13 sec
+2026-10-16 09:25:51.133 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 90, iters: 583830
+2026-10-16 09:25:51.205 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:114 - The model saved at the end of epoch: 90, iters: 583830
+2026-10-16 09:28:00.091 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 91/120 completed. Average loss: 0.187418. Time taken: 128.89 sec
+2026-10-16 09:28:00.151 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 91, iters: 590317
+2026-10-16 09:30:09.392 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 92/120 completed. Average loss: 0.186967. Time taken: 129.24 sec
+2026-10-16 09:30:09.453 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 92, iters: 596804
+2026-10-16 09:32:18.688 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 93/120 completed. Average loss: 0.186551. Time taken: 129.23 sec
+2026-10-16 09:32:18.755 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 93, iters: 603291
+2026-10-16 09:34:27.924 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 94/120 completed. Average loss: 0.186228. Time taken: 129.17 sec
+2026-10-16 09:34:27.986 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 94, iters: 609778
+2026-10-16 09:36:37.088 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 95/120 completed. Average loss: 0.185843. Time taken: 129.10 sec
+2026-10-16 09:36:37.149 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 95, iters: 616265
+2026-10-16 09:38:45.971 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 96/120 completed. Average loss: 0.185471. Time taken: 128.82 sec
+2026-10-16 09:38:46.031 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 96, iters: 622752
+2026-10-16 09:40:54.908 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 97/120 completed. Average loss: 0.185144. Time taken: 128.88 sec
+2026-10-16 09:40:54.969 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 97, iters: 629239
+2026-10-16 09:43:03.231 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 98/120 completed. Average loss: 0.184701. Time taken: 128.26 sec
+2026-10-16 09:43:03.297 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 98, iters: 635726
+2026-10-16 09:45:12.076 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 99/120 completed. Average loss: 0.184365. Time taken: 128.78 sec
+2026-10-16 09:45:12.136 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 99, iters: 642213
+2026-10-16 09:47:21.330 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 100/120 completed. Average loss: 0.184069. Time taken: 129.19 sec
+2026-10-16 09:47:21.397 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 100, iters: 648700
+2026-10-16 09:47:21.461 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:114 - The model saved at the end of epoch: 100, iters: 648700
+2026-10-16 09:49:30.596 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 101/120 completed. Average loss: 0.183078. Time taken: 129.13 sec
+2026-10-16 09:49:30.665 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 101, iters: 655187
+2026-10-16 09:51:39.900 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 102/120 completed. Average loss: 0.182790. Time taken: 129.23 sec
+2026-10-16 09:51:39.960 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 102, iters: 661674
+2026-10-16 09:53:49.194 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 103/120 completed. Average loss: 0.182612. Time taken: 129.23 sec
+2026-10-16 09:53:49.256 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 103, iters: 668161
+2026-10-16 09:55:57.605 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 104/120 completed. Average loss: 0.182381. Time taken: 128.35 sec
+2026-10-16 09:55:57.665 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 104, iters: 674648
+2026-10-16 09:58:06.903 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 105/120 completed. Average loss: 0.182199. Time taken: 129.24 sec
+2026-10-16 09:58:06.968 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 105, iters: 681135
+2026-10-16 10:00:16.089 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 106/120 completed. Average loss: 0.181973. Time taken: 129.12 sec
+2026-10-16 10:00:16.152 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 106, iters: 687622
+2026-10-16 10:02:25.101 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 107/120 completed. Average loss: 0.181818. Time taken: 128.95 sec
+2026-10-16 10:02:25.199 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 107, iters: 694109
+2026-10-16 10:04:34.036 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 108/120 completed. Average loss: 0.181590. Time taken: 128.84 sec
+2026-10-16 10:04:34.096 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 108, iters: 700596
+2026-10-16 10:06:43.145 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 109/120 completed. Average loss: 0.181381. Time taken: 129.05 sec
+2026-10-16 10:06:43.206 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 109, iters: 707083
+2026-10-16 10:08:51.746 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 110/120 completed. Average loss: 0.181203. Time taken: 128.54 sec
+2026-10-16 10:08:51.807 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 110, iters: 713570
+2026-10-16 10:08:51.870 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:114 - The model saved at the end of epoch: 110, iters: 713570
+2026-10-16 10:11:00.916 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 111/120 completed. Average loss: 0.180995. Time taken: 129.05 sec
+2026-10-16 10:11:00.977 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 111, iters: 720057
+2026-10-16 10:13:09.841 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 112/120 completed. Average loss: 0.180809. Time taken: 128.86 sec
+2026-10-16 10:13:09.901 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 112, iters: 726544
+2026-10-16 10:15:18.824 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 113/120 completed. Average loss: 0.180584. Time taken: 128.92 sec
+2026-10-16 10:15:18.894 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 113, iters: 733031
+2026-10-16 10:17:28.373 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 114/120 completed. Average loss: 0.180417. Time taken: 129.48 sec
+2026-10-16 10:17:28.434 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 114, iters: 739518
+2026-10-16 10:19:36.624 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 115/120 completed. Average loss: 0.180217. Time taken: 128.19 sec
+2026-10-16 10:19:36.686 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 115, iters: 746005
+2026-10-16 10:21:45.774 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 116/120 completed. Average loss: 0.180060. Time taken: 129.09 sec
+2026-10-16 10:21:45.834 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 116, iters: 752492
+2026-10-16 10:23:54.907 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 117/120 completed. Average loss: 0.179896. Time taken: 129.07 sec
+2026-10-16 10:23:54.968 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 117, iters: 758979
+2026-10-16 10:26:04.250 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 118/120 completed. Average loss: 0.179689. Time taken: 129.28 sec
+2026-10-16 10:26:04.311 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 118, iters: 765466
+2026-10-16 10:28:13.788 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 119/120 completed. Average loss: 0.179513. Time taken: 129.48 sec
+2026-10-16 10:28:13.851 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 119, iters: 771953
+2026-10-16 10:30:23.107 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:104 - Epoch 120/120 completed. Average loss: 0.179310. Time taken: 129.26 sec
+2026-10-16 10:30:23.168 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:110 - The latest model saved at the end of epoch: 120, iters: 778440
+2026-10-16 10:30:23.230 | INFO     | PID<881831>:TID<125608290408256> | __main__:<module>:114 - The model saved at the end of epoch: 120, iters: 778440
+2026-10-16 13:28:46.228 | INFO     | PID<1011157>:TID<138952871810880> | models.cddfuse_model:__init__:70 - [Loss Mode] Enabled Innovation 3: OrthogonalDecouplingLoss + ContrastStructureAwareFusionLoss
+2026-10-16 13:37:00.448 | INFO     | PID<1013020>:TID<126636636514112> | models.cddfuse_model:__init__:70 - [Loss Mode] Enabled Innovation 3: OrthogonalDecouplingLoss + ContrastStructureAwareFusionLoss
+2026-10-16 13:37:00.562 | INFO     | PID<1013020>:TID<126636636514112> | models.cddfuse_model:load_model:307 - Loading CDDFuse_Exp3_v2 checkpoint from checkpoints/Exp3_v2/CDDFuse_Exp3_v2_epoch_100.pth (ckp phase=2, epoch=100)...
+2026-10-16 13:37:00.566 | INFO     | PID<1013020>:TID<126636636514112> | models.cddfuse_model:load_model:318 - Models loaded successfully from checkpoint.
+2026-10-16 13:37:00.568 | INFO     | PID<1013020>:TID<126636636514112> | models.cddfuse_model:load_model:345 - Checkpoint (phase=2, epoch=100) loaded successfully from checkpoints/Exp3_v2/CDDFuse_Exp3_v2_epoch_100.pth.
+2026-10-16 13:37:00.570 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:43 - Starting [CDDFuse_Exp3_v2] training from epoch 101 to 120, batch_size=8, lr=0.00015, use_bf16=True
+2026-10-16 13:39:40.154 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 101/120 completed. Average loss: 0.224901. Time taken: 159.58 sec
+2026-10-16 13:39:40.234 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 101, iters: 655187
+2026-10-16 13:42:10.390 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 102/120 completed. Average loss: 0.223032. Time taken: 150.16 sec
+2026-10-16 13:42:10.461 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 102, iters: 661674
+2026-10-16 13:44:40.541 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 103/120 completed. Average loss: 0.222078. Time taken: 150.08 sec
+2026-10-16 13:44:40.612 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 103, iters: 668161
+2026-10-16 13:47:12.233 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 104/120 completed. Average loss: 0.221378. Time taken: 151.62 sec
+2026-10-16 13:47:12.305 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 104, iters: 674648
+2026-10-16 13:49:41.157 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 105/120 completed. Average loss: 0.220805. Time taken: 148.85 sec
+2026-10-16 13:49:41.301 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 105, iters: 681135
+2026-10-16 13:52:11.698 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 106/120 completed. Average loss: 0.220321. Time taken: 150.40 sec
+2026-10-16 13:52:11.778 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 106, iters: 687622
+2026-10-16 13:54:41.385 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 107/120 completed. Average loss: 0.219850. Time taken: 149.61 sec
+2026-10-16 13:54:41.459 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 107, iters: 694109
+2026-10-16 13:57:10.917 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 108/120 completed. Average loss: 0.219461. Time taken: 149.46 sec
+2026-10-16 13:57:11.005 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 108, iters: 700596
+2026-10-16 13:59:39.999 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 109/120 completed. Average loss: 0.219105. Time taken: 148.99 sec
+2026-10-16 13:59:40.070 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 109, iters: 707083
+2026-10-16 14:02:10.201 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 110/120 completed. Average loss: 0.218780. Time taken: 150.13 sec
+2026-10-16 14:02:10.277 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 110, iters: 713570
+2026-10-16 14:02:10.404 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:114 - The model saved at the end of epoch: 110, iters: 713570
+2026-10-16 14:04:40.232 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 111/120 completed. Average loss: 0.218466. Time taken: 149.83 sec
+2026-10-16 14:04:40.305 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 111, iters: 720057
+2026-10-16 14:07:10.318 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 112/120 completed. Average loss: 0.218110. Time taken: 150.01 sec
+2026-10-16 14:07:10.415 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 112, iters: 726544
+2026-10-16 14:09:40.878 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 113/120 completed. Average loss: 0.217820. Time taken: 150.46 sec
+2026-10-16 14:09:40.953 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 113, iters: 733031
+2026-10-16 14:12:09.915 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 114/120 completed. Average loss: 0.217481. Time taken: 148.96 sec
+2026-10-16 14:12:09.992 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 114, iters: 739518
+2026-10-16 14:14:38.598 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 115/120 completed. Average loss: 0.217225. Time taken: 148.61 sec
+2026-10-16 14:14:38.919 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 115, iters: 746005
+2026-10-16 14:17:09.367 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 116/120 completed. Average loss: 0.216914. Time taken: 150.45 sec
+2026-10-16 14:17:09.441 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 116, iters: 752492
+2026-10-16 14:19:39.936 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 117/120 completed. Average loss: 0.216635. Time taken: 150.49 sec
+2026-10-16 14:19:40.015 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 117, iters: 758979
+2026-10-16 14:22:09.690 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 118/120 completed. Average loss: 0.216399. Time taken: 149.67 sec
+2026-10-16 14:22:09.764 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 118, iters: 765466
+2026-10-16 14:24:40.885 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 119/120 completed. Average loss: 0.216107. Time taken: 151.12 sec
+2026-10-16 14:24:40.975 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 119, iters: 771953
+2026-10-16 14:27:11.086 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:104 - Epoch 120/120 completed. Average loss: 0.215871. Time taken: 150.11 sec
+2026-10-16 14:27:11.180 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:110 - The latest model saved at the end of epoch: 120, iters: 778440
+2026-10-16 14:27:11.266 | INFO     | PID<1013020>:TID<126636636514112> | __main__:<module>:114 - The model saved at the end of epoch: 120, iters: 778440
+2026-10-16 14:54:01.330 | INFO     | PID<1037994>:TID<128799189112640> | models.cddfuse_model:__init__:70 - [Loss Mode] Enabled Innovation 3: OrthogonalDecouplingLoss + ContrastStructureAwareFusionLoss
+2026-10-16 14:54:01.335 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:43 - Starting [CDDFuse_Exp3_v2] training from epoch 1 to 120, batch_size=8, lr=0.00015, use_bf16=True
+2026-10-16 14:56:31.693 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 1/120 completed. Average loss: 0.200131. Time taken: 150.36 sec
+2026-10-16 14:56:31.759 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 1, iters: 6487
+2026-10-16 14:58:54.251 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 2/120 completed. Average loss: 0.020784. Time taken: 142.49 sec
+2026-10-16 14:58:54.305 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 2, iters: 12974
+2026-10-16 15:01:16.047 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 3/120 completed. Average loss: 0.014873. Time taken: 141.74 sec
+2026-10-16 15:01:16.099 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 3, iters: 19461
+2026-10-16 15:03:37.843 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 4/120 completed. Average loss: 0.009601. Time taken: 141.74 sec
+2026-10-16 15:03:37.899 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 4, iters: 25948
+2026-10-16 15:06:00.010 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 5/120 completed. Average loss: 0.008429. Time taken: 142.11 sec
+2026-10-16 15:06:00.065 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 5, iters: 32435
+2026-10-16 15:08:22.088 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 6/120 completed. Average loss: 0.008565. Time taken: 142.02 sec
+2026-10-16 15:08:22.148 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 6, iters: 38922
+2026-10-16 15:10:45.219 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 7/120 completed. Average loss: 0.007481. Time taken: 143.07 sec
+2026-10-16 15:10:45.271 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 7, iters: 45409
+2026-10-16 15:13:07.310 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 8/120 completed. Average loss: 0.006775. Time taken: 142.04 sec
+2026-10-16 15:13:07.403 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 8, iters: 51896
+2026-10-16 15:15:29.302 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 9/120 completed. Average loss: 0.008342. Time taken: 141.90 sec
+2026-10-16 15:15:29.356 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 9, iters: 58383
+2026-10-16 15:17:51.862 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 10/120 completed. Average loss: 0.006415. Time taken: 142.51 sec
+2026-10-16 15:17:51.917 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 10, iters: 64870
+2026-10-16 15:17:51.971 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:114 - The model saved at the end of epoch: 10, iters: 64870
+2026-10-16 15:20:13.685 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 11/120 completed. Average loss: 0.005305. Time taken: 141.71 sec
+2026-10-16 15:20:13.749 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 11, iters: 71357
+2026-10-16 15:22:34.484 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 12/120 completed. Average loss: 0.005109. Time taken: 140.73 sec
+2026-10-16 15:22:34.537 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 12, iters: 77844
+2026-10-16 15:24:56.645 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 13/120 completed. Average loss: 0.005039. Time taken: 142.11 sec
+2026-10-16 15:24:56.703 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 13, iters: 84331
+2026-10-16 15:27:19.246 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 14/120 completed. Average loss: 0.005053. Time taken: 142.54 sec
+2026-10-16 15:27:19.301 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 14, iters: 90818
+2026-10-16 15:29:41.382 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 15/120 completed. Average loss: 0.005581. Time taken: 142.08 sec
+2026-10-16 15:29:41.436 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 15, iters: 97305
+2026-10-16 15:32:03.701 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 16/120 completed. Average loss: 0.005398. Time taken: 142.26 sec
+2026-10-16 15:32:03.755 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 16, iters: 103792
+2026-10-16 15:34:24.961 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 17/120 completed. Average loss: 0.005315. Time taken: 141.21 sec
+2026-10-16 15:34:25.254 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 17, iters: 110279
+2026-10-16 15:36:47.133 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 18/120 completed. Average loss: 0.004174. Time taken: 141.88 sec
+2026-10-16 15:36:47.188 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 18, iters: 116766
+2026-10-16 15:39:08.830 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 19/120 completed. Average loss: 0.004385. Time taken: 141.64 sec
+2026-10-16 15:39:08.884 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 19, iters: 123253
+2026-10-16 15:41:29.293 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 20/120 completed. Average loss: 0.004726. Time taken: 140.41 sec
+2026-10-16 15:41:29.358 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 20, iters: 129740
+2026-10-16 15:41:29.412 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:114 - The model saved at the end of epoch: 20, iters: 129740
+2026-10-16 15:43:50.341 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 21/120 completed. Average loss: 0.003038. Time taken: 140.93 sec
+2026-10-16 15:43:50.394 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 21, iters: 136227
+2026-10-16 15:46:10.909 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 22/120 completed. Average loss: 0.002925. Time taken: 140.51 sec
+2026-10-16 15:46:10.962 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 22, iters: 142714
+2026-10-16 15:48:33.595 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 23/120 completed. Average loss: 0.002878. Time taken: 142.63 sec
+2026-10-16 15:48:33.670 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 23, iters: 149201
+2026-10-16 15:50:54.793 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 24/120 completed. Average loss: 0.002940. Time taken: 141.12 sec
+2026-10-16 15:50:54.862 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 24, iters: 155688
+2026-10-16 15:53:17.111 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 25/120 completed. Average loss: 0.002764. Time taken: 142.25 sec
+2026-10-16 15:53:17.163 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 25, iters: 162175
+2026-10-16 15:55:39.501 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 26/120 completed. Average loss: 0.002798. Time taken: 142.34 sec
+2026-10-16 15:55:39.555 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 26, iters: 168662
+2026-10-16 15:58:01.040 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 27/120 completed. Average loss: 0.002831. Time taken: 141.48 sec
+2026-10-16 15:58:01.094 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 27, iters: 175149
+2026-10-16 16:00:22.786 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 28/120 completed. Average loss: 0.002822. Time taken: 141.69 sec
+2026-10-16 16:00:22.841 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 28, iters: 181636
+2026-10-16 16:02:44.543 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 29/120 completed. Average loss: 0.002756. Time taken: 141.70 sec
+2026-10-16 16:02:44.596 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 29, iters: 188123
+2026-10-16 16:05:05.901 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 30/120 completed. Average loss: 0.002747. Time taken: 141.30 sec
+2026-10-16 16:05:05.956 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 30, iters: 194610
+2026-10-16 16:05:06.013 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:114 - The model saved at the end of epoch: 30, iters: 194610
+2026-10-16 16:07:28.257 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 31/120 completed. Average loss: 0.002942. Time taken: 142.24 sec
+2026-10-16 16:07:28.313 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 31, iters: 201097
+2026-10-16 16:09:51.479 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 32/120 completed. Average loss: 0.002724. Time taken: 143.17 sec
+2026-10-16 16:09:51.535 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 32, iters: 207584
+2026-10-16 16:12:13.352 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 33/120 completed. Average loss: 0.002676. Time taken: 141.82 sec
+2026-10-16 16:12:13.406 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 33, iters: 214071
+2026-10-16 16:14:33.522 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 34/120 completed. Average loss: 0.002710. Time taken: 140.12 sec
+2026-10-16 16:14:33.576 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 34, iters: 220558
+2026-10-16 16:16:54.643 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 35/120 completed. Average loss: 0.002650. Time taken: 141.07 sec
+2026-10-16 16:16:54.717 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 35, iters: 227045
+2026-10-16 16:19:15.664 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 36/120 completed. Average loss: 0.002865. Time taken: 140.95 sec
+2026-10-16 16:19:15.719 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 36, iters: 233532
+2026-10-16 16:21:37.405 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 37/120 completed. Average loss: 0.002686. Time taken: 141.69 sec
+2026-10-16 16:21:37.471 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 37, iters: 240019
+2026-10-16 16:23:58.817 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 38/120 completed. Average loss: 0.002718. Time taken: 141.35 sec
+2026-10-16 16:23:58.870 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 38, iters: 246506
+2026-10-16 16:26:20.333 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 39/120 completed. Average loss: 0.002672. Time taken: 141.46 sec
+2026-10-16 16:26:20.414 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 39, iters: 252993
+2026-10-16 16:28:41.918 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 40/120 completed. Average loss: 0.002757. Time taken: 141.50 sec
+2026-10-16 16:28:41.974 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 40, iters: 259480
+2026-10-16 16:28:42.026 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:114 - The model saved at the end of epoch: 40, iters: 259480
+2026-10-16 16:31:02.990 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 41/120 completed. Average loss: 0.397943. Time taken: 140.96 sec
+2026-10-16 16:31:03.056 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 41, iters: 265967
+2026-10-16 16:33:23.271 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 42/120 completed. Average loss: 0.320656. Time taken: 140.21 sec
+2026-10-16 16:33:23.338 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 42, iters: 272454
+2026-10-16 16:35:43.799 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 43/120 completed. Average loss: 0.308097. Time taken: 140.46 sec
+2026-10-16 16:35:43.865 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 43, iters: 278941
+2026-10-16 16:38:04.807 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 44/120 completed. Average loss: 0.298994. Time taken: 140.94 sec
+2026-10-16 16:38:04.874 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 44, iters: 285428
+2026-10-16 16:40:26.884 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 45/120 completed. Average loss: 0.292277. Time taken: 142.01 sec
+2026-10-16 16:40:26.953 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 45, iters: 291915
+2026-10-16 16:42:47.714 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 46/120 completed. Average loss: 0.287053. Time taken: 140.76 sec
+2026-10-16 16:42:47.785 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 46, iters: 298402
+2026-10-16 16:45:08.491 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 47/120 completed. Average loss: 0.282059. Time taken: 140.71 sec
+2026-10-16 16:45:08.569 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 47, iters: 304889
+2026-10-16 16:47:30.343 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 48/120 completed. Average loss: 0.277207. Time taken: 141.77 sec
+2026-10-16 16:47:30.412 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 48, iters: 311376
+2026-10-16 16:49:51.011 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 49/120 completed. Average loss: 0.272403. Time taken: 140.60 sec
+2026-10-16 16:49:51.079 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 49, iters: 317863
+2026-10-16 16:52:12.364 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 50/120 completed. Average loss: 0.267539. Time taken: 141.28 sec
+2026-10-16 16:52:12.471 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 50, iters: 324350
+2026-10-16 16:52:12.539 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:114 - The model saved at the end of epoch: 50, iters: 324350
+2026-10-16 16:54:34.203 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 51/120 completed. Average loss: 0.263478. Time taken: 141.66 sec
+2026-10-16 16:54:34.284 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 51, iters: 330837
+2026-10-16 16:56:54.779 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 52/120 completed. Average loss: 0.259492. Time taken: 140.49 sec
+2026-10-16 16:56:54.844 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 52, iters: 337324
+2026-10-16 16:59:15.433 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 53/120 completed. Average loss: 0.256273. Time taken: 140.59 sec
+2026-10-16 16:59:15.502 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 53, iters: 343811
+2026-10-16 17:01:36.418 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 54/120 completed. Average loss: 0.253320. Time taken: 140.91 sec
+2026-10-16 17:01:36.484 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 54, iters: 350298
+2026-10-16 17:03:57.438 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 55/120 completed. Average loss: 0.250175. Time taken: 140.95 sec
+2026-10-16 17:03:57.534 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 55, iters: 356785
+2026-10-16 17:06:18.907 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 56/120 completed. Average loss: 0.247654. Time taken: 141.37 sec
+2026-10-16 17:06:18.976 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 56, iters: 363272
+2026-10-16 17:08:39.906 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 57/120 completed. Average loss: 0.245368. Time taken: 140.93 sec
+2026-10-16 17:08:39.975 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 57, iters: 369759
+2026-10-16 17:11:01.605 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 58/120 completed. Average loss: 0.243282. Time taken: 141.63 sec
+2026-10-16 17:11:01.675 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 58, iters: 376246
+2026-10-16 17:13:23.103 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 59/120 completed. Average loss: 0.241471. Time taken: 141.43 sec
+2026-10-16 17:13:23.170 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 59, iters: 382733
+2026-10-16 17:15:44.469 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 60/120 completed. Average loss: 0.239492. Time taken: 141.30 sec
+2026-10-16 17:15:44.536 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 60, iters: 389220
+2026-10-16 17:15:44.602 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:114 - The model saved at the end of epoch: 60, iters: 389220
+2026-10-16 17:18:05.870 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 61/120 completed. Average loss: 0.236772. Time taken: 141.27 sec
+2026-10-16 17:18:05.941 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 61, iters: 395707
+2026-10-16 17:20:27.894 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 62/120 completed. Average loss: 0.235670. Time taken: 141.95 sec
+2026-10-16 17:20:27.963 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 62, iters: 402194
+2026-10-16 17:22:49.484 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 63/120 completed. Average loss: 0.234732. Time taken: 141.52 sec
+2026-10-16 17:22:49.583 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 63, iters: 408681
+2026-10-16 17:25:10.732 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 64/120 completed. Average loss: 0.233762. Time taken: 141.15 sec
+2026-10-16 17:25:10.802 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 64, iters: 415168
+2026-10-16 17:27:33.044 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 65/120 completed. Average loss: 0.232942. Time taken: 142.24 sec
+2026-10-16 17:27:33.118 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 65, iters: 421655
+2026-10-16 17:29:53.858 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 66/120 completed. Average loss: 0.232336. Time taken: 140.74 sec
+2026-10-16 17:29:53.927 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 66, iters: 428142
+2026-10-16 17:32:15.163 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 67/120 completed. Average loss: 0.231442. Time taken: 141.24 sec
+2026-10-16 17:32:15.240 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 67, iters: 434629
+2026-10-16 17:34:36.611 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 68/120 completed. Average loss: 0.230802. Time taken: 141.37 sec
+2026-10-16 17:34:36.680 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 68, iters: 441116
+2026-10-16 17:36:57.922 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 69/120 completed. Average loss: 0.230067. Time taken: 141.24 sec
+2026-10-16 17:36:57.994 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 69, iters: 447603
+2026-10-16 17:39:19.172 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 70/120 completed. Average loss: 0.229379. Time taken: 141.18 sec
+2026-10-16 17:39:19.241 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 70, iters: 454090
+2026-10-16 17:39:19.309 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:114 - The model saved at the end of epoch: 70, iters: 454090
+2026-10-16 17:41:40.441 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 71/120 completed. Average loss: 0.228585. Time taken: 141.13 sec
+2026-10-16 17:41:40.510 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 71, iters: 460577
+2026-10-16 17:44:02.141 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 72/120 completed. Average loss: 0.228034. Time taken: 141.63 sec
+2026-10-16 17:44:02.233 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 72, iters: 467064
+2026-10-16 17:46:23.425 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 73/120 completed. Average loss: 0.227411. Time taken: 141.19 sec
+2026-10-16 17:46:23.493 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 73, iters: 473551
+2026-10-16 17:48:44.502 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 74/120 completed. Average loss: 0.226735. Time taken: 141.01 sec
+2026-10-16 17:48:44.573 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 74, iters: 480038
+2026-10-16 17:51:05.958 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 75/120 completed. Average loss: 0.226017. Time taken: 141.38 sec
+2026-10-16 17:51:06.057 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 75, iters: 486525
+2026-10-16 17:53:27.531 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 76/120 completed. Average loss: 0.225454. Time taken: 141.47 sec
+2026-10-16 17:53:27.600 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 76, iters: 493012
+2026-10-16 17:55:49.287 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 77/120 completed. Average loss: 0.224928. Time taken: 141.69 sec
+2026-10-16 17:55:49.357 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 77, iters: 499499
+2026-10-16 17:58:10.995 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 78/120 completed. Average loss: 0.224339. Time taken: 141.64 sec
+2026-10-16 17:58:11.065 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 78, iters: 505986
+2026-10-16 18:00:32.508 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 79/120 completed. Average loss: 0.223730. Time taken: 141.44 sec
+2026-10-16 18:00:32.577 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 79, iters: 512473
+2026-10-16 18:02:54.248 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 80/120 completed. Average loss: 0.223217. Time taken: 141.67 sec
+2026-10-16 18:02:54.319 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 80, iters: 518960
+2026-10-16 18:02:54.387 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:114 - The model saved at the end of epoch: 80, iters: 518960
+2026-10-16 18:05:15.847 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 81/120 completed. Average loss: 0.221984. Time taken: 141.46 sec
+2026-10-16 18:05:15.916 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 81, iters: 525447
+2026-10-16 18:07:37.190 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 82/120 completed. Average loss: 0.221573. Time taken: 141.27 sec
+2026-10-16 18:07:37.260 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 82, iters: 531934
+2026-10-16 18:09:58.752 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 83/120 completed. Average loss: 0.221251. Time taken: 141.49 sec
+2026-10-16 18:09:58.822 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 83, iters: 538421
+2026-10-16 18:12:19.943 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 84/120 completed. Average loss: 0.220821. Time taken: 141.12 sec
+2026-10-16 18:12:20.013 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 84, iters: 544908
+2026-10-16 18:14:41.939 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 85/120 completed. Average loss: 0.220505. Time taken: 141.93 sec
+2026-10-16 18:14:42.014 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 85, iters: 551395
+2026-10-16 18:17:03.335 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 86/120 completed. Average loss: 0.220202. Time taken: 141.32 sec
+2026-10-16 18:17:03.416 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 86, iters: 557882
+2026-10-16 18:19:24.473 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 87/120 completed. Average loss: 0.219812. Time taken: 141.06 sec
+2026-10-16 18:19:24.543 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 87, iters: 564369
+2026-10-16 18:21:45.668 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 88/120 completed. Average loss: 0.219558. Time taken: 141.12 sec
+2026-10-16 18:21:45.743 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 88, iters: 570856
+2026-10-16 18:24:06.637 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 89/120 completed. Average loss: 0.219234. Time taken: 140.89 sec
+2026-10-16 18:24:06.706 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 89, iters: 577343
+2026-10-16 18:26:28.454 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 90/120 completed. Average loss: 0.218946. Time taken: 141.75 sec
+2026-10-16 18:26:28.532 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 90, iters: 583830
+2026-10-16 18:26:28.606 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:114 - The model saved at the end of epoch: 90, iters: 583830
+2026-10-16 18:28:50.012 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 91/120 completed. Average loss: 0.218648. Time taken: 141.41 sec
+2026-10-16 18:28:50.088 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 91, iters: 590317
+2026-10-16 18:31:11.527 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 92/120 completed. Average loss: 0.218285. Time taken: 141.44 sec
+2026-10-16 18:31:11.628 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 92, iters: 596804
+2026-10-16 18:33:32.204 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 93/120 completed. Average loss: 0.218073. Time taken: 140.58 sec
+2026-10-16 18:33:32.273 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 93, iters: 603291
+2026-10-16 18:35:52.638 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 94/120 completed. Average loss: 0.217745. Time taken: 140.36 sec
+2026-10-16 18:35:52.736 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 94, iters: 609778
+2026-10-16 18:38:13.480 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 95/120 completed. Average loss: 0.217448. Time taken: 140.74 sec
+2026-10-16 18:38:13.603 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 95, iters: 616265
+2026-10-16 18:40:34.841 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 96/120 completed. Average loss: 0.217270. Time taken: 141.24 sec
+2026-10-16 18:40:34.909 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 96, iters: 622752
+2026-10-16 18:42:56.024 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 97/120 completed. Average loss: 0.217006. Time taken: 141.11 sec
+2026-10-16 18:42:56.095 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 97, iters: 629239
+2026-10-16 18:45:16.917 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 98/120 completed. Average loss: 0.216654. Time taken: 140.82 sec
+2026-10-16 18:45:16.986 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 98, iters: 635726
+2026-10-16 18:47:38.170 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 99/120 completed. Average loss: 0.216390. Time taken: 141.18 sec
+2026-10-16 18:47:38.243 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 99, iters: 642213
+2026-10-16 18:49:58.942 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 100/120 completed. Average loss: 0.216131. Time taken: 140.70 sec
+2026-10-16 18:49:59.012 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 100, iters: 648700
+2026-10-16 18:49:59.086 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:114 - The model saved at the end of epoch: 100, iters: 648700
+2026-10-16 18:52:20.212 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 101/120 completed. Average loss: 0.215518. Time taken: 141.13 sec
+2026-10-16 18:52:20.326 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 101, iters: 655187
+2026-10-16 18:54:40.702 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 102/120 completed. Average loss: 0.215371. Time taken: 140.38 sec
+2026-10-16 18:54:40.770 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 102, iters: 661674
+2026-10-16 18:57:00.942 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 103/120 completed. Average loss: 0.215181. Time taken: 140.17 sec
+2026-10-16 18:57:01.012 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 103, iters: 668161
+2026-10-16 18:59:22.075 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 104/120 completed. Average loss: 0.215031. Time taken: 141.06 sec
+2026-10-16 18:59:22.151 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 104, iters: 674648
+2026-10-16 19:01:43.509 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 105/120 completed. Average loss: 0.214903. Time taken: 141.36 sec
+2026-10-16 19:01:43.576 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 105, iters: 681135
+2026-10-16 19:04:04.212 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 106/120 completed. Average loss: 0.214735. Time taken: 140.64 sec
+2026-10-16 19:04:04.283 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 106, iters: 687622
+2026-10-16 19:06:25.714 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 107/120 completed. Average loss: 0.214557. Time taken: 141.43 sec
+2026-10-16 19:06:25.795 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 107, iters: 694109
+2026-10-16 19:08:46.381 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 108/120 completed. Average loss: 0.214467. Time taken: 140.59 sec
+2026-10-16 19:08:46.490 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 108, iters: 700596
+2026-10-16 19:11:07.656 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 109/120 completed. Average loss: 0.214314. Time taken: 141.17 sec
+2026-10-16 19:11:07.724 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 109, iters: 707083
+2026-10-16 19:13:29.319 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 110/120 completed. Average loss: 0.214146. Time taken: 141.59 sec
+2026-10-16 19:13:29.392 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 110, iters: 713570
+2026-10-16 19:13:29.479 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:114 - The model saved at the end of epoch: 110, iters: 713570
+2026-10-16 19:15:50.789 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 111/120 completed. Average loss: 0.213993. Time taken: 141.31 sec
+2026-10-16 19:15:50.855 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 111, iters: 720057
+2026-10-16 19:18:12.421 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 112/120 completed. Average loss: 0.213891. Time taken: 141.57 sec
+2026-10-16 19:18:12.489 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 112, iters: 726544
+2026-10-16 19:20:34.072 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 113/120 completed. Average loss: 0.213720. Time taken: 141.58 sec
+2026-10-16 19:20:34.149 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 113, iters: 733031
+2026-10-16 19:22:55.483 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 114/120 completed. Average loss: 0.213578. Time taken: 141.33 sec
+2026-10-16 19:22:55.550 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 114, iters: 739518
+2026-10-16 19:25:15.920 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 115/120 completed. Average loss: 0.213484. Time taken: 140.37 sec
+2026-10-16 19:25:15.987 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 115, iters: 746005
+2026-10-16 19:27:36.544 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 116/120 completed. Average loss: 0.213303. Time taken: 140.56 sec
+2026-10-16 19:27:36.613 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 116, iters: 752492
+2026-10-16 19:29:57.359 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 117/120 completed. Average loss: 0.213197. Time taken: 140.75 sec
+2026-10-16 19:29:57.427 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 117, iters: 758979
+2026-10-16 19:32:18.552 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 118/120 completed. Average loss: 0.213061. Time taken: 141.12 sec
+2026-10-16 19:32:18.617 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 118, iters: 765466
+2026-10-16 19:34:39.304 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 119/120 completed. Average loss: 0.212919. Time taken: 140.69 sec
+2026-10-16 19:34:39.374 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 119, iters: 771953
+2026-10-16 19:37:00.922 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:104 - Epoch 120/120 completed. Average loss: 0.212763. Time taken: 141.55 sec
+2026-10-16 19:37:00.989 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:110 - The latest model saved at the end of epoch: 120, iters: 778440
+2026-10-16 19:37:01.056 | INFO     | PID<1037994>:TID<128799189112640> | __main__:<module>:114 - The model saved at the end of epoch: 120, iters: 778440
+2026-10-16 21:55:28.568 | INFO     | PID<1168816>:TID<125259125573440> | models.cddfuse_model:__init__:70 - [Loss Mode] Enabled Innovation 3: OrthogonalDecouplingLoss + ContrastStructureAwareFusionLoss
+2026-10-16 21:55:28.710 | INFO     | PID<1168816>:TID<125259125573440> | models.cddfuse_model:load_model:307 - Loading CDDFuse_Exp3_v2 checkpoint from checkpoints/Exp3_v2/CDDFuse_Exp3_v2_epoch_100.pth (ckp phase=2, epoch=100)...
+2026-10-16 21:55:28.714 | INFO     | PID<1168816>:TID<125259125573440> | models.cddfuse_model:load_model:318 - Models loaded successfully from checkpoint.
+2026-10-16 21:55:28.717 | INFO     | PID<1168816>:TID<125259125573440> | models.cddfuse_model:load_model:345 - Checkpoint (phase=2, epoch=100) loaded successfully from checkpoints/Exp3_v2/CDDFuse_Exp3_v2_epoch_100.pth.
+2026-10-16 21:55:28.719 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:43 - Starting [CDDFuse_Exp3_v2] training from epoch 101 to 120, batch_size=8, lr=0.00015, use_bf16=True
+2026-10-16 21:58:09.498 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 101/120 completed. Average loss: 0.221408. Time taken: 160.78 sec
+2026-10-16 21:58:09.617 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 101, iters: 655187
+2026-10-16 22:00:39.479 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 102/120 completed. Average loss: 0.219657. Time taken: 149.86 sec
+2026-10-16 22:00:39.560 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 102, iters: 661674
+2026-10-16 22:03:10.300 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 103/120 completed. Average loss: 0.218748. Time taken: 150.74 sec
+2026-10-16 22:03:10.381 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 103, iters: 668161
+2026-10-16 22:05:41.302 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 104/120 completed. Average loss: 0.218094. Time taken: 150.92 sec
+2026-10-16 22:05:41.382 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 104, iters: 674648
+2026-10-16 22:08:11.587 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 105/120 completed. Average loss: 0.217595. Time taken: 150.20 sec
+2026-10-16 22:08:11.663 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 105, iters: 681135
+2026-10-16 22:10:42.057 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 106/120 completed. Average loss: 0.217115. Time taken: 150.39 sec
+2026-10-16 22:10:42.135 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 106, iters: 687622
+2026-10-16 22:13:13.930 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 107/120 completed. Average loss: 0.216692. Time taken: 151.79 sec
+2026-10-16 22:13:14.006 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 107, iters: 694109
+2026-10-16 22:15:44.637 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 108/120 completed. Average loss: 0.216292. Time taken: 150.63 sec
+2026-10-16 22:15:44.712 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 108, iters: 700596
+2026-10-16 22:18:14.286 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 109/120 completed. Average loss: 0.215941. Time taken: 149.57 sec
+2026-10-16 22:18:14.363 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 109, iters: 707083
+2026-10-16 22:20:44.710 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 110/120 completed. Average loss: 0.215584. Time taken: 150.35 sec
+2026-10-16 22:20:44.783 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 110, iters: 713570
+2026-10-16 22:20:44.866 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:114 - The model saved at the end of epoch: 110, iters: 713570
+2026-10-16 22:23:15.328 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 111/120 completed. Average loss: 0.215288. Time taken: 150.46 sec
+2026-10-16 22:23:15.404 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 111, iters: 720057
+2026-10-16 22:25:45.797 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 112/120 completed. Average loss: 0.214958. Time taken: 150.39 sec
+2026-10-16 22:25:45.879 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 112, iters: 726544
+2026-10-16 22:28:16.592 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 113/120 completed. Average loss: 0.214675. Time taken: 150.71 sec
+2026-10-16 22:28:16.669 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 113, iters: 733031
+2026-10-16 22:30:47.181 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 114/120 completed. Average loss: 0.214362. Time taken: 150.51 sec
+2026-10-16 22:30:47.255 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 114, iters: 739518
+2026-10-16 22:33:17.739 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 115/120 completed. Average loss: 0.214136. Time taken: 150.48 sec
+2026-10-16 22:33:17.814 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 115, iters: 746005
+2026-10-16 22:35:48.837 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 116/120 completed. Average loss: 0.213829. Time taken: 151.02 sec
+2026-10-16 22:35:48.913 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 116, iters: 752492
+2026-10-16 22:38:18.657 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 117/120 completed. Average loss: 0.213585. Time taken: 149.74 sec
+2026-10-16 22:38:18.729 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 117, iters: 758979
+2026-10-16 22:40:48.137 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 118/120 completed. Average loss: 0.213349. Time taken: 149.41 sec
+2026-10-16 22:40:48.211 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 118, iters: 765466
+2026-10-16 22:43:21.142 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 119/120 completed. Average loss: 0.213053. Time taken: 152.93 sec
+2026-10-16 22:43:21.219 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 119, iters: 771953
+2026-10-16 22:45:52.282 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:104 - Epoch 120/120 completed. Average loss: 0.212841. Time taken: 151.06 sec
+2026-10-16 22:45:52.377 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:110 - The latest model saved at the end of epoch: 120, iters: 778440
+2026-10-16 22:45:52.452 | INFO     | PID<1168816>:TID<125259125573440> | __main__:<module>:114 - The model saved at the end of epoch: 120, iters: 778440
+2026-10-16 23:49:16.132 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:__init__:70 - [Loss Mode] Enabled Innovation 3: OrthogonalDecouplingLoss + ContrastStructureAwareFusionLoss
+2026-10-16 23:49:16.232 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:load_model:307 - Loading CDDFuse_Exp3_v2 checkpoint from checkpoints/Exp3_v2/CDDFuse_Exp3_v2_epoch_40.pth (ckp phase=1, epoch=40)...
+2026-10-16 23:49:16.237 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:load_model:312 - [Hot-Start] Skipping Phase-I untrained 'BaseFuseLayer' from checkpoint; keeping new Exp-3 initialization.
+2026-10-16 23:49:16.237 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:load_model:312 - [Hot-Start] Skipping Phase-I untrained 'DetailFuseLayer' from checkpoint; keeping new Exp-3 initialization.
+2026-10-16 23:49:16.237 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:load_model:318 - Models loaded successfully from checkpoint.
+2026-10-16 23:49:16.239 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:load_model:345 - Checkpoint (phase=1, epoch=40) loaded successfully from checkpoints/Exp3_v2/CDDFuse_Exp3_v2_epoch_40.pth.
+2026-10-16 23:49:16.241 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:43 - Starting [CDDFuse_Exp3_v2] training from epoch 41 to 120, batch_size=8, lr=0.00015, use_bf16=True
+2026-10-16 23:51:53.188 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 41/120 completed. Average loss: 0.401675. Time taken: 156.95 sec
+2026-10-16 23:51:53.320 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch41 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-16 23:54:21.909 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 42/120 completed. Average loss: 0.318054. Time taken: 148.59 sec
+2026-10-16 23:54:21.983 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch42 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-16 23:56:53.176 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 43/120 completed. Average loss: 0.305991. Time taken: 151.19 sec
+2026-10-16 23:56:53.260 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch43 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-16 23:59:23.401 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 44/120 completed. Average loss: 0.297982. Time taken: 150.14 sec
+2026-10-16 23:59:23.513 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch44 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:01:51.343 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 45/120 completed. Average loss: 0.291980. Time taken: 147.83 sec
+2026-10-17 00:01:51.423 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch45 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:04:18.447 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 46/120 completed. Average loss: 0.287219. Time taken: 147.02 sec
+2026-10-17 00:04:18.523 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch46 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:06:44.292 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 47/120 completed. Average loss: 0.282065. Time taken: 145.77 sec
+2026-10-17 00:06:44.388 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch47 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:09:10.458 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 48/120 completed. Average loss: 0.275555. Time taken: 146.07 sec
+2026-10-17 00:09:10.534 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch48 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:11:36.935 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 49/120 completed. Average loss: 0.269411. Time taken: 146.40 sec
+2026-10-17 00:11:37.006 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch49 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:14:03.153 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 50/120 completed. Average loss: 0.265397. Time taken: 146.15 sec
+2026-10-17 00:14:03.227 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch50 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:14:03.304 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch50 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_epoch_50.pth".
+2026-10-17 00:16:29.318 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 51/120 completed. Average loss: 0.260667. Time taken: 146.01 sec
+2026-10-17 00:16:29.393 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch51 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:18:56.145 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 52/120 completed. Average loss: 0.257469. Time taken: 146.75 sec
+2026-10-17 00:18:56.218 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch52 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:21:22.569 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 53/120 completed. Average loss: 0.254075. Time taken: 146.35 sec
+2026-10-17 00:21:22.640 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch53 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:23:48.524 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 54/120 completed. Average loss: 0.251020. Time taken: 145.88 sec
+2026-10-17 00:23:49.446 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch54 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:26:15.541 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 55/120 completed. Average loss: 0.248183. Time taken: 146.09 sec
+2026-10-17 00:26:15.622 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch55 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:28:42.061 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 56/120 completed. Average loss: 0.245443. Time taken: 146.44 sec
+2026-10-17 00:28:42.133 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch56 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:31:08.580 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 57/120 completed. Average loss: 0.243396. Time taken: 146.45 sec
+2026-10-17 00:31:08.652 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch57 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:33:35.269 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 58/120 completed. Average loss: 0.241502. Time taken: 146.62 sec
+2026-10-17 00:33:35.342 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch58 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:36:02.057 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 59/120 completed. Average loss: 0.239815. Time taken: 146.71 sec
+2026-10-17 00:36:02.128 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch59 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:38:28.140 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 60/120 completed. Average loss: 0.238349. Time taken: 146.01 sec
+2026-10-17 00:38:28.235 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch60 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:38:28.306 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch60 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_epoch_60.pth".
+2026-10-17 00:40:54.583 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 61/120 completed. Average loss: 0.234994. Time taken: 146.28 sec
+2026-10-17 00:40:54.686 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch61 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:43:21.115 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 62/120 completed. Average loss: 0.234121. Time taken: 146.43 sec
+2026-10-17 00:43:21.189 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch62 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:45:47.453 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 63/120 completed. Average loss: 0.233194. Time taken: 146.26 sec
+2026-10-17 00:45:47.528 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch63 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:48:13.845 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 64/120 completed. Average loss: 0.232187. Time taken: 146.32 sec
+2026-10-17 00:48:13.919 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch64 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:50:40.339 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 65/120 completed. Average loss: 0.231639. Time taken: 146.42 sec
+2026-10-17 00:50:40.410 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch65 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:53:06.617 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 66/120 completed. Average loss: 0.230854. Time taken: 146.21 sec
+2026-10-17 00:53:06.688 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch66 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:55:33.198 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 67/120 completed. Average loss: 0.230023. Time taken: 146.51 sec
+2026-10-17 00:55:33.269 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch67 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 00:58:00.015 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 68/120 completed. Average loss: 0.229439. Time taken: 146.75 sec
+2026-10-17 00:58:00.085 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch68 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:00:25.274 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 69/120 completed. Average loss: 0.228543. Time taken: 145.19 sec
+2026-10-17 01:00:25.344 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch69 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:02:51.546 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 70/120 completed. Average loss: 0.228034. Time taken: 146.20 sec
+2026-10-17 01:02:51.617 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch70 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:02:51.694 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch70 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_epoch_70.pth".
+2026-10-17 01:05:18.082 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 71/120 completed. Average loss: 0.227076. Time taken: 146.39 sec
+2026-10-17 01:05:18.153 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch71 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:07:44.279 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 72/120 completed. Average loss: 0.226606. Time taken: 146.13 sec
+2026-10-17 01:07:44.359 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch72 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:10:10.593 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 73/120 completed. Average loss: 0.225844. Time taken: 146.23 sec
+2026-10-17 01:10:10.664 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch73 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:12:36.798 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 74/120 completed. Average loss: 0.225147. Time taken: 146.13 sec
+2026-10-17 01:12:36.868 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch74 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:15:03.637 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 75/120 completed. Average loss: 0.224360. Time taken: 146.77 sec
+2026-10-17 01:15:03.708 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch75 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:17:29.379 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 76/120 completed. Average loss: 0.223701. Time taken: 145.67 sec
+2026-10-17 01:17:29.451 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch76 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:19:54.699 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 77/120 completed. Average loss: 0.223070. Time taken: 145.25 sec
+2026-10-17 01:19:54.771 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch77 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:22:21.421 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 78/120 completed. Average loss: 0.222331. Time taken: 146.65 sec
+2026-10-17 01:22:21.494 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch78 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:24:48.197 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 79/120 completed. Average loss: 0.221863. Time taken: 146.70 sec
+2026-10-17 01:24:48.268 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch79 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:27:14.519 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 80/120 completed. Average loss: 0.221104. Time taken: 146.25 sec
+2026-10-17 01:27:14.595 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch80 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:27:14.677 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch80 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_epoch_80.pth".
+2026-10-17 01:29:41.166 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 81/120 completed. Average loss: 0.219753. Time taken: 146.49 sec
+2026-10-17 01:29:41.237 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch81 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:32:07.263 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 82/120 completed. Average loss: 0.219241. Time taken: 146.02 sec
+2026-10-17 01:32:07.333 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch82 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:34:33.655 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 83/120 completed. Average loss: 0.218807. Time taken: 146.32 sec
+2026-10-17 01:34:33.726 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch83 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:36:59.734 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 84/120 completed. Average loss: 0.218399. Time taken: 146.01 sec
+2026-10-17 01:36:59.822 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch84 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:39:25.355 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 85/120 completed. Average loss: 0.218060. Time taken: 145.53 sec
+2026-10-17 01:39:25.438 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch85 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:41:51.438 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 86/120 completed. Average loss: 0.217724. Time taken: 146.00 sec
+2026-10-17 01:41:51.534 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch86 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:44:17.850 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 87/120 completed. Average loss: 0.217278. Time taken: 146.31 sec
+2026-10-17 01:44:17.924 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch87 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:46:44.219 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 88/120 completed. Average loss: 0.216991. Time taken: 146.29 sec
+2026-10-17 01:46:44.294 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch88 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:49:10.300 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 89/120 completed. Average loss: 0.216568. Time taken: 146.01 sec
+2026-10-17 01:49:10.374 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch89 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:51:36.133 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 90/120 completed. Average loss: 0.216241. Time taken: 145.76 sec
+2026-10-17 01:51:36.219 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch90 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:51:36.300 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch90 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_epoch_90.pth".
+2026-10-17 01:54:01.599 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 91/120 completed. Average loss: 0.215905. Time taken: 145.30 sec
+2026-10-17 01:54:01.672 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch91 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:56:27.424 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 92/120 completed. Average loss: 0.215581. Time taken: 145.75 sec
+2026-10-17 01:56:27.495 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch92 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 01:58:53.384 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 93/120 completed. Average loss: 0.215271. Time taken: 145.89 sec
+2026-10-17 01:58:53.472 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch93 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:01:19.126 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 94/120 completed. Average loss: 0.214911. Time taken: 145.65 sec
+2026-10-17 02:01:19.201 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch94 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:03:45.196 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 95/120 completed. Average loss: 0.214596. Time taken: 145.99 sec
+2026-10-17 02:03:45.267 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch95 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:06:10.496 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 96/120 completed. Average loss: 0.214291. Time taken: 145.23 sec
+2026-10-17 02:06:10.568 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch96 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:08:36.991 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 97/120 completed. Average loss: 0.214048. Time taken: 146.42 sec
+2026-10-17 02:08:37.063 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch97 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:11:03.476 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 98/120 completed. Average loss: 0.213638. Time taken: 146.41 sec
+2026-10-17 02:11:03.550 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch98 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:13:29.440 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 99/120 completed. Average loss: 0.213332. Time taken: 145.89 sec
+2026-10-17 02:13:29.515 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch99 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:15:54.597 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 100/120 completed. Average loss: 0.213058. Time taken: 145.08 sec
+2026-10-17 02:15:54.668 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch100 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:15:54.739 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch100 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_epoch_100.pth".
+2026-10-17 02:18:20.608 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 101/120 completed. Average loss: 0.212369. Time taken: 145.87 sec
+2026-10-17 02:18:20.681 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch101 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:20:47.211 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 102/120 completed. Average loss: 0.212187. Time taken: 146.53 sec
+2026-10-17 02:20:47.285 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch102 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:23:13.536 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 103/120 completed. Average loss: 0.211977. Time taken: 146.25 sec
+2026-10-17 02:23:13.621 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch103 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:25:39.724 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 104/120 completed. Average loss: 0.211806. Time taken: 146.10 sec
+2026-10-17 02:25:39.801 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch104 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:28:05.010 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 105/120 completed. Average loss: 0.211662. Time taken: 145.21 sec
+2026-10-17 02:28:05.083 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch105 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:30:31.817 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 106/120 completed. Average loss: 0.211468. Time taken: 146.73 sec
+2026-10-17 02:30:31.889 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch106 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:32:59.005 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 107/120 completed. Average loss: 0.211271. Time taken: 147.11 sec
+2026-10-17 02:32:59.078 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch107 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:35:25.549 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 108/120 completed. Average loss: 0.211101. Time taken: 146.47 sec
+2026-10-17 02:35:25.624 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch108 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:37:51.647 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 109/120 completed. Average loss: 0.210982. Time taken: 146.02 sec
+2026-10-17 02:37:51.720 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch109 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:40:18.301 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 110/120 completed. Average loss: 0.210786. Time taken: 146.58 sec
+2026-10-17 02:40:18.426 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch110 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:40:18.526 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch110 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_epoch_110.pth".
+2026-10-17 02:42:44.259 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 111/120 completed. Average loss: 0.210640. Time taken: 145.73 sec
+2026-10-17 02:42:44.353 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch111 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:45:11.079 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 112/120 completed. Average loss: 0.210488. Time taken: 146.73 sec
+2026-10-17 02:45:11.163 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch112 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:47:36.604 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 113/120 completed. Average loss: 0.210290. Time taken: 145.44 sec
+2026-10-17 02:47:36.676 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch113 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:50:02.263 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 114/120 completed. Average loss: 0.210123. Time taken: 145.59 sec
+2026-10-17 02:50:02.342 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch114 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:52:28.172 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 115/120 completed. Average loss: 0.209972. Time taken: 145.83 sec
+2026-10-17 02:52:28.252 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch115 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:54:54.142 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 116/120 completed. Average loss: 0.209752. Time taken: 145.89 sec
+2026-10-17 02:54:54.275 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch116 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:57:20.109 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 117/120 completed. Average loss: 0.209609. Time taken: 145.83 sec
+2026-10-17 02:57:20.181 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch117 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 02:59:46.691 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 118/120 completed. Average loss: 0.209420. Time taken: 146.51 sec
+2026-10-17 02:59:46.764 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch118 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 03:02:13.069 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 119/120 completed. Average loss: 0.209285. Time taken: 146.30 sec
+2026-10-17 03:02:13.143 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch119 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 03:04:38.935 | INFO     | PID<1203516>:TID<135055113418560> | __main__:<module>:104 - Epoch 120/120 completed. Average loss: 0.209134. Time taken: 145.79 sec
+2026-10-17 03:04:39.006 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch120 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_latest.pth".
+2026-10-17 03:04:39.091 | INFO     | PID<1203516>:TID<135055113418560> | models.cddfuse_model:save_model:363 - CDDFuse_Exp3_v2_phase2_epoch120 checkpoint saved successfully at "checkpoints/20261016_234916/CDDFuse_Exp3_v2_epoch_120.pth".

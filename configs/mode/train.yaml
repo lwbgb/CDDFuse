@@ -11,9 +11,10 @@ print_iter_freq: 4
 display_freq: 100
 save_latest_freq: 1
 save_epoch_freq: 10
-ckp_name: CDDFuse_Exp4_epoch_40.pth
-load_dir: Exp4
+ckp_name: CDDFuse_Exp3_v2_epoch_40.pth
+load_dir: Exp3_v2
 norm: layer
+isTrain: True
 
 # Coefficients of the loss function
 coeff_mse_loss_VF: 1. # alpha1

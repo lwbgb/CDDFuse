@@ -107,10 +107,10 @@ if __name__ == "__main__":
         
         if epoch % opt.save_latest_freq == 0:
             model.save_model(f"{opt.model}_latest.pth")
-            logger.info(f"The latest model saved at the end of epoch: {epoch}, iters: {total_iters}")
+            print(f"The latest model saved at the end of epoch: {epoch}, iters: {total_iters}")
 
         if epoch % opt.save_epoch_freq == 0 or epoch == opt.epoch_gap or epoch == opt.n_epochs:
             model.save_model(f"{opt.model}_epoch_{epoch}.pth")
-            logger.info(f"The model saved at the end of epoch: {epoch}, iters: {total_iters}")
+            print(f"The model saved at the end of epoch: {epoch}, iters: {total_iters}")
 
     cleanup_ddp()

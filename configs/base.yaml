@@ -1,4 +1,3 @@
-model: CDDFuse_Exp4
-isTrain: True
+model: CDDFuse_Exp3_v2
 verbose: False
 checkpoint_root: checkpoints/

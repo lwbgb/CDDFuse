@@ -21,7 +21,7 @@ from utils import networks, path_util
 from utils.loss import Fusionloss, cc
 
 # [Exp-4 修改 1] 导入 Exp-4 非线性解耦损失与结构自适应融合损失
-from utils.loss_exp4 import NonLinearDecouplingLoss, AdaptiveStructureFusionLoss
+from utils.loss_exp4 import OrthogonalDecouplingLoss, ContrastStructureAwareFusionLoss
 
 from utils.logger_initializer import logger
 from schemas.model_checkpoint import ModelCkp
@@ -34,6 +34,8 @@ class CDDFuseModel(BaseModel):
         BaseModel.__init__(self, opt)
         self.name = opt.model
         self.use_bf16: bool = opt.get("use_bf16", True)
+        # 控制变量开关：False 对应消融表第3行 (Exp-3_Clean 原版Loss)，True 对应消融表第4行 (Exp-4_Final 创新点三Loss)
+        self.use_exp4_loss: bool = opt.get("use_exp4_loss", True)
         if opt.isTrain:
             self._epoch = opt.start_epoch
             self._phase = 1 if opt.start_epoch <= opt.epoch_gap else 2
@@ -63,33 +65,21 @@ class CDDFuseModel(BaseModel):
             self.L1Loss = nn.L1Loss()
             self.Loss_ssim = kornia.losses.SSIMLoss(window_size=opt.SSIM_window_size, reduction="mean")
             self.spatial_grad = kornia.filters.SpatialGradient().to(self.device)
-            self.criteria_fusion = Fusionloss().to(self.device)
             
-            # [Exp-4 修改 2] 实例化多阶非线性特征解耦损失与自适应结构融合损失
-            self.criteria_decomp = NonLinearDecouplingLoss(
-                lambda_hsic=opt.get("lambda_hsic", 0.5),
-                lambda_ortho=opt.get("lambda_ortho", 0.1),
-            ).to(self.device)
-            self.criteria_fusion = AdaptiveStructureFusionLoss(
-                grad_weight=10.0,
-                sf_weight=opt.get("sf_weight", 1.5),
-                cs_weight=opt.get("cs_weight", 0.6),
-                max_blend_ratio=opt.get("max_blend_ratio", 0.70),
-            ).to(self.device)
-
-            # 优化器
-            # self.optimizer_encoder = torch.optim.Adam(
-            #     self.DIDF_Encoder.parameters(), lr=opt.lr, weight_decay=opt.weight_decay
-            # )
-            # self.optimizer_decoder = torch.optim.Adam(
-            #     self.DIDF_Decoder.parameters(), lr=opt.lr, weight_decay=opt.weight_decay
-            # )
-            # self.optimizer_base = torch.optim.Adam(
-            #     self.BaseFuseLayer.parameters(), lr=opt.lr, weight_decay=opt.weight_decay
-            # )
-            # self.optimizer_detail = torch.optim.Adam(
-            #     self.DetailFuseLayer.parameters(), lr=opt.lr, weight_decay=opt.weight_decay
-            # )
+            if self.use_exp4_loss:
+                logger.info("[Loss Mode] Enabled Innovation 3: OrthogonalDecouplingLoss + ContrastStructureAwareFusionLoss")
+                self.criteria_decomp = OrthogonalDecouplingLoss(
+                    lambda_ortho=opt.get("lambda_ortho", 0.05),
+                ).to(self.device)
+                self.criteria_fusion = ContrastStructureAwareFusionLoss(
+                    grad_weight=10.0,
+                    sd_weight=opt.get("sd_weight", 0.5),
+                    struct_weight=opt.get("struct_weight", 0.12),
+                ).to(self.device)
+            else:
+                logger.info("[Loss Mode] Using Original CDDFuse Baseline Loss (for clean architecture ablation)")
+                self.criteria_decomp = None
+                self.criteria_fusion = Fusionloss().to(self.device)
             
             # [Exp-2 修改 2] 使用 Mamba 安全参数分组构建优化器（自动将 A_log, D, dt_proj.bias, norm 的 weight_decay 设为 0）
             self.optimizer_encoder = self._build_optimizer(self.DIDF_Encoder, opt.lr, opt.weight_decay)
@@ -210,14 +200,14 @@ class CDDFuseModel(BaseModel):
         feat_ir_b = self.feature_IR_Base.float()
         feat_ir_d = self.feature_IR_Detail.float()
 
-        # self.loss_cc_Base = cc(feat_vis_b, feat_ir_b)
-        # self.loss_cc_Detail = cc(feat_vis_d, feat_ir_d)
-        # self.loss_decomp = (self.loss_cc_Detail ** 2) / (1.01 + self.loss_cc_Base)
-        
-        # 计算多阶非线性解耦损失 (含 CC + Spatial-nHSIC + 模态内正交约束)
-        self.loss_decomp, self.loss_cc_Base, self.loss_cc_Detail = self.criteria_decomp(
-            feat_vis_b, feat_ir_b, feat_vis_d, feat_ir_d
-        )
+        if self.use_exp4_loss:
+            self.loss_decomp, self.loss_cc_Base, self.loss_cc_Detail = self.criteria_decomp(
+                feat_vis_b, feat_ir_b, feat_vis_d, feat_ir_d
+            )
+        else:
+            self.loss_cc_Base = cc(feat_vis_b, feat_ir_b)
+            self.loss_cc_Detail = cc(feat_vis_d, feat_ir_d)
+            self.loss_decomp = (self.loss_cc_Detail ** 2) / (1.01 + self.loss_cc_Base)
 
         if self._phase == 1:
             vis_hat = self.data_VIS_hat.float()
@@ -230,16 +220,18 @@ class CDDFuseModel(BaseModel):
                 self.data_IR, ir_hat
             )
 
-            # self.loss_gradient: torch.Tensor = self.L1Loss(
-            #     self.spatial_grad(self.data_VIS), self.spatial_grad(vis_hat)
-            # )
-            
-            # [Exp-4 修复] 补齐原仓库缺失的红外图像梯度重构损失，实现双模态对称边缘监督
-            self.loss_gradient: torch.Tensor = self.L1Loss(
-                self.spatial_grad(self.data_VIS), self.spatial_grad(vis_hat)
-            ) + self.L1Loss(
-                self.spatial_grad(self.data_IR), self.spatial_grad(ir_hat)
-            )
+            if self.use_exp4_loss:
+                # 创新点三 (A): 双模态对称梯度重构约束
+                self.loss_gradient: torch.Tensor = self.L1Loss(
+                    self.spatial_grad(self.data_VIS), self.spatial_grad(vis_hat)
+                ) + self.L1Loss(
+                    self.spatial_grad(self.data_IR), self.spatial_grad(ir_hat)
+                )
+            else:
+                # 原版损失 (用于 Exp-3_Clean 控制变量)
+                self.loss_gradient: torch.Tensor = self.L1Loss(
+                    self.spatial_grad(self.data_VIS), self.spatial_grad(vis_hat)
+                )
 
             self.loss_total: torch.Tensor = (
                 self.opt.coeff_mse_loss_VF * self.loss_MSE_VIS
@@ -368,7 +360,7 @@ class CDDFuseModel(BaseModel):
             )
 
             torch.save(model_ckp.to_dict(), save_path)
-            print(
+            logger.info(
                 f'{self.name}_phase{model_ckp.phase}_epoch{model_ckp.epoch} checkpoint saved successfully at "{save_path}".'
             )
             return model_ckp
