@@ -42,3 +42,11 @@ class TrainConfig(BaseConfig):
     num_threads: int = 4
     drop_last: bool = False
     dataset_root: str = "data/"
+    dataset_mode: str = "h5"
+    h5_file_name: str = "MSRS_train_imgsize_128_stride_200.h5"
+    dataset_dir: str = "datasets/MSRS_train"
+    crop_size: int = 128
+    samples_per_epoch: int = 6000
+    augment: bool = False
+    filter_low_contrast: bool = True
+    max_crop_attempts: int = 20

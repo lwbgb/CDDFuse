@@ -1,3 +1,4 @@
+from kornia.filters import filter2d, get_gaussian_kernel2d
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -38,6 +39,86 @@ class Sobelxy(nn.Module):
         sobelx=F.conv2d(x, self.weightx, padding=1)
         sobely=F.conv2d(x, self.weighty, padding=1)
         return torch.abs(sobelx)+torch.abs(sobely)
+    
+class LegacySSIMLoss(nn.Module):
+    """兼容 CDDFuse 所用 Kornia 0.2.0 SSIM 训练损失。
+
+    输入：[B, C, H, W]，浮点张量，通常在 [0, 1]。
+    """
+
+    def __init__(self, window_size=11, reduction="mean", max_val=1.0):
+        super().__init__()
+
+        if window_size <= 0 or window_size % 2 == 0:
+            raise ValueError("window_size 必须为正奇数")
+        if reduction not in {"none", "mean", "sum"}:
+            raise ValueError(f"不支持的 reduction: {reduction}")
+
+        self.reduction = reduction
+        self.C1 = (0.01 * max_val) ** 2
+        self.C2 = (0.03 * max_val) ** 2
+
+        window = get_gaussian_kernel2d(
+            (window_size, window_size),
+            (1.5, 1.5),
+            device=torch.device("cpu"),
+            dtype=torch.float32,
+        )
+
+        # 不写入 checkpoint，避免给旧权重增加必需字段。
+        self.register_buffer(
+            "window", window.unsqueeze(0), persistent=False
+        )
+
+    def forward(self, img1, img2):
+        if img1.ndim != 4 or img1.shape != img2.shape:
+            raise ValueError("输入必须为相同形状的 [B, C, H, W]")
+        if img1.device != img2.device or img1.dtype != img2.dtype:
+            raise ValueError("两个输入的 device 和 dtype 必须一致")
+
+        kernel = self.window.to(device=img1.device, dtype=img1.dtype)
+
+        def smooth(x):
+            return filter2d(
+                x,
+                kernel,
+                border_type="reflect",
+                normalized=False,
+                padding="same",
+                behaviour="corr",
+            )
+
+        mu1 = smooth(img1)
+        mu2 = smooth(img2)
+
+        mu1_sq = mu1.pow(2)
+        mu2_sq = mu2.pow(2)
+        mu1_mu2 = mu1 * mu2
+
+        sigma1_sq = smooth(img1 * img1) - mu1_sq
+        sigma2_sq = smooth(img2 * img2) - mu2_sq
+        sigma12 = smooth(img1 * img2) - mu1_mu2
+
+        numerator = (
+            (2.0 * mu1_mu2 + self.C1)
+            * (2.0 * sigma12 + self.C2)
+        )
+        denominator = (
+            (mu1_sq + mu2_sq + self.C1)
+            * (sigma1_sq + sigma2_sq + self.C2)
+        )
+
+        # 对齐旧版：不额外添加 eps，不截断局部方差。
+        ssim_map = numerator / denominator
+
+        # 关键：先 clamp，再除以 2。
+        loss = torch.clamp(1.0 - ssim_map, min=0.0, max=1.0) / 2.0
+
+        if self.reduction == "mean":
+            return loss.mean()
+        if self.reduction == "sum":
+            return loss.sum()
+        return loss
     
 
 def complex_decoupling_loss(feat_V, feat_I):

@@ -15,10 +15,10 @@ from models.base_model import BaseModel
 # from models.net_exp2_v2 import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
 
 # [Exp-3 修改 1] 切换为导入 net_exp3
-from models.net_exp3 import Restormer_Encoder, Restormer_Decoder, MIMOHybridMambaVisionFusion, CrossModalityDetailFusion
+from models.net_exp3_v2_loss import Restormer_Encoder, Restormer_Decoder, MIMOHybridMambaVisionFusion, CrossModalityDetailFusion
 
 from utils import networks, path_util
-from utils.loss import Fusionloss, cc
+from utils.loss import Fusionloss, cc, LegacySSIMLoss
 
 # [Exp-4 修改 1] 导入 Exp-4 非线性解耦损失与结构自适应融合损失
 from utils.loss_exp4 import OrthogonalDecouplingLoss, ContrastStructureAwareFusionLoss
@@ -63,7 +63,7 @@ class CDDFuseModel(BaseModel):
         if self.isTrain:
             self.MSELoss = nn.MSELoss()
             self.L1Loss = nn.L1Loss()
-            self.Loss_ssim = kornia.losses.SSIMLoss(window_size=opt.SSIM_window_size, reduction="mean")
+            self.Loss_ssim = LegacySSIMLoss(window_size=opt.SSIM_window_size, reduction="mean", max_val=1.0).to(self.device)
             self.spatial_grad = kornia.filters.SpatialGradient().to(self.device)
             
             if self.use_exp4_loss:
@@ -162,7 +162,6 @@ class CDDFuseModel(BaseModel):
 
     def update_state(self, epoch: int):
         """更新模型的训练状态，当首次切入 Phase II 时温和降低编码器学习率以保护 Phase I 特征流形"""
-        prev_phase = self._phase
         self._epoch = epoch
         self._phase = 1 if epoch <= self.opt.epoch_gap else 2
 
@@ -213,11 +212,14 @@ class CDDFuseModel(BaseModel):
             vis_hat = self.data_VIS_hat.float()
             ir_hat = self.data_IR_hat.float()
 
-            self.loss_MSE_VIS: torch.Tensor = 5 * self.Loss_ssim(self.data_VIS, vis_hat) + self.MSELoss(
-                self.data_VIS, vis_hat
+            self.loss_MSE_VIS = (
+                5 * self.Loss_ssim(self.data_VIS, vis_hat)
+                + self.MSELoss(self.data_VIS, vis_hat)
             )
-            self.loss_MSE_IR: torch.Tensor = 5 * self.Loss_ssim(self.data_IR, ir_hat) + self.MSELoss(
-                self.data_IR, ir_hat
+
+            self.loss_MSE_IR = (
+                5 * self.Loss_ssim(self.data_IR, ir_hat)
+                + self.MSELoss(self.data_IR, ir_hat)
             )
 
             if self.use_exp4_loss:
@@ -228,7 +230,6 @@ class CDDFuseModel(BaseModel):
                     self.spatial_grad(self.data_IR), self.spatial_grad(ir_hat)
                 )
             else:
-                # 原版损失 (用于 Exp-3_Clean 控制变量)
                 self.loss_gradient: torch.Tensor = self.L1Loss(
                     self.spatial_grad(self.data_VIS), self.spatial_grad(vis_hat)
                 )

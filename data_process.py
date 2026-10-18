@@ -17,7 +17,7 @@ def get_img_file(file_name):
         for filename in filenames:
             if filename.lower().endswith(('.bmp', '.dib', '.png', '.jpg', '.jpeg', '.pbm', '.pgm', '.ppm', '.tif', '.tiff', '.npy')):
                 imagelist.append(os.path.join(parent, filename))
-        return imagelist
+    return imagelist
     
 def rgb2y(img):
     y = img[0:1, :, :] * 0.299000 + img[1:2, :, :] * 0.587000 + img[2:3, :, :] * 0.114000
@@ -42,6 +42,8 @@ def is_low_contrast(image, fraction_threshold=0.1, lower_percentile=10,
                     upper_percentile=90):
     """Determine if an image is low contrast."""
     limits = np.percentile(image, [lower_percentile, upper_percentile])
+    if limits[1] <= 0:
+        return True
     ratio = (limits[1] - limits[0]) / limits[1]
     return ratio < fraction_threshold
 

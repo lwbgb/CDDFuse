@@ -12,10 +12,10 @@ warnings.filterwarnings("ignore")
 logging.basicConfig(level=logging.CRITICAL)
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-ckpt_path=r"checkpoints/base_model/CDDFuse_phase2_epoch120.pth"
+ckpt_path=r"checkpoints/CDDFuse_05-04-20-06.pth"
 
 if __name__ == '__main__':
-    for dataset_name in ["MSRS"]:
+    for dataset_name in ["MSRS", "TNO", "RoadScene"]:
         print("\n"*2+"="*80)
         model_name="CDDFuse    "
         print("The test result of "+dataset_name+' :')

@@ -1251,3 +1251,262 @@
 |   7.28   |  48.54   |  15.59   |   2.45   |   1.64   |   0.75   |   0.61   |   0.96   |
 +----------+----------+----------+----------+----------+----------+----------+----------+
 =========================================================================================
+2026-10-17 12:12:48.791 | INFO     | PID<1514474>:TID<129891061319488> | models.cddfuse_model:load_model:307 - Loading CDDFuse_Exp3_Clean checkpoint from checkpoints/20261017_062007/CDDFuse_Exp3_v2_epoch_120.pth (ckp phase=2, epoch=120)...
+2026-10-17 12:12:48.797 | INFO     | PID<1514474>:TID<129891061319488> | models.cddfuse_model:load_model:318 - Models loaded successfully from checkpoint.
+2026-10-17 12:12:48.797 | INFO     | PID<1514474>:TID<129891061319488> | models.cddfuse_model:load_model:345 - Checkpoint (phase=2, epoch=120) loaded successfully from checkpoints/20261017_062007/CDDFuse_Exp3_v2_epoch_120.pth.
+2026-10-17 12:12:50.304 | INFO     | PID<1514474>:TID<129891061319488> | __main__:<module>:101 - ==> [MSRS] Starting Inference & Evaluation (Total Dataset Size: 361 samples)...
+2026-10-17 12:14:10.472 | INFO     | PID<1514474>:TID<129891061319488> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp3_Clean
+  Checkpoint       : CDDFuse_Exp3_v2_epoch_120.pth
+  Target Dataset   : MSRS
+  Dataset Size     : 361 images
+  Average Loss     : 0.1625
+  Pure Inference   : 59.35 s  (164.39 ms/img | 6.08 FPS)
+  Total Eval Time  : 80.17 s  (4.50 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   6.69   |  42.94   |  11.74   |   3.56   |   1.60   |   1.05   |   0.73   |   0.97   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-17 12:14:10.473 | INFO     | PID<1514474>:TID<129891061319488> | __main__:<module>:101 - ==> [TNO] Starting Inference & Evaluation (Total Dataset Size: 25 samples)...
+2026-10-17 12:14:26.108 | INFO     | PID<1514474>:TID<129891061319488> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp3_Clean
+  Checkpoint       : CDDFuse_Exp3_v2_epoch_120.pth
+  Target Dataset   : TNO
+  Dataset Size     : 25 images
+  Average Loss     : 0.4562
+  Pure Inference   : 7.95 s  (318.15 ms/img | 3.14 FPS)
+  Total Eval Time  : 15.63 s  (1.60 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.08   |  43.48   |  13.43   |   2.91   |   1.59   |   0.87   |   0.60   |   0.95   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-17 12:14:26.110 | INFO     | PID<1514474>:TID<129891061319488> | __main__:<module>:101 - ==> [RoadScene] Starting Inference & Evaluation (Total Dataset Size: 50 samples)...
+2026-10-17 12:15:04.967 | INFO     | PID<1514474>:TID<129891061319488> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_Exp3_Clean
+  Checkpoint       : CDDFuse_Exp3_v2_epoch_120.pth
+  Target Dataset   : RoadScene
+  Dataset Size     : 50 images
+  Average Loss     : 0.5848
+  Pure Inference   : 18.84 s  (376.88 ms/img | 2.65 FPS)
+  Total Eval Time  : 38.86 s  (1.29 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.33   |  50.14   |  15.85   |   2.95   |   1.58   |   0.79   |   0.61   |   0.90   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-18 00:07:16.868 | ERROR    | PID<2176>:TID<131278657533760> | models.cddfuse_model:load_model:341 - Error occurred while loading checkpoint: Cannot use ``weights_only=True`` with files saved in the legacy .tar format. In PyTorch 2.6, we changed the default value of the `weights_only` argument in `torch.load` from `False` to `True`. Re-running `torch.load` with `weights_only` set to `False` will likely succeed, but it can result in arbitrary code execution. Do it only if you got the file from a trusted source.
+2026-10-18 00:11:44.021 | ERROR    | PID<3768>:TID<133970670016320> | models.cddfuse_model:load_model:341 - Error occurred while loading checkpoint: Cannot use ``weights_only=True`` with files saved in the legacy .tar format. In PyTorch 2.6, we changed the default value of the `weights_only` argument in `torch.load` from `False` to `True`. Re-running `torch.load` with `weights_only` set to `False` will likely succeed, but it can result in arbitrary code execution. Do it only if you got the file from a trusted source.
+2026-10-18 00:12:33.946 | ERROR    | PID<4398>:TID<138388666701632> | models.cddfuse_model:load_model:341 - Error occurred while loading checkpoint: "filename 'storages' not found"
+2026-10-18 00:19:18.110 | ERROR    | PID<1752>:TID<135287655749440> | models.cddfuse_model:load_model:341 - Error occurred while loading checkpoint: Cannot use ``weights_only=True`` with files saved in the legacy .tar format. In PyTorch 2.6, we changed the default value of the `weights_only` argument in `torch.load` from `False` to `True`. Re-running `torch.load` with `weights_only` set to `False` will likely succeed, but it can result in arbitrary code execution. Do it only if you got the file from a trusted source.
+2026-10-18 00:20:01.794 | ERROR    | PID<2242>:TID<137360940128064> | models.cddfuse_model:load_model:341 - Error occurred while loading checkpoint: "filename 'storages' not found"
+2026-10-18 05:19:19.644 | INFO     | PID<167902>:TID<131386042484544> | models.cddfuse_model:load_model:305 - Loading CDDFuse_exp1_random_crop checkpoint from checkpoints/20261018_024508/CDDFuse_exp1_random_crop_latest.pth (ckp phase=2, epoch=106)...
+2026-10-18 05:19:19.647 | INFO     | PID<167902>:TID<131386042484544> | models.cddfuse_model:load_model:316 - Models loaded successfully from checkpoint.
+2026-10-18 05:19:19.647 | INFO     | PID<167902>:TID<131386042484544> | models.cddfuse_model:load_model:343 - Checkpoint (phase=2, epoch=106) loaded successfully from checkpoints/20261018_024508/CDDFuse_exp1_random_crop_latest.pth.
+2026-10-18 05:19:28.792 | INFO     | PID<167902>:TID<131386042484544> | __main__:<module>:101 - ==> [MSRS] Starting Inference & Evaluation (Total Dataset Size: 361 samples)...
+2026-10-18 05:22:13.656 | INFO     | PID<167902>:TID<131386042484544> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_exp1_random_crop
+  Checkpoint       : CDDFuse_exp1_random_crop_latest.pth
+  Target Dataset   : MSRS
+  Dataset Size     : 361 images
+  Average Loss     : 0.1869
+  Pure Inference   : 99.37 s  (275.25 ms/img | 3.63 FPS)
+  Total Eval Time  : 164.86 s  (2.19 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   6.69   |  43.24   |  11.68   |   3.53   |   1.65   |   1.06   |   0.71   |   1.00   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-18 05:22:13.657 | INFO     | PID<167902>:TID<131386042484544> | __main__:<module>:101 - ==> [TNO] Starting Inference & Evaluation (Total Dataset Size: 25 samples)...
+2026-10-18 05:22:57.530 | INFO     | PID<167902>:TID<131386042484544> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_exp1_random_crop
+  Checkpoint       : CDDFuse_exp1_random_crop_latest.pth
+  Target Dataset   : TNO
+  Dataset Size     : 25 images
+  Average Loss     : 0.6247
+  Pure Inference   : 22.13 s  (885.21 ms/img | 1.13 FPS)
+  Total Eval Time  : 43.87 s  (0.57 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.07   |  44.85   |  13.48   |   2.22   |   1.74   |   0.77   |   0.55   |   1.03   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-18 05:22:57.531 | INFO     | PID<167902>:TID<131386042484544> | __main__:<module>:101 - ==> [RoadScene] Starting Inference & Evaluation (Total Dataset Size: 50 samples)...
+2026-10-18 05:25:30.049 | INFO     | PID<167902>:TID<131386042484544> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_exp1_random_crop
+  Checkpoint       : CDDFuse_exp1_random_crop_latest.pth
+  Target Dataset   : RoadScene
+  Dataset Size     : 50 images
+  Average Loss     : 0.9214
+  Pure Inference   : 83.71 s  (1674.22 ms/img | 0.60 FPS)
+  Total Eval Time  : 152.51 s  (0.33 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.34   |  50.80   |  15.63   |   2.38   |   1.72   |   0.69   |   0.54   |   0.98   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-18 05:50:34.316 | INFO     | PID<191682>:TID<132257838581568> | models.cddfuse_model:load_model:308 - Loading CDDFuse_exp1_random_crop checkpoint from checkpoints/20261018_024508/CDDFuse_exp1_random_crop_epoch_120.pth (ckp phase=2, epoch=120)...
+2026-10-18 05:50:34.326 | INFO     | PID<191682>:TID<132257838581568> | models.cddfuse_model:load_model:319 - Models loaded successfully from checkpoint.
+2026-10-18 05:50:34.326 | INFO     | PID<191682>:TID<132257838581568> | models.cddfuse_model:load_model:346 - Checkpoint (phase=2, epoch=120) loaded successfully from checkpoints/20261018_024508/CDDFuse_exp1_random_crop_epoch_120.pth.
+2026-10-18 05:50:36.614 | INFO     | PID<191682>:TID<132257838581568> | __main__:<module>:101 - ==> [MSRS] Starting Inference & Evaluation (Total Dataset Size: 361 samples)...
+2026-10-18 05:51:51.414 | INFO     | PID<191682>:TID<132257838581568> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_exp1_random_crop
+  Checkpoint       : CDDFuse_exp1_random_crop_epoch_120.pth
+  Target Dataset   : MSRS
+  Dataset Size     : 361 images
+  Average Loss     : 0.1847
+  Pure Inference   : 52.05 s  (144.18 ms/img | 6.94 FPS)
+  Total Eval Time  : 74.80 s  (4.83 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   6.69   |  43.22   |  11.69   |   3.45   |   1.67   |   1.06   |   0.71   |   1.00   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-18 05:51:51.416 | INFO     | PID<191682>:TID<132257838581568> | __main__:<module>:101 - ==> [TNO] Starting Inference & Evaluation (Total Dataset Size: 25 samples)...
+2026-10-18 05:52:07.669 | INFO     | PID<191682>:TID<132257838581568> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_exp1_random_crop
+  Checkpoint       : CDDFuse_exp1_random_crop_epoch_120.pth
+  Target Dataset   : TNO
+  Dataset Size     : 25 images
+  Average Loss     : 0.6460
+  Pure Inference   : 8.61 s  (344.32 ms/img | 2.90 FPS)
+  Total Eval Time  : 16.25 s  (1.54 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.04   |  44.14   |  13.76   |   2.16   |   1.74   |   0.76   |   0.54   |   1.03   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-18 05:52:07.670 | INFO     | PID<191682>:TID<132257838581568> | __main__:<module>:101 - ==> [RoadScene] Starting Inference & Evaluation (Total Dataset Size: 50 samples)...
+2026-10-18 05:53:00.529 | INFO     | PID<191682>:TID<132257838581568> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_exp1_random_crop
+  Checkpoint       : CDDFuse_exp1_random_crop_epoch_120.pth
+  Target Dataset   : RoadScene
+  Dataset Size     : 50 images
+  Average Loss     : 0.9406
+  Pure Inference   : 28.38 s  (567.68 ms/img | 1.76 FPS)
+  Total Eval Time  : 52.86 s  (0.95 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.31   |  49.67   |  15.89   |   2.33   |   1.69   |   0.67   |   0.54   |   0.98   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-18 08:11:43.336 | ERROR    | PID<223364>:TID<126350689204032> | models.cddfuse_model:load_model:343 - Error occurred while loading checkpoint: [Errno 2] No such file or directory: 'checkpoints/Exp3_v2_loss/CDDFuse_exp3_v2_epoch_120.pth'
+2026-10-18 08:12:47.288 | INFO     | PID<224159>:TID<138444794943296> | models.cddfuse_model:load_model:308 - Loading CDDFuse_exp1_random_crop checkpoint from checkpoints/Exp3_v2_loss/CDDFuse_Exp3_v2_epoch_120.pth (ckp phase=2, epoch=120)...
+2026-10-18 08:12:47.291 | ERROR    | PID<224159>:TID<138444794943296> | models.cddfuse_model:load_model:343 - Error occurred while loading checkpoint: Error(s) in loading state_dict for Restormer_Encoder:
+	Missing key(s) in state_dict: "baseFeature.norm1.body.weight", "baseFeature.norm1.body.bias", "baseFeature.norm2.body.weight", "baseFeature.norm2.body.bias". 
+	Unexpected key(s) in state_dict: "baseFeature.norm_mamba.body.weight", "baseFeature.norm_mamba.body.bias", "baseFeature.norm_attn.body.weight", "baseFeature.norm_attn.body.bias", "baseFeature.norm_ffn.body.weight", "baseFeature.norm_ffn.body.bias". 
+	size mismatch for baseFeature.mamba_mixer.mamba.A_log: copying a param with shape torch.Size([64, 16]) from checkpoint, the shape in current model is torch.Size([16, 16]).
+	size mismatch for baseFeature.mamba_mixer.mamba.D: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for baseFeature.mamba_mixer.mamba.in_proj.weight: copying a param with shape torch.Size([128, 32]) from checkpoint, the shape in current model is torch.Size([32, 8]).
+	size mismatch for baseFeature.mamba_mixer.mamba.conv1d.weight: copying a param with shape torch.Size([64, 1, 4]) from checkpoint, the shape in current model is torch.Size([16, 1, 4]).
+	size mismatch for baseFeature.mamba_mixer.mamba.conv1d.bias: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for baseFeature.mamba_mixer.mamba.x_proj.weight: copying a param with shape torch.Size([34, 64]) from checkpoint, the shape in current model is torch.Size([33, 16]).
+	size mismatch for baseFeature.mamba_mixer.mamba.dt_proj.weight: copying a param with shape torch.Size([64, 2]) from checkpoint, the shape in current model is torch.Size([16, 1]).
+	size mismatch for baseFeature.mamba_mixer.mamba.dt_proj.bias: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for baseFeature.mamba_mixer.mamba.out_proj.weight: copying a param with shape torch.Size([32, 64]) from checkpoint, the shape in current model is torch.Size([8, 16]).
+2026-10-18 08:15:04.769 | INFO     | PID<225171>:TID<139475134842688> | models.cddfuse_model:load_model:308 - Loading CDDFuse_exp3_v2 checkpoint from checkpoints/Exp3_v2_loss/CDDFuse_Exp3_v2_epoch_120.pth (ckp phase=2, epoch=120)...
+2026-10-18 08:15:04.773 | INFO     | PID<225171>:TID<139475134842688> | models.cddfuse_model:load_model:319 - Models loaded successfully from checkpoint.
+2026-10-18 08:15:04.773 | INFO     | PID<225171>:TID<139475134842688> | models.cddfuse_model:load_model:346 - Checkpoint (phase=2, epoch=120) loaded successfully from checkpoints/Exp3_v2_loss/CDDFuse_Exp3_v2_epoch_120.pth.
+2026-10-18 08:15:06.491 | INFO     | PID<225171>:TID<139475134842688> | __main__:<module>:101 - ==> [MSRS] Starting Inference & Evaluation (Total Dataset Size: 361 samples)...
+2026-10-18 08:16:26.590 | INFO     | PID<225171>:TID<139475134842688> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_exp3_v2
+  Checkpoint       : CDDFuse_Exp3_v2_epoch_120.pth
+  Target Dataset   : MSRS
+  Dataset Size     : 361 images
+  Average Loss     : 0.1517
+  Pure Inference   : 58.71 s  (162.64 ms/img | 6.15 FPS)
+  Total Eval Time  : 80.10 s  (4.51 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   6.73   |  43.31   |  11.66   |   3.09   |   1.70   |   1.06   |   0.73   |   0.99   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-18 08:16:26.591 | INFO     | PID<225171>:TID<139475134842688> | __main__:<module>:101 - ==> [TNO] Starting Inference & Evaluation (Total Dataset Size: 25 samples)...
+2026-10-18 08:16:42.230 | INFO     | PID<225171>:TID<139475134842688> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_exp3_v2
+  Checkpoint       : CDDFuse_Exp3_v2_epoch_120.pth
+  Target Dataset   : TNO
+  Dataset Size     : 25 images
+  Average Loss     : 0.4360
+  Pure Inference   : 7.97 s  (318.67 ms/img | 3.14 FPS)
+  Total Eval Time  : 15.64 s  (1.60 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.08   |  43.63   |  13.26   |   2.18   |   1.71   |   0.83   |   0.60   |   1.01   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================
+2026-10-18 08:16:42.230 | INFO     | PID<225171>:TID<139475134842688> | __main__:<module>:101 - ==> [RoadScene] Starting Inference & Evaluation (Total Dataset Size: 50 samples)...
+2026-10-18 08:17:21.482 | INFO     | PID<225171>:TID<139475134842688> | __main__:print_metrics_table:63 - 
+=========================================================================================
+                       TEST & EVALUATION SUMMARY REPORT
+=========================================================================================
+  Model Name       : CDDFuse_exp3_v2
+  Checkpoint       : CDDFuse_Exp3_v2_epoch_120.pth
+  Target Dataset   : RoadScene
+  Dataset Size     : 50 images
+  Average Loss     : 0.5756
+  Pure Inference   : 19.13 s  (382.59 ms/img | 2.61 FPS)
+  Total Eval Time  : 39.25 s  (1.27 img/s)
+-----------------------------------------------------------------------------------------
++----------+----------+----------+----------+----------+----------+----------+----------+
+|    EN    |    SD    |    SF    |    MI    |   SCD    |   VIF    |   Qabf   |   SSIM   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+|   7.32   |  50.12   |  15.84   |   2.34   |   1.72   |   0.75   |   0.61   |   0.95   |
++----------+----------+----------+----------+----------+----------+----------+----------+
+=========================================================================================

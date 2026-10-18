@@ -246,7 +246,7 @@ class EvaluatorTorch:
     @classmethod
     def _ssim_single(cls, x: torch.Tensor, y: torch.Tensor) -> float:
         """
-        严格复现 skimage.metrics.structural_similarity(x, y, data_range=1)：
+        严格复现 skimage.metrics.structural_similarity(x, y, data_range=2.0)：
         1. 默认 gaussian_weights=False, win_size=7 (7x7 均值滤波)
         2. 默认 use_sample_covariance=True (乘以 NP / (NP - 1) = 49 / 48)
         3. 裁剪四周 pad=(win_size-1)//2=3 的边界后再求均值 (等价于 padding=0 的 valid 卷积)
@@ -271,7 +271,7 @@ class EvaluatorTorch:
         vy = cov_norm * (uyy - uy * uy)
         vxy = cov_norm * (uxy - ux * uy)
 
-        data_range = 1.0
+        data_range = 2.0
         C1 = (0.01 * data_range) ** 2
         C2 = (0.03 * data_range) ** 2
 

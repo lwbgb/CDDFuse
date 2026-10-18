@@ -261,8 +261,7 @@ class WithBias_LayerNorm_Optimized(nn.Module):
         self.normalized_shape = normalized_shape
 
     def forward(self, x):
-        # 🚀 核心优化：使用 PyTorch 底层 C++ 算子替代手动拼凑
-        # 它会在底层完成 (x-mu)/sqrt(var+eps)*weight + bias，不仅零额外显存，而且速度快几倍
+        # 使用 PyTorch 底层 C++ 算子替代手动拼凑
         return F.layer_norm(x, self.normalized_shape, self.weight, self.bias, 1e-5)
 
 

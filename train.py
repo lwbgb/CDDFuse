@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     total_iters = (opt.start_epoch - 1) * dataset_size  # the total number of training iterations
     total_epochs = opt.start_epoch - 1  # the total number of training epochs
-    epoch_batches: int = dataset_size // opt.batch_size
+    epoch_batches: int = len(dataLoader)  # the number of batches in one epoch
 
     logger.info(
         f"Starting [{opt.model}] training from epoch {opt.start_epoch} to {opt.n_epochs}, "

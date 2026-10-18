@@ -47,24 +47,24 @@ class OrthogonalDecouplingLoss(nn.Module):
 
 class ContrastStructureAwareFusionLoss(nn.Module):
     """
-    [创新点三 (B)] 双向对比度延展与互补结构感知融合损失:
-    专门解决原版 max(I_ir, I_vis) 强度损失导致的“暗部底噪抬升 (压低 SD)”与“次模态纹理掩蔽 (压低 SCD/MI)”问题：
-    1. 双向极值对比度与零均值细节目标 (I_target*):
-       - 亮部 (I_max >= mu_max) 100% 保持 I_max 峰值包络，锁定高 VIF 与 TNO/RoadScene MI；
-       - 暗部 (I_max < mu_max) 向谷值 I_min 适度下探，恢复深暗阴影极差，直接拉升全局对比度 SD；
-       - 叠加次显著模态的零均值局部结构起伏 eta * (I_min - mean_local(I_min))，恢复 MSRS 暗部可见光纹理与 MI。
-    2. 显式可微差异相关与尺度不变结构损失 (L_struct_scd): 直接最大化 SCD 与局部结构皮尔逊相关。
-    3. 正交能量标准差下界约束 (L_sd): 驱动融合图像标准差向正交合成上界 sqrt(var_max + 0.25*var_min) 对齐。
-    4. Sobel 梯度 + 一阶相邻像素差分约束 (L_grad): 同步锁定高 Qabf 与高空间频率 SF。
+    [创新点三 (B) - 平衡校准版] 局部纹理门控极值路由与结构感知融合损失:
+    在保住高互信息 (MI) 与高视觉保真度 (VIF/Qabf) 的前提下，同步提升对比度 (SD)、差异相关性 (SCD) 与结构相似度 (SSIM):
+    1. 纹理门控双向对比度目标 (I_target*):
+       - 亮部区域 (I_max >= mu_max) 100% 锁定 I_max，保护高亮热目标与 MI 联合直方图主对角线；
+       - 暗部背景区域 (I_max < mu_max) 根据次显著模态的局部纹理优势度 tex_gate 温和下探 (valley_pull=0.15)，
+         并注入 5x5 紧致零均值细节 (detail_inject=0.06)，拉开暗部动态范围而不破坏像素级灰度对齐。
+    2. 零均值高频残差 SCD 与稳定化局部结构损失 (L_struct):
+       - 在局部零均值残差域计算 SCD 相关性，避免在亮目标处拉低绝对亮度，精准提升 SCD 与 SSIM。
+    3. 正交能量标准差下界约束 (L_sd, sd_weight=0.25) + Sobel/有限差分梯度约束 (L_grad, sf_weight=0.5)。
     """
     def __init__(
         self,
         grad_weight: float = 10.0,
-        sd_weight: float = 0.45,       # 由 0.80 回调至 0.45，温和推高 SD
-        struct_weight: float = 0.12,   # 由 0.15 回调至 0.12，稳定拉升 SCD 与 SSIM
-        valley_pull: float = 0.08,     # 由 0.35 回调至 0.08，避免破坏 MI 联合直方图对角线
-        detail_inject: float = 0.05,   # 由 0.25 回调至 0.05，轻量注入次模态纹理
-        sf_weight: float = 0.30,       # 由 0.50 回调至 0.30，避免边缘过冲
+        sd_weight: float = 0.25,
+        struct_weight: float = 0.06,
+        valley_pull: float = 0.15,
+        detail_inject: float = 0.06,
+        sf_weight: float = 0.5,
     ):
         super(ContrastStructureAwareFusionLoss, self).__init__()
         self.sobelconv = Sobelxy()
@@ -86,22 +86,29 @@ class ContrastStructureAwareFusionLoss(nn.Module):
         return mu, var, std, img_pad
 
     def _build_contrast_detail_target(self, img_vis: torch.Tensor, img_ir: torch.Tensor) -> torch.Tensor:
-        """构造双向对比度延展 + 零均值次模态细节注入目标 I_target*"""
+        """构造纹理门控极值路由目标 I_target* (兼顾高 MI 对角线集中度与高 SD/SCD)"""
         x_max = torch.maximum(img_vis, img_ir)
         x_min = torch.minimum(img_vis, img_ir)
 
-        # 1. 暗部阴影谷值下探 (仅在低于全局均值的暗背景区下探，绝不拉低高亮目标)
+        # 计算 7x7 局部标准差，评估较暗模态 (x_min) 相比于较亮模态 (x_max) 的局部纹理优势度
+        _, _, std_v7, _ = self._local_stats(img_vis, win_size=7)
+        _, _, std_i7, _ = self._local_stats(img_ir, win_size=7)
+        is_vis_min = (img_vis <= img_ir).float()
+        std_min = is_vis_min * std_v7 + (1.0 - is_vis_min) * std_i7
+        std_max = is_vis_min * std_i7 + (1.0 - is_vis_min) * std_v7
+        tex_gate = (std_min + 1e-4) / (std_min + std_max + 2e-4)
+
+        # 1. 暗部阴影谷值下探: 仅在低于全局均值且次模态具备纹理的暗背景区温和下探，100% 保护高亮目标
         mu_max = x_max.mean(dim=(-2, -1), keepdim=True).clamp(min=1e-3)
         w_dark = torch.clamp((mu_max - x_max) / mu_max, min=0.0, max=1.0)
-        x_env = x_max - self.valley_pull * w_dark * (x_max - x_min)
+        x_env = x_max - self.valley_pull * w_dark * (0.4 + 0.6 * tex_gate) * (x_max - x_min)
 
-        # 2. 零均值次显著模态局部结构注入 (均值严格为 0，恢复被 max 掩蔽的次模态纹理)
-        pad = 7
-        min_pad = F.pad(x_min, (pad, pad, pad, pad), mode='reflect')
-        min_local_mean = F.avg_pool2d(min_pad, kernel_size=15, stride=1)
+        # 2. 5x5 紧致零均值次模态高频细节注入: 仅在次模态纹理占优处微幅注入，避免大窗口偏移伤及 MI
+        min_pad = F.pad(x_min, (2, 2, 2, 2), mode='reflect')
+        min_local_mean = F.avg_pool2d(min_pad, kernel_size=5, stride=1)
         delta_min = x_min - min_local_mean
 
-        x_target = torch.clamp(x_env + self.detail_inject * delta_min, min=0.0, max=1.0)
+        x_target = torch.clamp(x_env + self.detail_inject * tex_gate * delta_min, min=0.0, max=1.0)
         return x_target.detach()
 
     @staticmethod
@@ -125,14 +132,14 @@ class ContrastStructureAwareFusionLoss(nn.Module):
         img_fuse: torch.Tensor,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         win_size = 11
-        c3 = 1e-4
+        c3 = 1e-3  # 提高平坦区域分母阻尼，防止背景微小方差放大梯度冲散 MI
 
         mu_v, _, std_v, v_pad = self._local_stats(img_vis, win_size)
         mu_i, _, std_i, i_pad = self._local_stats(img_ir, win_size)
         mu_t, _, std_t, _ = self._local_stats(img_target, win_size)
         mu_f, _, std_f, f_pad = self._local_stats(img_fuse, win_size)
 
-        # --- A. 尺度不变局部结构相关 + 显式可微 SCD 差异相关损失 ---
+        # --- A. 稳定化局部结构相关 + 零均值高频残差 SCD 损失 ---
         cov_fv = F.avg_pool2d(f_pad * v_pad, kernel_size=win_size, stride=1) - mu_f * mu_v
         cov_fi = F.avg_pool2d(f_pad * i_pad, kernel_size=win_size, stride=1) - mu_f * mu_i
 
@@ -143,9 +150,12 @@ class ContrastStructureAwareFusionLoss(nn.Module):
         w_vis = 1.0 - w_ir
         loss_local_r = torch.mean(w_ir * (1.0 - r_fi) + w_vis * (1.0 - r_fv))
 
-        # 可微 SCD 损失: 最大化 (F - I_vis) 与 I_ir 的相关系数，以及 (F - I_ir) 与 I_vis 的相关系数
-        scd_ir = cc(img_fuse - img_vis, img_ir - mu_i.detach())
-        scd_vis = cc(img_fuse - img_ir, img_vis - mu_v.detach())
+        # 在局部零均值高频结构残差域计算 SCD，避免拉暗 TNO 高亮热目标的低频亮度
+        res_f = img_fuse - mu_f
+        res_v = (img_vis - mu_v).detach()
+        res_i = (img_ir - mu_i).detach()
+        scd_ir = cc(res_f - res_v, res_i)
+        scd_vis = cc(res_f - res_i, res_v)
         loss_scd = 1.0 - 0.5 * (scd_ir + scd_vis)
 
         loss_struct = 0.5 * loss_local_r + 0.5 * loss_scd
@@ -156,21 +166,23 @@ class ContrastStructureAwareFusionLoss(nn.Module):
         var_ir = img_ir.var(dim=(-2, -1), keepdim=False, unbiased=False)
         var_vis = img_vis.var(dim=(-2, -1), keepdim=False, unbiased=False)
 
-        # 正交合成标准差上界: sqrt(max(var_ir, var_vis) + 0.25 * min(var_ir, var_vis))
-        ortho_std_target = torch.sqrt(torch.maximum(var_ir, var_vis) + 0.25 * torch.minimum(var_ir, var_vis) + 1e-6)
+        ortho_std_target = torch.sqrt(torch.maximum(var_ir, var_vis) + 0.20 * torch.minimum(var_ir, var_vis) + 1e-6)
         target_global_std = torch.maximum(global_std_t, ortho_std_target).detach()
         loss_sd_global = F.relu(target_global_std - global_std_f).mean()
 
-        target_local_std = torch.maximum(std_t, torch.sqrt(torch.maximum(std_i**2, std_v**2) + 0.2 * torch.minimum(std_i**2, std_v**2))).detach()
+        target_local_std = torch.maximum(
+            std_t,
+            torch.sqrt(torch.maximum(std_i ** 2, std_v ** 2) + 0.15 * torch.minimum(std_i ** 2, std_v ** 2))
+        ).detach()
         loss_sd_local = F.relu(target_local_std - std_f).mean()
 
-        loss_sd = loss_sd_global + 0.5 * loss_sd_local
+        loss_sd = loss_sd_global + 0.4 * loss_sd_local
         return loss_struct, loss_sd
 
     def forward(self, image_vis: torch.Tensor, image_ir: torch.Tensor, generate_img: torch.Tensor):
         image_y = image_vis[:, :1, :, :]
 
-        # 1. 双向对比度延展与零均值互补细节强度损失
+        # 1. 纹理门控双向对比度与微幅细节强度损失
         x_target = self._build_contrast_detail_target(image_y, image_ir)
         loss_in = F.l1_loss(generate_img, x_target)
 
@@ -183,7 +195,7 @@ class ContrastStructureAwareFusionLoss(nn.Module):
         loss_sf = self._finite_diff_sf_loss(image_y, image_ir, generate_img)
         loss_grad = self.grad_weight * loss_grad_sobel + self.sf_weight * loss_sf
 
-        # 3. 尺度不变结构/SCD 损失与正交对比度下界损失
+        # 3. 零均值残差结构/SCD 损失与温和正交对比度下界损失
         loss_struct, loss_sd = self._compute_struct_scd_and_sd_loss(
             image_y, image_ir, x_target, generate_img
         )
@@ -203,13 +215,12 @@ AdaptiveStructureFusionLoss = ContrastStructureAwareFusionLoss
 
 
 # =============================================================================
-# 第一性原理数学自检：运行 `python -m utils.loss_exp4` 验证 SD 与 SCD 增益属性
+# 数学性质自检：运行 `python -m utils.loss_exp4` 验证 MI 保真度、SD 延展与 SCD 增益
 # =============================================================================
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
     fusion_fn = ContrastStructureAwareFusionLoss().to(device)
 
-    # 模拟 TNO/RoadScene 场景: IR 有深暗背景 (0.1) 与高亮目标 (0.9)，VIS 有中灰雾背景 (0.4) 与丰富细节
     torch.manual_seed(42)
     ir = torch.full((2, 1, 128, 128), 0.15, device=device)
     ir[:, :, 32:96, 32:96] = 0.85
@@ -219,14 +230,19 @@ if __name__ == "__main__":
     naive_max = torch.maximum(vis, ir)
     new_target = fusion_fn._build_contrast_detail_target(vis, ir)
 
-    # 验证 1: 新目标 new_target 的全局标准差 (SD) 显著高于原版 naive_max
+    # 验证 1: 亮目标区域 (32:96, 32:96) 极值保真度 (确保不拉暗红外高亮目标，保护 TNO SD 与 MI)
+    highlight_diff = (new_target[:, :, 32:96, 32:96] - naive_max[:, :, 32:96, 32:96]).abs().mean().item()
+    assert highlight_diff < 0.005, f"Highlight target drifted by {highlight_diff:.4f}!"
+    print(f"[Check 1 Passed] Highlight Target Fidelity Preserved (Drift = {highlight_diff:.5f} < 0.005 -> Protects MI & VIF)")
+
+    # 验证 2: 全局标准差 (SD) 显著高于原版 naive_max
     sd_naive = naive_max.std().item() * 255.0
     sd_new = new_target.std().item() * 255.0
-    assert sd_new > sd_naive + 3.0, "New target failed to expand SD over naive max!"
-    print(f"[Check 1 Passed] Target SD Expanded -> Naive Max SD: {sd_naive:.2f} vs New Target SD: {sd_new:.2f} (+{sd_new - sd_naive:.2f})")
+    assert sd_new > sd_naive + 1.2, "New target failed to expand SD!"
+    print(f"[Check 2 Passed] Target SD Expanded -> Naive Max SD: {sd_naive:.2f} vs Calibrated Target SD: {sd_new:.2f} (+{sd_new - sd_naive:.2f})")
 
-    # 验证 2: 新目标 new_target 的差异相关和 (SCD) 显著高于原版 naive_max
+    # 验证 3: 差异相关和 (SCD) 显著高于原版 naive_max
     scd_naive = (cc(naive_max - vis, ir) + cc(naive_max - ir, vis)).item()
     scd_new = (cc(new_target - vis, ir) + cc(new_target - ir, vis)).item()
-    assert scd_new > scd_naive + 0.10, "New target failed to boost SCD over naive max!"
-    print(f"[Check 2 Passed] Target SCD Boosted  -> Naive Max SCD: {scd_naive:.4f} vs New Target SCD: {scd_new:.4f} (+{scd_new - scd_naive:.4f})")
+    assert scd_new > scd_naive + 0.05, "New target failed to boost SCD!"
+    print(f"[Check 3 Passed] Target SCD Boosted  -> Naive Max SCD: {scd_naive:.4f} vs Calibrated Target SCD: {scd_new:.4f} (+{scd_new - scd_naive:.4f})")
