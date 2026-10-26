@@ -1,4 +1,9 @@
+# 输入：root/name/ir 与 root/name/vi，相对路径以项目目录为基准。
 root: datasets/
 name: MSRS_train
 crop_size: 128
-stride: 200
+stride: 128
+
+# 默认保护已有 H5；只有明确需要重建时才改为 true。
+output_dir: data/
+overwrite: false

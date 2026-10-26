@@ -8,3 +8,6 @@ class DatasetConfig(BaseConfig):
     name: str = "MSRS_train"
     crop_size: int = 128
     stride: int = 200
+    output_dir: str = "data/"
+    overwrite: bool = False
+    progress: bool = True

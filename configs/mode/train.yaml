@@ -1,9 +1,9 @@
 n_epochs: 120 # total epoch
 epoch_gap: 40  # epoches of Phase I 
-start_epoch: 50
-continue_train: True
+start_epoch: 1
+continue_train: False
 n_epochs_decay: 20
-lr: 1.5e-4
+lr: 1e-4
 min_lr: 1e-6
 weight_decay: 0
 print_epoch_freq: 1
@@ -31,11 +31,11 @@ optim_gamma: 0.5
 
 # device
 device: gpu
-use_bf16: True
+use_bf16: False
 seed: 3407
 
 # dataset
-batch_size: 8
+batch_size: 4
 shuffle: True
 num_threads: 8
 drop_last: False

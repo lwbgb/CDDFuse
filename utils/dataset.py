@@ -10,27 +10,62 @@ import numpy as np
 import torch
 from omegaconf import DictConfig
 from PIL import Image
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader, Dataset, RandomSampler, SequentialSampler
 
 
 class H5Dataset(Dataset):
+    """读取配对 float32 数组；IR/VIS 返回顺序与现有训练入口保持一致。"""
+
     def __init__(self, h5file_path):
         self.h5file_path = str(h5file_path)
-        with h5py.File(self.h5file_path, "r") as h5f:
-            self.dataset_len = h5f["ir_patchs"].shape[0]
-            if h5f["vis_patchs"].shape[0] != self.dataset_len:
-                raise ValueError("H5 中红外与可见光样本数量不一致")
+        with h5py.File(self.h5file_path, "r") as f:
+            ir, vis = f["ir_patchs"], f["vis_patchs"]
+            if not isinstance(ir, h5py.Dataset) or not isinstance(vis, h5py.Dataset):
+                raise ValueError("H5 必须使用配对数组布局 [N,1,H,W]")
+            if ir.shape != vis.shape or ir.ndim != 4 or ir.shape[1] != 1 or min(ir.shape) <= 0:
+                raise ValueError(f"H5 配对维度不正确：IR={ir.shape}，VIS={vis.shape}")
+            if ir.dtype != np.dtype("float32") or vis.dtype != np.dtype("float32"):
+                raise ValueError("H5 patch 必须为 float32")
+            self.dataset_len = ir.shape[0]
         self.h5f = None
+        self._owner_pid = None
 
     def __len__(self):
         return self.dataset_len
 
+    def close(self) -> None:
+        if self.h5f is not None:
+            self.h5f.close()
+            self.h5f = None
+        self._owner_pid = None
+
+    def __getstate__(self):
+        # spawn worker 不能序列化打开的 HDF5 句柄；原进程句柄仍可继续用。
+        state = self.__dict__.copy()
+        state["h5f"] = None
+        state["_owner_pid"] = None
+        return state
+
+    def __del__(self):
+        handle = getattr(self, "h5f", None)
+        if handle is not None:
+            try:
+                handle.close()
+            except (AttributeError, RuntimeError):
+                pass  # 解释器退出时 HDF5 资源可能已经释放。
+
     def __getitem__(self, index):
-        if self.h5f is None:
-            self.h5f = h5py.File(self.h5file_path, "r", swmr=True)
+        if self.h5f is None or self._owner_pid != os.getpid():
+            # fork 后也重新打开，避免父子进程共用同一个 HDF5 句柄。
+            self.close()
+            self.h5f = h5py.File(self.h5file_path, "r")
+            self._owner_pid = os.getpid()
         ir = self.h5f["ir_patchs"][index]
         vis = self.h5f["vis_patchs"][index]
-        return torch.from_numpy(ir).float(), torch.from_numpy(vis).float()
+        for name, values in (("IR", ir), ("VIS", vis)):
+            if not np.isfinite(values).all() or np.any(values < 0) or np.any(values > 1):
+                raise ValueError(f"H5 patch {index} 的 {name} 不为 [0,1] 有限值")
+        return torch.from_numpy(ir), torch.from_numpy(vis)
 
 
 def is_low_contrast(image, fraction_threshold=0.1):
@@ -146,16 +181,20 @@ def seed_worker(worker_id):
 
 
 def get_loader(opt: DictConfig, dataset: Dataset) -> DataLoader:
-    num_workers = int(opt.get("num_threads", 0))
-    generator = torch.Generator().manual_seed(int(opt.get("seed", 3407)))
+    num_workers = int(opt.get("num_threads", 4))
+    seed = int(opt.get("seed", 3407))
+    # worker 建立/重建会消耗 RNG；分开随机流，防止它改变下一 epoch 的 shuffle。
+    sampler_generator = torch.Generator().manual_seed(seed)
+    worker_generator = torch.Generator().manual_seed(seed + 1)
+    sampler = RandomSampler(dataset, generator=sampler_generator) if opt.shuffle else SequentialSampler(dataset)
     return DataLoader(
         dataset,
         batch_size=opt.batch_size,
-        shuffle=opt.shuffle,
+        sampler=sampler,
         num_workers=num_workers,
         drop_last=opt.drop_last,
         pin_memory=torch.cuda.is_available(),
         persistent_workers=(num_workers > 0),
         worker_init_fn=seed_worker,
-        generator=generator,
+        generator=worker_generator,
     )

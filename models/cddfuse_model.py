@@ -6,22 +6,10 @@ import torch
 import torch.nn as nn
 import kornia
 from models.base_model import BaseModel
-# from models.net import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
-
-# [Exp-1 修改 1] 切换为导入 net_exp1
-# from models.net_exp1 import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
-
-# [Exp-2 修改 1] 切换为导入 net_exp2
-# from models.net_exp2_v2 import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
-
-# [Exp-3 修改 1] 切换为导入 net_exp3
-from models.net_exp3_v2_loss import Restormer_Encoder, Restormer_Decoder, MIMOHybridMambaVisionFusion, CrossModalityDetailFusion
+from models.net import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
 
 from utils import networks, path_util
 from utils.loss import Fusionloss, cc, LegacySSIMLoss
-
-# [Exp-4 修改 1] 导入 Exp-4 非线性解耦损失与结构自适应融合损失
-from utils.loss_exp4 import OrthogonalDecouplingLoss, ContrastStructureAwareFusionLoss
 
 from utils.logger_initializer import logger
 from schemas.model_checkpoint import ModelCkp
@@ -33,25 +21,17 @@ class CDDFuseModel(BaseModel):
     def __init__(self, opt: DictConfig):
         BaseModel.__init__(self, opt)
         self.name = opt.model
-        self.use_bf16: bool = opt.get("use_bf16", True)
-        # 控制变量开关：False 对应消融表第3行 (Exp-3_Clean 原版Loss)，True 对应消融表第4行 (Exp-4_Final 创新点三Loss)
-        self.use_exp4_loss: bool = opt.get("use_exp4_loss", True)
+        self.use_bf16: bool = opt.get("use_bf16", False)
         if opt.isTrain:
             self._epoch = opt.start_epoch
             self._phase = 1 if opt.start_epoch <= opt.epoch_gap else 2
         else:
-            self._phase = 2  # 测试阶段直接进入 Phase II
+            self._phase = 2
 
-        # 定义网络结构
         self.DIDF_Encoder = Restormer_Encoder().to(self.device)
         self.DIDF_Decoder = Restormer_Decoder().to(self.device)
-
-        # self.BaseFuseLayer = BaseFeatureExtraction(dim=64, num_heads=8).to(self.device)
-        # self.DetailFuseLayer = DetailFeatureExtraction(num_layers=1).to(self.device)
-
-        # [Exp-3 修改 2] 实例化 MIMO 低频融合层与跨模态极性感知高频融合层    
-        self.BaseFuseLayer = MIMOHybridMambaVisionFusion(in_dim=128, out_dim=64, num_heads=8).to(self.device)
-        self.DetailFuseLayer = CrossModalityDetailFusion(dim=64, num_layers=1).to(self.device)
+        self.BaseFuseLayer = BaseFeatureExtraction(dim=64, num_heads=8).to(self.device)
+        self.DetailFuseLayer = DetailFeatureExtraction(num_layers=1).to(self.device)
 
         self.models: dict[str, nn.Module] = {
             "DIDF_Encoder": self.DIDF_Encoder,
@@ -63,29 +43,16 @@ class CDDFuseModel(BaseModel):
         if self.isTrain:
             self.MSELoss = nn.MSELoss()
             self.L1Loss = nn.L1Loss()
-            self.Loss_ssim = LegacySSIMLoss(window_size=opt.SSIM_window_size, reduction="mean", max_val=1.0).to(self.device)
+            self.Loss_ssim = LegacySSIMLoss(opt.SSIM_window_size, reduction="mean").to(self.device)
             self.spatial_grad = kornia.filters.SpatialGradient().to(self.device)
+
+            self.criteria_decomp = None
+            self.criteria_fusion = Fusionloss().to(self.device)
             
-            if self.use_exp4_loss:
-                logger.info("[Loss Mode] Enabled Innovation 3: OrthogonalDecouplingLoss + ContrastStructureAwareFusionLoss")
-                self.criteria_decomp = OrthogonalDecouplingLoss(
-                    lambda_ortho=opt.get("lambda_ortho", 0.05),
-                ).to(self.device)
-                self.criteria_fusion = ContrastStructureAwareFusionLoss(
-                    grad_weight=10.0,
-                    sd_weight=opt.get("sd_weight", 0.5),
-                    struct_weight=opt.get("struct_weight", 0.12),
-                ).to(self.device)
-            else:
-                logger.info("[Loss Mode] Using Original CDDFuse Baseline Loss (for clean architecture ablation)")
-                self.criteria_decomp = None
-                self.criteria_fusion = Fusionloss().to(self.device)
-            
-            # [Exp-2 修改 2] 使用 Mamba 安全参数分组构建优化器（自动将 A_log, D, dt_proj.bias, norm 的 weight_decay 设为 0）
-            self.optimizer_encoder = self._build_optimizer(self.DIDF_Encoder, opt.lr, opt.weight_decay)
-            self.optimizer_decoder = self._build_optimizer(self.DIDF_Decoder, opt.lr, opt.weight_decay)
-            self.optimizer_base = self._build_optimizer(self.BaseFuseLayer, opt.lr, opt.weight_decay)
-            self.optimizer_detail = self._build_optimizer(self.DetailFuseLayer, opt.lr, opt.weight_decay)
+            self.optimizer_encoder = torch.optim.Adam(self.DIDF_Encoder.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
+            self.optimizer_decoder = torch.optim.Adam(self.DIDF_Decoder.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
+            self.optimizer_base = torch.optim.Adam(self.BaseFuseLayer.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
+            self.optimizer_detail = torch.optim.Adam(self.DetailFuseLayer.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
             self.optimizers: dict[str, torch.optim.Optimizer] = {
                 "optimizer_encoder": self.optimizer_encoder,
                 "optimizer_decoder": self.optimizer_decoder,
@@ -103,27 +70,6 @@ class CDDFuseModel(BaseModel):
                 "scheduler_base_fusion": self.scheduler_base,
                 "scheduler_detail_fusion": self.scheduler_detail,
             }
-
-    @staticmethod
-    def _build_optimizer(model: nn.Module, lr: float, weight_decay: float) -> torch.optim.Optimizer:
-        """为含 Mamba 的混合模型构建安全参数分组"""
-        decay_params = []
-        no_decay_params = []
-        for name, param in model.named_parameters():
-            if not param.requires_grad:
-                continue
-            if any(nd in name for nd in [
-                "A_log", "D", "dt_proj.bias", "norm", "temperature",
-                "gamma", "scale_ssm", "contrast_logit"
-            ]):
-                no_decay_params.append(param)
-            else:
-                decay_params.append(param)
-        param_groups = [
-            {"params": decay_params, "weight_decay": weight_decay},
-            {"params": no_decay_params, "weight_decay": 0.0},
-        ]
-        return torch.optim.Adam(param_groups, lr=lr)
 
     def get_phase(self):
         return self._phase
@@ -183,12 +129,8 @@ class CDDFuseModel(BaseModel):
                 self.feature_VIS_Base, self.feature_VIS_Detail, _ = self.DIDF_Encoder(self.data_VIS)
                 self.feature_IR_Base, self.feature_IR_Detail, _ = self.DIDF_Encoder(self.data_IR)
                 
-                # self.feature_Fuse_Base = self.BaseFuseLayer(self.feature_IR_Base + self.feature_VIS_Base)
-                # self.feature_Fuse_Detail = self.DetailFuseLayer(self.feature_IR_Detail + self.feature_VIS_Detail)
-
-                # [Exp-3 修改 3] 传入双模态特征张量，执行复数 MIMO 融合与极性感知细节融合
-                self.feature_Fuse_Base = self.BaseFuseLayer(self.feature_IR_Base, self.feature_VIS_Base)
-                self.feature_Fuse_Detail = self.DetailFuseLayer(self.feature_IR_Detail, self.feature_VIS_Detail)
+                self.feature_Fuse_Base = self.BaseFuseLayer(self.feature_IR_Base + self.feature_VIS_Base)
+                self.feature_Fuse_Detail = self.DetailFuseLayer(self.feature_IR_Detail + self.feature_VIS_Detail)
 
                 self.data_Fuse, _ = self.DIDF_Decoder(self.data_VIS, self.feature_Fuse_Base, self.feature_Fuse_Detail)
 
@@ -199,14 +141,9 @@ class CDDFuseModel(BaseModel):
         feat_ir_b = self.feature_IR_Base.float()
         feat_ir_d = self.feature_IR_Detail.float()
 
-        if self.use_exp4_loss:
-            self.loss_decomp, self.loss_cc_Base, self.loss_cc_Detail = self.criteria_decomp(
-                feat_vis_b, feat_ir_b, feat_vis_d, feat_ir_d
-            )
-        else:
-            self.loss_cc_Base = cc(feat_vis_b, feat_ir_b)
-            self.loss_cc_Detail = cc(feat_vis_d, feat_ir_d)
-            self.loss_decomp = (self.loss_cc_Detail ** 2) / (1.01 + self.loss_cc_Base)
+        self.loss_cc_Base = cc(feat_vis_b, feat_ir_b)
+        self.loss_cc_Detail = cc(feat_vis_d, feat_ir_d)
+        self.loss_decomp = (self.loss_cc_Detail ** 2) / (1.01 + self.loss_cc_Base)
 
         if self._phase == 1:
             vis_hat = self.data_VIS_hat.float()
@@ -222,17 +159,9 @@ class CDDFuseModel(BaseModel):
                 + self.MSELoss(self.data_IR, ir_hat)
             )
 
-            if self.use_exp4_loss:
-                # 创新点三 (A): 双模态对称梯度重构约束
-                self.loss_gradient: torch.Tensor = self.L1Loss(
-                    self.spatial_grad(self.data_VIS), self.spatial_grad(vis_hat)
-                ) + self.L1Loss(
-                    self.spatial_grad(self.data_IR), self.spatial_grad(ir_hat)
-                )
-            else:
-                self.loss_gradient: torch.Tensor = self.L1Loss(
-                    self.spatial_grad(self.data_VIS), self.spatial_grad(vis_hat)
-                )
+            self.loss_gradient: torch.Tensor = self.L1Loss(
+                self.spatial_grad(self.data_VIS), self.spatial_grad(vis_hat)
+            )
 
             self.loss_total: torch.Tensor = (
                 self.opt.coeff_mse_loss_VF * self.loss_MSE_VIS
@@ -265,7 +194,7 @@ class CDDFuseModel(BaseModel):
         }
 
     def optimize_parameters(self):
-        """更新网络权重（每个 iteration 调用一次）。"""
+        """更新网络权重"""
         for model in self.models.values():
             model.train()
 
@@ -293,11 +222,6 @@ class CDDFuseModel(BaseModel):
             self.optimizer_detail.step()
 
     def load_model(self, ckp_name: str, prefix: str | Path = "") -> ModelCkp:
-        """
-        [Exp-3 修改 4] 智能权重加载：
-        支持直接加载 Exp-2_v2 的 Phase I (epoch_40.pth) 权重热启动 Phase II 训练，
-        自动跳过 Phase I 未训练的旧融合层权重冲突。
-        """
         try:
             load_path = Path(self.opt.checkpoint_root) / prefix / ckp_name
             path_util.check_file_path(load_path)
@@ -306,12 +230,8 @@ class CDDFuseModel(BaseModel):
             model_ckp = ModelCkp.from_dict(checkpoint)
 
             logger.info(f"Loading {self.name} checkpoint from {load_path} (ckp phase={model_ckp.phase}, epoch={model_ckp.epoch})...")
-            is_phase_switch = self.isTrain and (model_ckp.phase == 1) and (self._phase == 2)
 
             for name, model in self.models.items():
-                if is_phase_switch and name in ["BaseFuseLayer", "DetailFuseLayer"]:
-                    logger.info(f"[Hot-Start] Skipping Phase-I untrained '{name}' from checkpoint; keeping new Exp-3 initialization.")
-                    continue
                 model_state = model_ckp.models.get(name)
                 if model_state is None:
                     raise KeyError(f"Checkpoint 中缺少模型 '{name}' 的参数")
@@ -320,8 +240,6 @@ class CDDFuseModel(BaseModel):
 
             if self.isTrain:
                 for name, optimizer in self.optimizers.items():
-                    if is_phase_switch and name in ["optimizer_base_fusion", "optimizer_detail_fusion"]:
-                        continue
                     optimizer_state = model_ckp.optimizers.get(name)
                     if optimizer_state is not None:
                         try:
@@ -330,8 +248,6 @@ class CDDFuseModel(BaseModel):
                             logger.warning(f"Optimizer '{name}' state dict skipped due to group change: {opt_e}")
 
                 for name, scheduler in self.schedulers.items():
-                    if is_phase_switch and name in ["scheduler_base_fusion", "scheduler_detail_fusion"]:
-                        continue
                     scheduler_state = model_ckp.schedulers.get(name)
                     if scheduler_state is not None:
                         try:

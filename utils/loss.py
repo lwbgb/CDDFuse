@@ -33,8 +33,8 @@ class Sobelxy(nn.Module):
                   [-1, -2, -1]]
         kernelx = torch.FloatTensor(kernelx).unsqueeze(0).unsqueeze(0)
         kernely = torch.FloatTensor(kernely).unsqueeze(0).unsqueeze(0)
-        self.weightx = nn.Parameter(data=kernelx, requires_grad=False).to("cpu")
-        self.weighty = nn.Parameter(data=kernely, requires_grad=False).to("cpu")
+        self.register_buffer("weightx", kernelx)
+        self.register_buffer("weighty", kernely)
     def forward(self,x):
         sobelx=F.conv2d(x, self.weightx, padding=1)
         sobely=F.conv2d(x, self.weighty, padding=1)
@@ -67,10 +67,16 @@ class LegacySSIMLoss(nn.Module):
 
         # 不写入 checkpoint，避免给旧权重增加必需字段。
         self.register_buffer(
-            "window", window.unsqueeze(0), persistent=False
+            "window", window.reshape(1, window_size, window_size), persistent=False
         )
 
     def forward(self, img1, img2):
+        # Float32 tensors alone do not prevent cuDNN TF32 convolution. The
+        # legacy E[x*x]-E[x]^2 SSIM variance is sensitive to that rounding.
+        with torch.backends.cudnn.flags(allow_tf32=False):
+            return self._forward_ieee(img1, img2)
+
+    def _forward_ieee(self, img1, img2):
         if img1.ndim != 4 or img1.shape != img2.shape:
             raise ValueError("输入必须为相同形状的 [B, C, H, W]")
         if img1.device != img2.device or img1.dtype != img2.dtype:
