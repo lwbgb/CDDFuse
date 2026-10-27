@@ -9,7 +9,16 @@ from loguru import logger
 from hydra import initialize, compose
 
 
-def init_logger(file_name: str | None = None):
+def init_logger(root: Path | str | None = None, file_name: str | None = None) -> int:
+    """初始化日志记录器，包括控制台输出和文件输出
+
+    Args:
+        root (Path | str | None, optional): 日志文件根目录. Defaults to None.
+        file_name (str | None, optional): 日志文件名. Defaults to None.、
+        
+    Returns:
+        int: 返回日志记录器的句柄，用于后续操作，如关闭或删除日志记录器
+    """
     with initialize(version_base=None, config_path="../configs"):
         opt: DictConfig = compose(config_name="loguru")
     logger.remove()
@@ -18,7 +27,7 @@ def init_logger(file_name: str | None = None):
                diagnose=opt.diagnose, enqueue=True)
     # 输出到文件
     try:
-        root = Path(opt.root)
+        root = Path(root) if root else Path(opt.root)
         parent = root.parent
         if not parent.exists():
             raise OSError(f"path:{parent} not exist!")
@@ -29,7 +38,7 @@ def init_logger(file_name: str | None = None):
         file_path = root / opt.prefix / file_name if opt.prefix else root / file_name
     except:
         raise IOError("Logger 文件路径配置出错！")
-    logger.add(file_path, level='INFO', format=opt.format, colorize=False, backtrace=opt.backtrace,
+    return logger.add(file_path, level='INFO', format=opt.format, colorize=False, backtrace=opt.backtrace,
                diagnose=opt.diagnose, rotation=opt.rotation, retention=opt.retention, encoding=opt.encoding, enqueue=True)
     
 

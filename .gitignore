@@ -5,7 +5,9 @@ MSRS_train/
 MSRS-main/
 .vscode/
 checkpoints/
-# rgb/
+docs/
+logs/
+rgb/
 # test_img/
 
 # idea

@@ -182,7 +182,7 @@ def seed_worker(worker_id):
 
 def get_loader(opt: DictConfig, dataset: Dataset) -> DataLoader:
     num_workers = int(opt.get("num_threads", 4))
-    seed = int(opt.get("seed", 3407))
+    seed = opt.seed
     # worker 建立/重建会消耗 RNG；分开随机流，防止它改变下一 epoch 的 shuffle。
     sampler_generator = torch.Generator().manual_seed(seed)
     worker_generator = torch.Generator().manual_seed(seed + 1)

@@ -18,3 +18,7 @@ class TestTorch(unittest.TestCase):
         std = torch.std(input, range(1, input.ndim), keepdim=True, unbiased=False)
         output = (input - mean) / (std + 1e-5)
         print(f"output:\n{output}")
+        
+        
+    def test01(self):
+        print()

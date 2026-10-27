@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from schemas.base_config import BaseConfig
 
@@ -20,6 +20,8 @@ class TrainConfig(BaseConfig):
     ckp_name: str = "CDDFuse"
     load_dir: str = ""
     continue_train: bool = False
+    reset_lr_on_resume: bool = False
+    resume_lrs: dict[str, float] = field(default_factory=dict)
     norm: str = "layer"
 
     coeff_mse_loss_VF: float = 1.0
@@ -32,10 +34,17 @@ class TrainConfig(BaseConfig):
     lr_policy: str = "step"
     optim_step: int = 20
     optim_gamma: float = 0.5
+    phase1_optim_step: int | None = None
+    phase1_optim_gamma: float | None = None
+    phase2_optim_step: int | None = None
+    phase2_optim_gamma: float | None = None
 
     device: str = "cpu"
-    use_bf16: bool = True
-    seed: int = 3407
+    use_bf16: bool = False
+    cudnn_allow_tf32: bool = False
+    matmul_allow_tf32: bool = False
+    cudnn_benchmark: bool = False
+    seed: int = 1696
 
     batch_size: int = 4
     shuffle: bool = True
@@ -50,3 +59,11 @@ class TrainConfig(BaseConfig):
     augment: bool = False
     filter_low_contrast: bool = True
     max_crop_attempts: int = 20
+
+    validation_enabled: bool = False
+    validation_dir: str = "datasets/RoadScene_val"
+    validation_test_dir: str = "test_img/RoadScene"
+    validation_expected_pairs: int = 50
+    validation_start_epoch: int | None = None
+    validation_every: int = 5
+    validation_metric: str = "Qabf"

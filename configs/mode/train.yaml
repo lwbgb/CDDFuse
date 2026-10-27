@@ -11,8 +11,8 @@ print_iter_freq: 4
 display_freq: 100
 save_latest_freq: 1
 save_epoch_freq: 10
-ckp_name: CDDFuse_exp1_random_crop_latest.pth
-load_dir: "20261018_005400"
+ckp_name: CDDFuse_latest.pth
+load_dir: "20261027_101010"
 norm: layer
 isTrain: True
 
@@ -28,14 +28,26 @@ clip_grad_norm_value: 0.01
 lr_policy: step
 optim_step: 20
 optim_gamma: 0.5
+# step 调度器：全部为 null 时保留原调度；填写任一项后按阶段独立计数。
+# 未填写的项回退到上面的 optim_step / optim_gamma。
+phase1_optim_step: 20
+phase1_optim_gamma: 0.5
+phase2_optim_step: 40
+phase2_optim_gamma: 0.8
+reset_lr_on_resume: True # 保留 Adam 状态，按 resume_lrs 选择性覆盖学习率并重建 scheduler
+resume_lrs:
+  # optimizer_encoder: 1e-5
+  # optimizer_decoder: 1e-5
+  optimizer_base_fusion: 1e-4
+  optimizer_detail_fusion: 1e-4
 
 # device
 device: gpu
-use_bf16: False
-seed: 3407
+use_bf16: True  # 浮点计算加速
+seed: 1027
 
 # dataset
-batch_size: 4
+batch_size: 8
 shuffle: True
 num_threads: 8
 drop_last: False
@@ -48,3 +60,13 @@ samples_per_epoch: 6487
 augment: false
 filter_low_contrast: true
 max_crop_attempts: 20
+
+# 独立 RoadScene 验证（示例，默认关闭；不能使用 test_img/RoadScene 选模型）
+validation_enabled: false
+validation_dir: datasets/RoadScene
+validation_test_dir: test_img/RoadScene
+validation_expected_pairs: 50
+# null 保持原逻辑；指定整数则从该轮开始，之后每 validation_every 轮验证。
+validation_start_epoch: null
+validation_every: 5
+validation_metric: Qabf

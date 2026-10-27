@@ -28,16 +28,16 @@ def create_dataset(opt: DictConfig, h5_file_name: str) -> DataLoader:
         dataset = H5Dataset(h5_file_path)
     elif mode == "random_crop":
         dataset = PairedRandomCropDataset(
-        image_root=opt.dataset_dir,
-        ir_dir=opt.get("ir_dir", "ir"),
-        vis_dir=opt.get("vis_dir", "vi"),
-        crop_size=opt.get("crop_size", 128),
-        samples_per_epoch=opt.get("samples_per_epoch", 6000),
-        augment=opt.get("augment", False),
-        filter_low_contrast=opt.get("filter_low_contrast", True),
-        max_crop_attempts=opt.get("max_crop_attempts", 20),
-        seed=opt.get("seed", 3407),
-    )
+            image_root=opt.dataset_dir,
+            ir_dir=opt.get("ir_dir", "ir"),
+            vis_dir=opt.get("vis_dir", "vi"),
+            crop_size=opt.get("crop_size", 128),
+            samples_per_epoch=opt.get("samples_per_epoch", 6000),
+            augment=opt.get("augment", False),
+            filter_low_contrast=opt.get("filter_low_contrast", True),
+            max_crop_attempts=opt.get("max_crop_attempts", 20),
+            seed=opt.get("seed", 3407),
+        )
     else:
         raise ValueError(f"未知 dataset_mode={mode!r}，应为 h5 或 random_crop")
     if len(dataset) == 0:

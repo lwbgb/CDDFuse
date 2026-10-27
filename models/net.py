@@ -203,6 +203,9 @@ class BiasFree_LayerNorm(nn.Module):
         self.normalized_shape = normalized_shape
 
     def forward(self, x):
+        # BF16仅用于适合的算子，归一化统计保持FP32；FP32路径保持原运算顺序。
+        if x.dtype in (torch.float16, torch.bfloat16):
+            x = x.float()
         sigma = x.var(-1, keepdim=True, unbiased=False)
         return x / torch.sqrt(sigma+1e-5) * self.weight
 
@@ -242,6 +245,8 @@ class WithBias_LayerNorm(nn.Module):
         self.normalized_shape = normalized_shape
 
     def forward(self, x):
+        if x.dtype in (torch.float16, torch.bfloat16):
+            x = x.float()
         mu = x.mean(-1, keepdim=True)
         sigma = x.var(-1, keepdim=True, unbiased=False)
         return (x - mu) / torch.sqrt(sigma+1e-5) * self.weight + self.bias
@@ -269,10 +274,9 @@ class LayerNorm(nn.Module):
     def __init__(self, dim, LayerNorm_type):
         super(LayerNorm, self).__init__()
         if LayerNorm_type == 'BiasFree':
-            # self.body = BiasFree_LayerNorm(dim)
-            self.body = BiasFree_LayerNorm_Optimized(dim)
+            self.body = BiasFree_LayerNorm(dim)
         else:
-            self.body = WithBias_LayerNorm_Optimized(dim)
+            self.body = WithBias_LayerNorm(dim)
 
     def forward(self, x):
         h, w = x.shape[-2:]
@@ -375,6 +379,8 @@ class OverlapPatchEmbed(nn.Module):
         return x
 
 
+
+
 class Restormer_Encoder(nn.Module):
     def __init__(self,
                  inp_channels=1,
@@ -397,11 +403,11 @@ class Restormer_Encoder(nn.Module):
         self.baseFeature = BaseFeatureExtraction(dim=dim, num_heads = heads[2])
         self.detailFeature = DetailFeatureExtraction()
              
-    def forward(self, inp_img):
+    def forward(self, inp_img) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         inp_enc_level1 = self.patch_embed(inp_img)
         out_enc_level1 = self.encoder_level1(inp_enc_level1)
-        base_feature = self.baseFeature(out_enc_level1)
-        detail_feature = self.detailFeature(out_enc_level1)
+        base_feature: torch.Tensor = self.baseFeature(out_enc_level1)
+        detail_feature: torch.Tensor = self.detailFeature(out_enc_level1)
         return base_feature, detail_feature, out_enc_level1
 
 class Restormer_Decoder(nn.Module):

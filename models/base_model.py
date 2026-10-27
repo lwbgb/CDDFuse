@@ -1,5 +1,5 @@
 import os
-from time import localtime, strftime
+from datetime import datetime
 from typing import Any
 from omegaconf import DictConfig
 import torch
@@ -12,7 +12,7 @@ import torch.distributed as dist
 from schemas.base_config import BaseConfig
 from schemas.model_checkpoint import ModelCkp
 from utils import networks, path_util
-from utils.device import init_ddp
+from utils.device import init_ddp, init_cuda
 from utils.logger_initializer import logger
 
 
@@ -27,13 +27,13 @@ class BaseModel(ABC):
     """
 
     def __init__(self, opt: DictConfig):
-        torch.backends.cudnn.benchmark = True
         self.opt = opt
-        self.init_time = strftime("%Y%m%d_%H%M%S", localtime())
-        self.device = init_ddp()
+        init_cuda(opt)
+        self.init_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.device: torch.device = init_ddp()
         self.isTrain = opt.get("isTrain", False)
         self.ckp_name = opt.get("ckp_name")
-        self.save_dir = Path(opt.checkpoint_root) / self.init_time
+        self.save_dir = Path(opt.checkpoint_root) / opt.load_dir if self.isTrain else Path(opt.checkpoint_root) / self.init_time
 
         self.models: dict[str, nn.Module] = dict()
         self.losses: dict[str, Any] = dict()
@@ -73,13 +73,11 @@ class BaseModel(ABC):
         pass
 
     def setup(self):
-        # 将模型挂载到设备并初始化权重
         for name, net in self.models.items():
             net = networks.init_net(net, self.opt)
-
-        # 测试或是继续训练时加载模型
-        if not self.isTrain or self.opt.continue_train:
-            model_ckp: ModelCkp = self.load_model(self.ckp_name, self.opt.load_dir)
+            
+        if not self.isTrain or self.opt.get("continue_train", False):
+            model_ckp: ModelCkp = self.load_model(self.ckp_name, self.opt.get("load_dir", ""))
 
         self.print_networks(self.opt.verbose)
 

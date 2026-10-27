@@ -1,3 +1,8 @@
 model: CDDFuse
 verbose: False
 checkpoint_root: checkpoints/
+
+# CUDA
+cudnn_allow_tf32: false # cuDNN 卷积运算加速
+matmul_allow_tf32: false # CUDA 矩阵乘法加速
+cudnn_benchmark: false # cuDNN 自动寻找最优卷积算法

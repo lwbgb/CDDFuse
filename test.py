@@ -43,8 +43,6 @@ def print_metrics_table(dataset_name: str, model_name: str, metrics: np.ndarray,
 
     report = (
         f"\n{border}\n"
-        f"                       TEST & EVALUATION SUMMARY REPORT\n"
-        f"{border}\n"
         f"  Model Name       : {model_name.strip()}\n"
         f"  Checkpoint       : {ckpt_name}\n"
         f"  Target Dataset   : {dataset_name}\n"

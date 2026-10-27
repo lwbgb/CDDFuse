@@ -1,5 +1,8 @@
 import os
+import random
 
+import numpy as np
+from omegaconf import DictConfig
 import torch
 import torch.distributed as dist
 
@@ -21,6 +24,22 @@ def init_ddp():
         device = torch.device("cpu")
     print(f"Initialized with device {device}")
     return device
+
+
+def init_cuda(opt: DictConfig):
+    """Initialize CUDA settings based on the provided configuration."""
+    torch.backends.cudnn.allow_tf32 = bool(opt.get("cudnn_allow_tf32", True))
+    torch.backends.cuda.matmul.allow_tf32 = bool(opt.get("matmul_allow_tf32", False))
+    torch.backends.cudnn.benchmark = bool(opt.get("cudnn_benchmark", True))
+    
+
+def set_seed(seed: int = 1696) -> None:
+    """Set random seed for reproducibility across various libraries."""
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
 
 
 def cleanup_ddp():

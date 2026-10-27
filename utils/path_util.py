@@ -2,6 +2,7 @@ from pathlib import Path
 
 
 def check_file_path(path: str | Path, create: bool = False) -> bool:
+    """检查指定路径是否可用于文件操作。"""
     path = Path(path)
 
     if path.exists() and not path.is_file():

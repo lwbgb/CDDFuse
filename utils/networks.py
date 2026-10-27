@@ -1,3 +1,4 @@
+from omegaconf import DictConfig
 import torch
 from torch import nn
 import os
@@ -5,7 +6,48 @@ from torch.optim import lr_scheduler
 from torch.nn import init
 import torch.distributed as dist
 
-def get_scheduler(optimizer, opt):
+class PhaseStepLR(lr_scheduler.StepLR):
+    """阶段内独立计数的 StepLR，阶段参数和当前阶段随 state_dict 保存。"""
+
+    def __init__(self, optimizer: torch.optim.Optimizer,
+                 phase_settings: dict[int, dict[str, float | int]], phase: int):
+        self.phase_settings = phase_settings
+        self.training_phase = phase
+        settings = phase_settings[phase]
+        super().__init__(optimizer, step_size=settings["step"], gamma=settings["gamma"])
+
+    def set_phase(self, phase: int) -> None:
+        if phase == self.training_phase:
+            return
+        if phase not in self.phase_settings:
+            raise ValueError(f"未知训练阶段：{phase}")
+        self.training_phase = phase
+        # 保留当前 lr；新阶段以当前值为基准，从 0 次调度开始。
+        for group in self.optimizer.param_groups:
+            group["initial_lr"] = group["lr"]
+        settings = self.phase_settings[phase]
+        super().__init__(self.optimizer, step_size=settings["step"], gamma=settings["gamma"])
+
+
+def phase_step_settings(opt: DictConfig) -> dict[int, dict[str, float | int]] | None:
+    fields = ("phase1_optim_step", "phase1_optim_gamma", "phase2_optim_step", "phase2_optim_gamma")
+    if not any(opt.get(key) is not None for key in fields):
+        return None
+    settings = {}
+    for phase in (1, 2):
+        step = opt.get(f"phase{phase}_optim_step")
+        gamma = opt.get(f"phase{phase}_optim_gamma")
+        step = opt.optim_step if step is None else step
+        gamma = opt.optim_gamma if gamma is None else gamma
+        if isinstance(step, bool) or not isinstance(step, int) or step < 1:
+            raise ValueError(f"phase{phase}_optim_step 必须为正整数")
+        if not 0 < float(gamma) <= 1:
+            raise ValueError(f"phase{phase}_optim_gamma 必须在 (0, 1] 内")
+        settings[phase] = {"step": step, "gamma": float(gamma)}
+    return settings
+
+
+def get_scheduler(optimizer, opt: DictConfig, phase: int | None = None):
     """Return a learning rate scheduler
 
     Parameters:
@@ -21,12 +63,18 @@ def get_scheduler(optimizer, opt):
     if opt.lr_policy == "linear":
 
         def lambda_rule(epoch):
-            lr_l = 1.0 - max(0, epoch + opt.epoch_count - opt.n_epochs) / float(opt.n_epochs_decay + 1)
+            lr_l = 1.0 - max(0, epoch + opt.get("epoch_count", 1) - opt.n_epochs) / float(opt.n_epochs_decay + 1)
             return lr_l
 
         scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda_rule)
     elif opt.lr_policy == "step":
-        scheduler = lr_scheduler.StepLR(optimizer, step_size=opt.optim_step, gamma=opt.optim_gamma)
+        settings = phase_step_settings(opt)
+        if settings is None:
+            scheduler = lr_scheduler.StepLR(optimizer, step_size=opt.optim_step, gamma=opt.optim_gamma)
+        else:
+            if phase is None:
+                phase = 1 if opt.get("start_epoch", 1) <= opt.get("epoch_gap", 40) else 2
+            scheduler = PhaseStepLR(optimizer, settings, phase)
     elif opt.lr_policy == "plateau":
         scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, mode="min", factor=0.2, threshold=0.01, patience=5)
     elif opt.lr_policy == "cosine":
