@@ -34,7 +34,7 @@ phase1_optim_step: 20
 phase1_optim_gamma: 0.5
 phase2_optim_step: 40
 phase2_optim_gamma: 0.8
-reset_lr_on_resume: True # 保留 Adam 状态，按 resume_lrs 选择性覆盖学习率并重建 scheduler
+reset_lr_on_resume: False # 保留 Adam 状态，按 resume_lrs 选择性覆盖学习率并重建 scheduler
 resume_lrs:
   # optimizer_encoder: 1e-5
   # optimizer_decoder: 1e-5

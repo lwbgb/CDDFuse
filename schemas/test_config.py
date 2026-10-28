@@ -18,4 +18,7 @@ class TestConfig(BaseConfig):
     output_dir: str = "test_results/"
     load_dir: str = "base_model"
     ckp_name: str = "CDDFuse_phase2_epoch120.pth"
+    max_images: int | None = None
+    evaluator_backend: str = "torch"
+    run_dir: str | None = None
     ...

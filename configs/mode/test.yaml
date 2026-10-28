@@ -6,8 +6,10 @@ shuffle: False
 no_flip: True
 drop_last: False
 num_test: 500
+evaluator_backend: torch # cpu or torch
 
 root: test_img/
 output_dir: test_result/
-load_dir: "20261027_101010"
-ckp_name: CDDFuse_epoch_160.pth
+load_dir: "bf16_bs8_seed1696"
+ckp_name: CDDFuse_epoch_120.pth
+

@@ -214,7 +214,8 @@ class Evaluator():
     @classmethod
     def SSIM(cls, image_F, image_A, image_B):
         cls.input_check(image_F, image_A, image_B)
-        return ssim(image_F,image_A, data_range=1)+ssim(image_F,image_B, data_range=1)
+        # 历史公开评测口径：0–255 float32 输入，range=2，两模态求和。
+        return ssim(image_F, image_A, data_range=2.0) + ssim(image_F, image_B, data_range=2.0)
 
 
 def VIFF(image_F, image_A, image_B):

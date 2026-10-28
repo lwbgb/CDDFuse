@@ -4,7 +4,10 @@ import os
 from skimage.io import imsave
 
 def image_read_cv2(path, mode='RGB'):
-    img_BGR = cv2.imread(path).astype('float32')
+    img_BGR = cv2.imread(str(path))
+    if img_BGR is None:
+        raise FileNotFoundError(f'图像不存在或无法解码：{path}')
+    img_BGR = img_BGR.astype('float32')
     assert mode == 'RGB' or mode == 'GRAY' or mode == 'YCrCb', 'mode error'
     if mode == 'RGB':
         img = cv2.cvtColor(img_BGR, cv2.COLOR_BGR2RGB)

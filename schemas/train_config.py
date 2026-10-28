@@ -38,6 +38,8 @@ class TrainConfig(BaseConfig):
     phase1_optim_gamma: float | None = None
     phase2_optim_step: int | None = None
     phase2_optim_gamma: float | None = None
+    reset_lr_on_resume: bool = False
+    resume_lrs: dict[str, float] = field(default_factory=dict)
 
     device: str = "cpu"
     use_bf16: bool = False
@@ -46,22 +48,22 @@ class TrainConfig(BaseConfig):
     cudnn_benchmark: bool = False
     seed: int = 1696
 
-    batch_size: int = 4
+    batch_size: int = 8
     shuffle: bool = True
-    num_threads: int = 4
+    num_threads: int = 8
     drop_last: bool = False
     dataset_root: str = "data/"
     dataset_mode: str = "h5"
     h5_file_name: str = "MSRS_train_imgsize_128_stride_200.h5"
     dataset_dir: str = "datasets/MSRS_train"
     crop_size: int = 128
-    samples_per_epoch: int = 6000
+    samples_per_epoch: int = 6487
     augment: bool = False
     filter_low_contrast: bool = True
     max_crop_attempts: int = 20
 
     validation_enabled: bool = False
-    validation_dir: str = "datasets/RoadScene_val"
+    validation_dir: str = "datasets/RoadScene"
     validation_test_dir: str = "test_img/RoadScene"
     validation_expected_pairs: int = 50
     validation_start_epoch: int | None = None
