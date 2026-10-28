@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+from decimal import Decimal, ROUND_HALF_UP
 from datetime import datetime
 import hashlib
 from pathlib import Path
@@ -34,7 +35,7 @@ PAPER_METRICS = {
 
 def evaluate(opt: TestConfig) -> Path:
     backend = opt.evaluator_backend
-    result_dir = Path(opt.output_dir) / opt.model.strip() / opt.load_dir
+    result_dir = Path(opt.output_dir) / opt.model.strip() / opt.load_dir / Path(opt.ckp_name).stem
     result_dir.mkdir(parents=True, exist_ok=True)
     OmegaConf.save(opt, result_dir / 'config.yaml')
     sink = init_logger(result_dir, 'test.log')
@@ -44,6 +45,7 @@ def evaluate(opt: TestConfig) -> Path:
             return EvaluatorTorch.evaluate_all(fi, ir, vis, device=model.device)
     else:
         evaluate_metrics = evaluate_cpu
+
     try:
         model = CDDFuseModel(opt)
         model.setup()
@@ -56,7 +58,7 @@ def evaluate(opt: TestConfig) -> Path:
         
         completed_pairs = 0
         datasets = ["MSRS", "TNO", "RoadScene"]
-        for dataset_name in datasets:
+        for dataset_name in datasets[-1:]:
             test_folder = Path(opt.root) / dataset_name
             test_out_folder = result_dir / dataset_name
             test_out_folder.mkdir(parents=True, exist_ok=True)
@@ -117,6 +119,10 @@ def evaluate(opt: TestConfig) -> Path:
                             raise FloatingPointError(f'{dataset_name}/{model.ir_img_name} {backend} 指标无效或非有限')
                         row = {'image': model.ir_img_name, 'png': png_path.name, 'fusion_loss': loss,
                                'inference_sec': seconds, **dict(zip(METRICS, values.tolist()))}
+                        # 仅在 CSV 写出时四舍五入到四位小数，汇总仍使用原始精度。
+                        for key in ('fusion_loss', 'inference_sec', *METRICS):
+                            row[key] = format(Decimal(str(row[key])).quantize(
+                                Decimal('0.0001'), rounding=ROUND_HALF_UP), '.4f')
                         writer.writerow(row)
                         stream.flush()
                         

@@ -11,6 +11,8 @@ from torch import nn
 import torch.distributed as dist
 from schemas.base_config import BaseConfig
 from schemas.model_checkpoint import ModelCkp
+from schemas.test_config import TestConfig
+from schemas.train_config import TrainConfig
 from utils import networks, path_util
 from utils.device import init_ddp, init_cuda
 from utils.logger_initializer import logger
@@ -26,14 +28,15 @@ class BaseModel(ABC):
         -- <optimize_parameters>:计算损失、梯度，并更新网络权重。
     """
 
-    def __init__(self, opt: DictConfig):
+    def __init__(self, opt: TrainConfig | TestConfig):
         self.opt = opt
         init_cuda(opt)
         self.init_time = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.device: torch.device = init_ddp()
         self.isTrain = opt.get("isTrain", False)
         self.ckp_name = opt.get("ckp_name")
-        self.save_dir = Path(opt.checkpoint_root) / opt.load_dir if self.isTrain else Path(opt.checkpoint_root) / self.init_time
+        self.save_root = Path(opt.checkpoint_root) / opt.model
+        self.save_dir = self.save_root / opt.load_dir if opt.get("continue_train", False) else self.save_root / self.init_time
 
         self.models: dict[str, nn.Module] = dict()
         self.losses: dict[str, Any] = dict()

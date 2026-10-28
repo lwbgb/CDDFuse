@@ -21,4 +21,5 @@ class TestTorch(unittest.TestCase):
         
         
     def test01(self):
-        print()
+        datasets = ["MSRS", "TNO", "RoadScene"]
+        print(list(datasets[-1]))
