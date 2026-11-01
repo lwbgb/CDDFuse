@@ -12,14 +12,14 @@ import torch
 from torch.utils.data import DataLoader
 
 from schemas.custom_dataset import CustomImageDataset
-from utils.evaluator_torch import EvaluatorTorch
+from utils import test_metrics
 from utils.img_read_save import image_read_cv2
 from utils.logger_initializer import logger
 
 if TYPE_CHECKING:
     from models.cddfuse_model import CDDFuseModel
 
-METRICS = ("EN", "SD", "SF", "MI", "SCD", "VIF", "Qabf", "SSIM")
+METRICS = ("EN", "SD", "SF", "MI", "SCD", "VIF", "Qabf", "SSIM", "CC", "AG", "MSE")
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff"}
 
 
@@ -47,6 +47,15 @@ class RoadSceneValidator:
         self.metric = str(opt.get("validation_metric", "Qabf"))
         if self.interval < 1 or self.metric not in METRICS:
             raise ValueError(f"validation_every 必须为正整数，validation_metric 应为 {METRICS}")
+        self.evaluator = test_metrics.FusionEvaluator()
+        description = self.evaluator.describe()
+        self.selection_mode = "min" if self.metric == "MSE" else "max"
+        self.metric_protocol = {
+            "implementation": "utils.test_metrics.FusionEvaluator",
+            "source_sha256": hashlib.sha256(Path(test_metrics.__file__).read_bytes()).hexdigest(),
+            "protocol": description["protocol"], "config": description["config"],
+            "metrics": list(METRICS),
+        }
         names = image_names(self.root, "ir")
         if not names or names != image_names(self.root, "vi"):
             raise ValueError("验证集 ir/vi 必须按相同文件名逐对匹配，且不能为空")
@@ -78,9 +87,13 @@ class RoadSceneValidator:
             self.best = json.loads(self.best_path.read_text(encoding="utf-8"))
             if self.best["fingerprint"] != self.fingerprint or self.best["selection_metric"] != self.metric:
                 raise ValueError("已有 best 记录的验证集或选择指标不同，请使用新的实验目录")
+            if (self.best.get("metric_protocol") != self.metric_protocol
+                    or self.best.get("selection_mode") != self.selection_mode):
+                raise ValueError("已有 best 记录的指标口径不同或缺少协议，不能与新指标混比，请使用新的实验目录")
         self.manifest = {"root": str(self.root), "fingerprint": self.fingerprint,
                          "count": len(names), "names": names,
-                         "selection_metric": self.metric, "selection_mode": "max",
+                         "selection_metric": self.metric, "selection_mode": self.selection_mode,
+                         "metric_protocol": self.metric_protocol,
                          "validation_start_epoch": self.start_epoch, "validation_every": self.interval}
 
     def should_validate(self, model: CDDFuseModel) -> bool:
@@ -111,11 +124,18 @@ class RoadSceneValidator:
                     fused = model.data_Fuse
                     if not torch.isfinite(fused).all():
                         raise FloatingPointError("验证输出出现 NaN/Inf")
-                    fused = ((fused - fused.min()) / (fused.max() - fused.min() + 1e-12) * 255)
+                    fused = ((fused - fused.min()) / (fused.max() - fused.min() + 1e-8) * 255)
                     fused = fused.squeeze().to(torch.uint8).float()
                     ir = torch.round(model.data_IR.squeeze() * 255)
                     vi = torch.round(model.data_VIS.squeeze() * 255)
-                    total += EvaluatorTorch.evaluate_all(fused, ir, vi, device=model.device)
+                    # 与 test_metrics_eval.py 使用同一指标实现；保持现有验证图像处理不变。
+                    result = self.evaluator.evaluate(ir, vi, fused, metrics=METRICS)
+                    values = np.asarray([result.values[name] for name in METRICS], dtype=np.float64)
+                    if not np.isfinite(values).all():
+                        raise FloatingPointError(
+                            f"验证指标未定义或非有限：{model.ir_img_name if hasattr(model, 'ir_img_name') else data[2]}；"
+                            f"{result.issues}，不保存 best checkpoint")
+                    total += values
         finally:
             model.isTrain = was_training
             for module, training in states:
@@ -128,10 +148,12 @@ class RoadSceneValidator:
     def run(self, model: CDDFuseModel) -> dict:
         metrics = self.evaluate(model)
         score = metrics[self.metric]
-        improved = self.best is None or score > self.best["score"]
+        improved = self.best is None or (score < self.best["score"] if self.selection_mode == "min"
+                                         else score > self.best["score"])
         record = {"epoch": model.get_epoch(), "pairs": len(self.loader.dataset),
                   "metrics": metrics, "selection_metric": self.metric, "score": score,
-                  "fingerprint": self.fingerprint, "improved": improved}
+                  "fingerprint": self.fingerprint, "improved": improved,
+                  "selection_mode": self.selection_mode, "metric_protocol": self.metric_protocol}
         self.output_dir.mkdir(parents=True, exist_ok=True)
         (self.output_dir / "validation_manifest.json").write_text(
             json.dumps(self.manifest, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -144,5 +166,8 @@ class RoadSceneValidator:
             temporary.replace(self.best_path)
         with (self.output_dir / "validation_history.jsonl").open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(record, allow_nan=False) + "\n")
-        logger.info(f"RoadScene validation epoch={model.get_epoch()}, {self.metric}={score:.6f}, best={improved}")
+        logger.info(f"RoadScene validation epoch={model.get_epoch()}, {self.metric}={score:.6f}, "
+                    f"mode={self.selection_mode}, best={improved}; "
+                    f"evaluator={self.metric_protocol['implementation']}; "
+                    + ", ".join(f"{name}={metrics[name]:.6f}" for name in METRICS))
         return record

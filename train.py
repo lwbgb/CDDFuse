@@ -38,7 +38,7 @@ def train(opt: TrainConfig) -> Path:
     try:
         mode = 'BF16' if model.use_bf16 else 'FP32'
         logger.info(f'Starting {opt.model}: epoch {opt.start_epoch}/{opt.n_epochs}, batch={opt.batch_size} pairs, '
-                    f'seed={opt.get("seed", 3407)}, precision={mode}, device={model.device}')
+                    f'seed={opt.get("seed", 1696)}, precision={mode}, device={model.device}')
         logger.info(f'TF32 cuDNN/matmul={torch.backends.cudnn.allow_tf32}/{torch.backends.cuda.matmul.allow_tf32}, '
                     f'benchmark={torch.backends.cudnn.benchmark}, deterministic={torch.are_deterministic_algorithms_enabled()}; '
                     f'dataset={getattr(loader.dataset, "h5file_path", opt.get("dataset_dir"))}, output={model.save_dir}')

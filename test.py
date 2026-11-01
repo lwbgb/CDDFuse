@@ -58,7 +58,7 @@ def evaluate(opt: TestConfig) -> Path:
         
         completed_pairs = 0
         datasets = ["MSRS", "TNO", "RoadScene"]
-        for dataset_name in datasets[-1:]:
+        for dataset_name in datasets[:]:
             test_folder = Path(opt.root) / dataset_name
             test_out_folder = result_dir / dataset_name
             test_out_folder.mkdir(parents=True, exist_ok=True)

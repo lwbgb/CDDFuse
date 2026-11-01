@@ -1,9 +1,9 @@
 n_epochs: 120 # total epoch
 epoch_gap: 40  # epoches of Phase I 
-start_epoch: 1
-continue_train: False
+start_epoch: 101
+continue_train: True
 n_epochs_decay: 20
-lr: 1e-4
+lr: 5e-5
 min_lr: 1e-6
 weight_decay: 0
 print_epoch_freq: 1
@@ -11,8 +11,8 @@ print_iter_freq: 4
 display_freq: 100
 save_latest_freq: 1
 save_epoch_freq: 10
-ckp_name: CDDFuse_latest.pth
-load_dir: "20261027_101010"
+ckp_name: CDDFuse_epoch_100.pth
+load_dir: "bf16_bs8_seed1696"
 norm: layer
 isTrain: True
 
@@ -22,6 +22,8 @@ coeff_mse_loss_IF: 1.
 coeff_decomp: 2.      # alpha2 and alpha4
 coeff_tv: 5.
 SSIM_window_size: 11
+# E0=0; E1>0, phase II only. 1.0 is an unvalidated starting weight.
+coeff_ssim_fusion: 1.0
 
 # Optimizer
 clip_grad_norm_value: 0.01
@@ -30,10 +32,10 @@ optim_step: 20
 optim_gamma: 0.5
 # step 调度器：全部为 null 时保留原调度；填写任一项后按阶段独立计数。
 # 未填写的项回退到上面的 optim_step / optim_gamma。
-phase1_optim_step: 20
-phase1_optim_gamma: 0.5
-phase2_optim_step: 40
-phase2_optim_gamma: 0.8
+phase1_optim_step: null
+phase1_optim_gamma: null
+phase2_optim_step: null
+phase2_optim_gamma: null
 reset_lr_on_resume: False # 保留 Adam 状态，按 resume_lrs 选择性覆盖学习率并重建 scheduler
 resume_lrs:
   # optimizer_encoder: 1e-5
@@ -44,7 +46,7 @@ resume_lrs:
 # device
 device: gpu
 use_bf16: True  # 浮点计算加速
-seed: 1027
+seed: 1
 
 # dataset
 batch_size: 8
@@ -62,11 +64,11 @@ filter_low_contrast: true
 max_crop_attempts: 20
 
 # 独立 RoadScene 验证（示例，默认关闭；不能使用 test_img/RoadScene 选模型）
-validation_enabled: false
-validation_dir: datasets/RoadScene
+validation_enabled: True
+validation_dir: datasets/RoadScene_valid
 validation_test_dir: test_img/RoadScene
 validation_expected_pairs: 50
 # null 保持原逻辑；指定整数则从该轮开始，之后每 validation_every 轮验证。
 validation_start_epoch: null
 validation_every: 5
-validation_metric: Qabf
+validation_metric: SD

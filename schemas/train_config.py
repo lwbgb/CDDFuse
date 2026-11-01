@@ -29,6 +29,7 @@ class TrainConfig(BaseConfig):
     coeff_decomp: float = 2.0
     coeff_tv: float = 5.0
     SSIM_window_size: int = 11
+    coeff_ssim_fusion: float = 0.0
 
     clip_grad_norm_value: float = 0.01
     lr_policy: str = "step"

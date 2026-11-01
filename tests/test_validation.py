@@ -198,10 +198,57 @@ class ValidationTests(unittest.TestCase):
 
     def test_nonfinite_metrics_do_not_save_best(self):
         model = DemoModel()
-        with patch("utils.validation.EvaluatorTorch.evaluate_all", return_value=np.full(8, np.nan)):
+        from utils.test_metrics import EvaluationResult
+        with patch.object(self.validator.evaluator, "evaluate",
+                          return_value=EvaluationResult(dict.fromkeys(METRICS, float("nan")), {"VIF": "injected"})):
             with self.assertRaises(FloatingPointError):
                 self.validator.run(model)
         self.assertFalse(model.saved)
+
+
+    def test_mse_selects_smaller_values(self):
+        self.opt.validation_metric = "MSE"
+        validator = RoadSceneValidator(self.opt, self.root / "mse_run")
+        model = DemoModel()
+        for epoch, score in ((41, 10.0), (45, 11.0), (50, 9.0)):
+            model.epoch = epoch
+            with patch.object(validator, "evaluate", return_value=dict.fromkeys(METRICS, score)):
+                validator.run(model)
+        self.assertEqual(len(model.saved), 2)
+        self.assertEqual(validator.best["score"], 9.0)
+        self.assertEqual(validator.best["selection_mode"], "min")
+
+    def test_old_or_different_metric_protocol_rejected_on_resume(self):
+        model = DemoModel()
+        with patch.object(self.validator, "evaluate", return_value=dict.fromkeys(METRICS, 0.4)):
+            self.validator.run(model)
+        path = self.root / "run/best_validation.json"
+        original_record = json.loads(path.read_text())
+        self.opt.continue_train = True
+        for protocol in (None, {"protocol": "different"}):
+            record = dict(original_record)
+            if protocol is None:
+                record.pop("metric_protocol")
+            else:
+                record["metric_protocol"] = protocol
+            path.write_text(json.dumps(record))
+            with self.assertRaisesRegex(ValueError, "指标口径不同"):
+                RoadSceneValidator(self.opt, self.root / "run")
+
+    def test_metric_calculation_matches_new_evaluator(self):
+        from utils.test_metrics import FusionEvaluator
+        model = DemoModel()
+        references = []
+        with torch.inference_mode():
+            for data in self.validator.loader:
+                ir, vi = data[:2]
+                fused = model.models["fusion"](torch.cat((ir, vi), dim=1))
+                fused = ((fused-fused.min())/(fused.max()-fused.min()+1e-8)*255).squeeze().to(torch.uint8).float()
+                values = FusionEvaluator().evaluate(torch.round(ir.squeeze()*255),
+                                                   torch.round(vi.squeeze()*255), fused, metrics=METRICS).values
+                references.append([values[name] for name in METRICS])
+        actual = self.validator.evaluate(model)
+        np.testing.assert_allclose([actual[name] for name in METRICS], np.mean(references, axis=0), rtol=0, atol=0)
 
 
 if __name__ == "__main__":

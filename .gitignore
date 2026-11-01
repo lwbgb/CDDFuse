@@ -8,6 +8,7 @@ checkpoints/
 docs/
 logs/
 rgb/
+datasets/
 # test_img/
 
 # idea

@@ -145,15 +145,41 @@ def complex_decoupling_loss(feat_V, feat_I):
     return cc_amp, cc_phase
 
 
-def cc(img1, img2):
+# def cc(img1, img2):
+#     eps = torch.finfo(torch.float32).eps
+#     """Correlation coefficient for (N, C, H, W) image; torch.float32 [0.,1.]."""
+#     N, C, _, _ = img1.shape
+#     img1 = img1.reshape(N, C, -1)
+#     img2 = img2.reshape(N, C, -1)
+#     img1 = img1 - img1.mean(dim=-1, keepdim=True)
+#     img2 = img2 - img2.mean(dim=-1, keepdim=True)
+#     cc = torch.sum(img1 * img2, dim=-1) / (eps + torch.sqrt(torch.sum(img1 **
+#                                                                       2, dim=-1)) * torch.sqrt(torch.sum(img2**2, dim=-1)))
+#     cc = torch.clamp(cc, -1., 1.)
+#     return cc.mean()
+
+def cc(
+    img1: torch.Tensor,
+    img2: torch.Tensor,
+    reduction: str = "mean",
+) -> torch.Tensor:
     eps = torch.finfo(torch.float32).eps
-    """Correlation coefficient for (N, C, H, W) image; torch.float32 [0.,1.]."""
-    N, C, _, _ = img1.shape
-    img1 = img1.reshape(N, C, -1)
-    img2 = img2.reshape(N, C, -1)
-    img1 = img1 - img1.mean(dim=-1, keepdim=True)
-    img2 = img2 - img2.mean(dim=-1, keepdim=True)
-    cc = torch.sum(img1 * img2, dim=-1) / (eps + torch.sqrt(torch.sum(img1 **
-                                                                      2, dim=-1)) * torch.sqrt(torch.sum(img2**2, dim=-1)))
-    cc = torch.clamp(cc, -1., 1.)
-    return cc.mean()
+    n, c = img1.shape[:2]
+
+    x = img1.reshape(n, c, -1)
+    y = img2.reshape(n, c, -1)
+    x = x - x.mean(dim=-1, keepdim=True)
+    y = y - y.mean(dim=-1, keepdim=True)
+
+    numerator = (x * y).sum(dim=-1)
+    # 修复反向传播时的梯度不稳定问题，避免除以零
+    sx = x.square().sum(dim=-1).clamp_min(1e-12)
+    sy = y.square().sum(dim=-1).clamp_min(1e-12)
+    denominator = sx.sqrt() * sy.sqrt() + eps
+    corr = (numerator / denominator).clamp(-1.0, 1.0)
+
+    if reduction == "none":
+        return corr.square().mean()
+    if reduction == "mean":
+        return corr.mean()
+    raise ValueError(f"Unsupported reduction: {reduction}")

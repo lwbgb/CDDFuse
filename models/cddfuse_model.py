@@ -13,6 +13,7 @@ from models.net import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtracti
 
 from utils import networks, path_util
 from utils.loss import Fusionloss, cc, LegacySSIMLoss
+from utils.fusion_structure_loss import DualSourceSSIMLoss
 
 from utils.logger_initializer import logger
 from schemas.model_checkpoint import ModelCkp
@@ -52,6 +53,10 @@ class CDDFuseModel(BaseModel):
 
             self.criteria_decomp = None
             self.criteria_fusion = Fusionloss().to(self.device)
+            self.coeff_ssim_fusion = float(opt.get("coeff_ssim_fusion", 0.0))
+            if not math.isfinite(self.coeff_ssim_fusion) or self.coeff_ssim_fusion < 0:
+                raise ValueError("coeff_ssim_fusion must be finite and nonnegative")
+            self.criteria_structure = DualSourceSSIMLoss(opt.SSIM_window_size).to(self.device)
             
             self.optimizer_encoder = torch.optim.Adam(self.DIDF_Encoder.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
             self.optimizer_decoder = torch.optim.Adam(self.DIDF_Decoder.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
@@ -154,8 +159,8 @@ class CDDFuseModel(BaseModel):
             feat_ir_detail = self.feature_IR_Detail.float()
     
             self.loss_cc_Base = cc(feat_vis_base, feat_ir_base)
-            self.loss_cc_Detail = cc(feat_vis_detail, feat_ir_detail)
-            self.loss_decomp = (self.loss_cc_Detail ** 2) / (1.01 + self.loss_cc_Base)
+            self.loss_cc_Detail = cc(feat_vis_detail, feat_ir_detail, "none")
+            self.loss_decomp = (self.loss_cc_Detail) / (1.01 + self.loss_cc_Base)
     
             if self._phase == 1:
                 vis_hat = self.data_VIS_hat.float()
@@ -181,6 +186,8 @@ class CDDFuseModel(BaseModel):
                     + self.opt.coeff_decomp * self.loss_decomp
                     + self.opt.coeff_tv * self.loss_gradient
                 )
+                if not torch.isfinite(self.loss_total):
+                    raise FloatingPointError(f"Non-finite loss at epoch {self._epoch}")
                 self.loss_total.backward()
     
                 self.losses |= {
@@ -194,12 +201,23 @@ class CDDFuseModel(BaseModel):
                 self.loss_fusion, _, _ = self.criteria_fusion(self.data_VIS, self.data_IR, fuse_out)
     
                 self.loss_total: torch.Tensor = self.loss_fusion + self.opt.coeff_decomp * self.loss_decomp
+                if self.coeff_ssim_fusion > 0:
+                    loss_structure, loss_structure_ir, loss_structure_vis = self.criteria_structure(
+                        fuse_out, self.data_IR, self.data_VIS
+                    )
+                    loss_structure_weighted = self.coeff_ssim_fusion * loss_structure
+                    self.loss_total = self.loss_total + loss_structure_weighted
+                    self.losses |= {
+                        "loss_structure": loss_structure.item(),
+                        "loss_structure_IR": loss_structure_ir.item(),
+                        "loss_structure_VIS": loss_structure_vis.item(),
+                        "loss_structure_weighted": loss_structure_weighted.item(),
+                    }
+                if not torch.isfinite(self.loss_total):
+                    raise FloatingPointError(f"Non-finite loss at epoch {self._epoch}")
                 self.loss_total.backward()
                 
                 self.losses |= {"loss_fusion": self.loss_fusion.item()}
-    
-            if not torch.isfinite(self.loss_total):
-                raise FloatingPointError(f"Non-finite loss at epoch {self._epoch}")
             
             self.losses |= {
                 "loss_total": self.loss_total.item(),
@@ -275,7 +293,7 @@ class CDDFuseModel(BaseModel):
 
     def load_model(self, ckp_name: str, prefix: str | Path = "") -> ModelCkp:
         """加载模型权重"""
-        path = Path(self.opt.checkpoint_root) / prefix / ckp_name
+        path = Path(self.opt.checkpoint_root) / self.opt.model / prefix / ckp_name
         checkpoint = torch.load(path, weights_only=True, map_location=self.device)
         model_ckp = ModelCkp.from_dict(checkpoint)
         
@@ -295,7 +313,7 @@ class CDDFuseModel(BaseModel):
             diff_configs = {}
             keys = ("epoch_gap", "batch_size", "lr", "weight_decay", "lr_policy", "optim_step", "optim_gamma",
                     "min_lr", "use_bf16", "SSIM_window_size", "clip_grad_norm_value", "coeff_mse_loss_VF",
-                    "coeff_mse_loss_IF", "coeff_decomp", "coeff_tv", "cudnn_allow_tf32", "matmul_allow_tf32")
+                    "coeff_mse_loss_IF", "coeff_decomp", "coeff_tv", "coeff_ssim_fusion", "cudnn_allow_tf32", "matmul_allow_tf32")
             for key in keys:
                 if key in model_ckp.config and model_ckp.config[key] != self.opt.get(key):
                     diff_configs[key] = (model_ckp.config[key], self.opt.get(key))
