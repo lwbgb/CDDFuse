@@ -36,7 +36,7 @@ class BaseModel(ABC):
         self.isTrain = opt.get("isTrain", False)
         self.ckp_name = opt.get("ckp_name")
         self.save_root = Path(opt.checkpoint_root) / opt.model
-        self.save_dir = self.save_root / self.init_time
+        self.save_dir = self.save_root / self.opt.load_dir if opt.get("continue_train", False) else self.save_root / self.init_time
 
         self.models: dict[str, nn.Module] = dict()
         self.losses: dict[str, Any] = dict()

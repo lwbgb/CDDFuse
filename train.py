@@ -56,10 +56,10 @@ def train(opt: TrainConfig) -> Path:
             
             epoch_start_time = time.time()  # timer for entire epoch
             iter_data_time = time.time()  # timer for data loading per iteration
-            epoch_iters = 0  # the number of training iterations in current epoch, reset to 0
-            epoch_samples = 0
-            epoch_loss = 0.0
-            components = {}
+            epoch_iters = 0  # the number of training iterations in current epoch
+            epoch_samples = 0 # the number of training samples in current epoch
+            epoch_loss = 0.0 # the total loss in current epoch
+            losses = {}
             
             model.update_state(epoch)
             learning_rates = {name: optimizer.param_groups[0]['lr'] for name, optimizer in model.optimizers.items()}
@@ -80,11 +80,10 @@ def train(opt: TrainConfig) -> Path:
                     loss = model.get_current_loss()
                     epoch_loss += loss
                     for key, value in model.get_current_losses().items():
-                        components[key] = components.get(key, 0.0) + float(value)
+                        losses[key] = losses.get(key, 0.0) + float(value)
                     pbar.set_postfix(loss=f'{loss:.6f}', avg=f'{epoch_loss / epoch_iters:.6f}', refresh=False)
 
             model.update_learning_rate()
-            # 完成该轮优化和 scheduler 推进后验证，best checkpoint 可正常续训。
             if validator is not None and validator.should_validate(model):
                 validator.run(model)
             
@@ -96,18 +95,18 @@ def train(opt: TrainConfig) -> Path:
             logger.info(
                 f"Epoch {epoch}/{opt.n_epochs} completed. Average loss: {avg_loss:.6f}. Time taken: {epoch_time:.2f} sec"
             )
-            record = {'epoch': epoch, 'phase': model.get_phase(), 'loss': avg_loss, 'epoch_iters': epoch_iters,
-                      'epoch_samples': epoch_samples, 'epoch_time': epoch_time, 'loss_components': {k: v / epoch_iters for k, v in components.items()},
+            history = {'epoch': epoch, 'phase': model.get_phase(), 'loss': avg_loss, 'epoch_iters': epoch_iters,
+                      'epoch_samples': epoch_samples, 'epoch_time': epoch_time, 'loss_components': {k: v / epoch_iters for k, v in losses.items()},
                       'learning_rates_used': learning_rates,
                       'learning_rates': {name: optimizer.param_groups[0]['lr'] for name, optimizer in model.optimizers.items()}}
             
             with (model.save_dir / 'history.jsonl').open('a', encoding='utf-8') as stream:
-                stream.write(json.dumps(record, allow_nan=False) + '\n')
+                stream.write(json.dumps(history, allow_nan=False) + '\n')
                 
             if epoch % opt.save_latest_freq == 0:
                 model.save_model(f'{opt.model}_latest.pth')
                 
-            if epoch % opt.save_epoch_freq == 0 or epoch == opt.epoch_gap or epoch == opt.n_epochs:
+            if (epoch > opt.epoch_gap and epoch % opt.save_epoch_freq == 0) or epoch == opt.epoch_gap or epoch == opt.n_epochs:
                 model.save_model(f"{opt.model}_epoch_{epoch}.pth")
                 
         logger.info(f'Training completed: {model.save_dir}')

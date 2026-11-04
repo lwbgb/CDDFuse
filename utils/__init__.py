@@ -36,7 +36,7 @@ def create_dataset(opt: DictConfig, h5_file_name: str) -> DataLoader:
             augment=opt.get("augment", False),
             filter_low_contrast=opt.get("filter_low_contrast", True),
             max_crop_attempts=opt.get("max_crop_attempts", 20),
-            seed=opt.get("seed", 3407),
+            seed=opt.get("seed", 1696),
         )
     else:
         raise ValueError(f"未知 dataset_mode={mode!r}，应为 h5 或 random_crop")

@@ -243,12 +243,87 @@ class ValidationTests(unittest.TestCase):
             for data in self.validator.loader:
                 ir, vi = data[:2]
                 fused = model.models["fusion"](torch.cat((ir, vi), dim=1))
-                fused = ((fused-fused.min())/(fused.max()-fused.min()+1e-8)*255).squeeze().to(torch.uint8).float()
+                fused = ((fused-fused.min())/(fused.max()-fused.min()).clamp_min(1e-8)*255).squeeze().to(torch.uint8).float()
                 values = FusionEvaluator().evaluate(torch.round(ir.squeeze()*255),
                                                    torch.round(vi.squeeze()*255), fused, metrics=METRICS).values
                 references.append([values[name] for name in METRICS])
         actual = self.validator.evaluate(model)
         np.testing.assert_allclose([actual[name] for name in METRICS], np.mean(references, axis=0), rtol=0, atol=0)
+
+
+    def test_normalization_clamps_denominator_and_truncates_like_test(self):
+        from utils.validation import _normalize_to_uint8
+        x = torch.tensor([[[[0.50, 0.55], [0.60, 0.65]]]])
+        np.testing.assert_array_equal(_normalize_to_uint8(x), [[0, 85], [170, 255]])
+        np.testing.assert_array_equal(_normalize_to_uint8(torch.ones(1,1,4,4)), np.zeros((4,4), dtype=np.uint8))
+        with self.assertRaises(ValueError):
+            _normalize_to_uint8(torch.ones(2,1,4,4))
+        with self.assertRaises(FloatingPointError):
+            _normalize_to_uint8(torch.full((1,1,4,4), float('nan')))
+
+    def test_forward_tensors_released_between_images_and_cycles(self):
+        import weakref
+        from utils.validation import _FORWARD_TENSORS
+        model = DemoModel()
+        previous = []
+        original_forward = model.forward
+        def tracked_forward():
+            self.assertTrue(all(ref() is None for ref in previous))
+            original_forward()
+            previous.append(weakref.ref(model.data_Fuse))
+            model.feature_VIS_Base = model.data_Fuse
+        for name in _FORWARD_TENSORS:
+            setattr(model, name, torch.ones(1))
+        with patch.object(model, 'forward', side_effect=tracked_forward):
+            for _ in range(2):
+                self.validator.evaluate(model)
+                self.assertTrue(all(getattr(model, name, None) is None for name in _FORWARD_TENSORS))
+                self.assertTrue(all(ref() is None for ref in previous))
+        self.assertTrue(model.isTrain)
+        model.optimizer.zero_grad()
+        model.models['fusion'](torch.ones(1,2,8,8)).sum().backward()
+        model.optimizer.step()
+
+    def test_partial_forward_failure_cleans_tensors_and_restores_modes(self):
+        from utils.validation import _FORWARD_TENSORS
+        model = DemoModel()
+        model.models['fusion'].train(False)
+        def failing_forward():
+            model.feature_IR_Base = torch.ones(1,64,96,96)
+            raise RuntimeError('partial_forward')
+        with patch.object(model, 'forward', side_effect=failing_forward):
+            with self.assertRaisesRegex(RuntimeError, 'partial_forward'):
+                self.validator.evaluate(model)
+        self.assertTrue(model.isTrain)
+        self.assertFalse(model.models['fusion'].training)
+        self.assertTrue(all(getattr(model,name,None) is None for name in _FORWARD_TENSORS))
+
+    def test_cuda_cache_cleanup_once_at_validation_boundary(self):
+        from contextlib import nullcontext
+        from types import SimpleNamespace
+        from utils.validation import _FORWARD_TENSORS
+        model = DemoModel()
+        # 模拟CUDA边界，不实际初始化GPU或移动张量。
+        model.device = SimpleNamespace(type='cuda')
+        def check_clean():
+            self.assertTrue(model.isTrain)
+            self.assertTrue(all(getattr(model,name,None) is None for name in _FORWARD_TENSORS))
+        with patch('utils.validation.torch.cuda.device', return_value=nullcontext()), \
+                patch('utils.validation.torch.cuda.empty_cache', side_effect=check_clean) as empty:
+            self.validator.evaluate(model)
+            empty.assert_called_once()
+
+    def test_postprocess_change_blocks_old_best_resume(self):
+        model = DemoModel()
+        with patch.object(self.validator, 'evaluate', return_value=dict.fromkeys(METRICS, 0.4)):
+            self.validator.run(model)
+        path = self.root/'run/best_validation.json'
+        record = json.loads(path.read_text())
+        record['metric_protocol'].pop('postprocess')
+        path.write_text(json.dumps(record))
+        self.opt.continue_train = True
+        with self.assertRaisesRegex(ValueError, '指标口径不同'):
+            RoadSceneValidator(self.opt,self.root/'run')
 
 
 if __name__ == "__main__":

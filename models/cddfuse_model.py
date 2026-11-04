@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 import kornia
 from models.base_model import BaseModel
-from models.net import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
+from models.net_sgc import Restormer_Encoder, Restormer_Decoder, BaseFeatureExtraction, DetailFeatureExtraction
 
 from utils import networks, path_util
 from utils.loss import Fusionloss, cc, LegacySSIMLoss
@@ -53,10 +53,6 @@ class CDDFuseModel(BaseModel):
 
             self.criteria_decomp = None
             self.criteria_fusion = Fusionloss().to(self.device)
-            self.coeff_ssim_fusion = float(opt.get("coeff_ssim_fusion", 0.0))
-            if not math.isfinite(self.coeff_ssim_fusion) or self.coeff_ssim_fusion < 0:
-                raise ValueError("coeff_ssim_fusion must be finite and nonnegative")
-            self.criteria_structure = DualSourceSSIMLoss(opt.SSIM_window_size).to(self.device)
             
             self.optimizer_encoder = torch.optim.Adam(self.DIDF_Encoder.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
             self.optimizer_decoder = torch.optim.Adam(self.DIDF_Decoder.parameters(), lr=opt.lr, weight_decay=opt.weight_decay)
@@ -135,8 +131,8 @@ class CDDFuseModel(BaseModel):
                 self.feature_VIS_Base, self.feature_VIS_Detail, _ = self.DIDF_Encoder(self.data_VIS)
                 self.feature_IR_Base, self.feature_IR_Detail, _ = self.DIDF_Encoder(self.data_IR)
 
-                self.data_VIS_hat, _ = self.DIDF_Decoder(self.data_VIS, self.feature_VIS_Base, self.feature_VIS_Detail)
-                self.data_IR_hat, _ = self.DIDF_Decoder(self.data_IR, self.feature_IR_Base, self.feature_IR_Detail)
+                self.data_VIS_hat, _ = self.DIDF_Decoder([self.data_VIS], self.feature_VIS_Base, self.feature_VIS_Detail)
+                self.data_IR_hat, _ = self.DIDF_Decoder([self.data_IR], self.feature_IR_Base, self.feature_IR_Detail)
 
             elif self._phase == 2:
                 # Phase II: 跨模态 MIMO 融合任务
@@ -146,7 +142,7 @@ class CDDFuseModel(BaseModel):
                 self.feature_Fuse_Base = self.BaseFuseLayer(self.feature_IR_Base + self.feature_VIS_Base)
                 self.feature_Fuse_Detail = self.DetailFuseLayer(self.feature_IR_Detail + self.feature_VIS_Detail)
 
-                self.data_Fuse, _ = self.DIDF_Decoder(self.data_VIS, self.feature_Fuse_Base, self.feature_Fuse_Detail)
+                self.data_Fuse, _ = self.DIDF_Decoder(([self.data_VIS, self.data_IR]), self.feature_Fuse_Base, self.feature_Fuse_Detail)
 
     def backward(self):
         """执行反向传播计算"""
@@ -166,19 +162,9 @@ class CDDFuseModel(BaseModel):
                 vis_hat = self.data_VIS_hat.float()
                 ir_hat = self.data_IR_hat.float()
     
-                self.loss_MSE_VIS = (
-                    5 * self.Loss_ssim(self.data_VIS, vis_hat)
-                    + self.MSELoss(self.data_VIS, vis_hat)
-                )
-    
-                self.loss_MSE_IR = (
-                    5 * self.Loss_ssim(self.data_IR, ir_hat)
-                    + self.MSELoss(self.data_IR, ir_hat)
-                )
-    
-                self.loss_gradient: torch.Tensor = self.L1Loss(
-                    self.spatial_grad(self.data_VIS), self.spatial_grad(vis_hat)
-                )
+                self.loss_MSE_VIS = (5 * self.Loss_ssim(self.data_VIS, vis_hat) + self.MSELoss(self.data_VIS, vis_hat))
+                self.loss_MSE_IR = (5 * self.Loss_ssim(self.data_IR, ir_hat) + self.MSELoss(self.data_IR, ir_hat))
+                self.loss_gradient: torch.Tensor = self.L1Loss(self.spatial_grad(self.data_VIS), self.spatial_grad(vis_hat))
     
                 self.loss_total: torch.Tensor = (
                     self.opt.coeff_mse_loss_VF * self.loss_MSE_VIS
@@ -190,29 +176,20 @@ class CDDFuseModel(BaseModel):
                     raise FloatingPointError(f"Non-finite loss at epoch {self._epoch}")
                 self.loss_total.backward()
     
-                self.losses |= {
-                    "loss_MSE_VIS": self.loss_MSE_VIS.item(),
-                    "loss_MSE_IR": self.loss_MSE_IR.item(),
-                    "loss_gradient": self.loss_gradient.item(),
-                }
+                self.losses |= {"loss_gradient": self.loss_gradient.item()}
     
             elif self._phase == 2:
                 fuse_out = self.data_Fuse.float()
-                self.loss_fusion, _, _ = self.criteria_fusion(self.data_VIS, self.data_IR, fuse_out)
+                self.loss_MSE_VIS: torch.Tensor = 2 * self.Loss_ssim(self.data_VIS, fuse_out) #+ MSELoss(data_VIS, data_Fuse)
+                self.loss_MSE_IR: torch.Tensor = 2 * self.Loss_ssim(self.data_IR, fuse_out) #+ MSELoss(data_IR, data_Fuse)
+                self.loss_fusion, self.loss_in, self.loss_grad = self.criteria_fusion(self.data_VIS, self.data_IR, fuse_out)
     
-                self.loss_total: torch.Tensor = self.loss_fusion + self.opt.coeff_decomp * self.loss_decomp
-                if self.coeff_ssim_fusion > 0:
-                    loss_structure, loss_structure_ir, loss_structure_vis = self.criteria_structure(
-                        fuse_out, self.data_IR, self.data_VIS
-                    )
-                    loss_structure_weighted = self.coeff_ssim_fusion * loss_structure
-                    self.loss_total = self.loss_total + loss_structure_weighted
-                    self.losses |= {
-                        "loss_structure": loss_structure.item(),
-                        "loss_structure_IR": loss_structure_ir.item(),
-                        "loss_structure_VIS": loss_structure_vis.item(),
-                        "loss_structure_weighted": loss_structure_weighted.item(),
-                    }
+                self.loss_total: torch.Tensor = (
+                    self.opt.coeff_mse_loss_VF * self.loss_MSE_VIS
+                    + self.opt.coeff_mse_loss_IF * self.loss_MSE_IR
+                    + self.opt.coeff_decomp * self.loss_decomp
+                    + self.loss_fusion
+                )
                 if not torch.isfinite(self.loss_total):
                     raise FloatingPointError(f"Non-finite loss at epoch {self._epoch}")
                 self.loss_total.backward()
@@ -220,6 +197,8 @@ class CDDFuseModel(BaseModel):
                 self.losses |= {"loss_fusion": self.loss_fusion.item()}
             
             self.losses |= {
+                "loss_MSE_VIS": self.loss_MSE_VIS.item(),
+                "loss_MSE_IR": self.loss_MSE_IR.item(),
                 "loss_total": self.loss_total.item(),
                 "loss_cc_Base": self.loss_cc_Base.item(),
                 "loss_cc_Detail": self.loss_cc_Detail.item(),
@@ -380,5 +359,5 @@ class CDDFuseModel(BaseModel):
             os.replace(temporary, target)
         finally:
             temporary.unlink(missing_ok=True)
-        logger.info(f"Checkpoint saved: {target} (epoch={self._epoch})")
+        logger.info(f"Checkpoint saved: {target}")
         return model_ckp

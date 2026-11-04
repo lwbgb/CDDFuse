@@ -1,29 +1,28 @@
 n_epochs: 120 # total epoch
 epoch_gap: 40  # epoches of Phase I 
-start_epoch: 101
+start_epoch: 41
 continue_train: True
 n_epochs_decay: 20
-lr: 5e-5
+lr: 1e-4
 min_lr: 1e-6
 weight_decay: 0
 print_epoch_freq: 1
 print_iter_freq: 4
 display_freq: 100
 save_latest_freq: 1
-save_epoch_freq: 10
-ckp_name: CDDFuse_epoch_100.pth
-load_dir: "bf16_bs8_seed1696"
+save_epoch_freq: 5
+run_dir: "20261103_160001"
+ckp_name: CDDFuse_sgc_epoch_40.pth
+load_dir: "4SGCv3_Encoder_Decoder"
 norm: layer
 isTrain: True
 
 # Coefficients of the loss function
 coeff_mse_loss_VF: 1. # alpha1
 coeff_mse_loss_IF: 1.
-coeff_decomp: 2.      # alpha2 and alpha4
+coeff_decomp: 10.      # alpha2 and alpha4
 coeff_tv: 5.
 SSIM_window_size: 11
-# E0=0; E1>0, phase II only. 1.0 is an unvalidated starting weight.
-coeff_ssim_fusion: 1.0
 
 # Optimizer
 clip_grad_norm_value: 0.01
@@ -46,7 +45,7 @@ resume_lrs:
 # device
 device: gpu
 use_bf16: True  # 浮点计算加速
-seed: 1
+seed: 1696
 
 # dataset
 batch_size: 8
@@ -54,11 +53,11 @@ shuffle: True
 num_threads: 8
 drop_last: False
 dataset_root: data/
-dataset_mode: h5  # h5 或 random_crop
+dataset_mode: random_crop  # h5 或 random_crop
 h5_file_name: MSRS_train_imgsize_128_stride_200.h5
 dataset_dir: datasets/MSRS_train
 crop_size: 128
-samples_per_epoch: 6487
+samples_per_epoch: 6400
 augment: false
 filter_low_contrast: true
 max_crop_attempts: 20
