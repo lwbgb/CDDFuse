@@ -1,9 +1,3 @@
-"""B混合版：共享编码器浅层采用3个SGC块，再接1个原版Transformer块。
-
-保留原版patch embedding、基础/细节分支、GDFN、解码器与融合层。
-训练入口须从本模块导入；原4-SGC版检查点与本结构不兼容，须另起实验。
-这是模块替换的受控候选，不代表质量/速度或新颖性已经验证。
-"""
 from collections.abc import Sequence
 import math
 
@@ -16,10 +10,10 @@ from models.net import (
     BaseFeatureExtraction,
     DetailFeatureExtraction,
     FeedForward,
-    # LayerNorm,
+    LayerNorm,
     OverlapPatchEmbed,
     # Restormer_Decoder,
-    # TransformerBlock,
+    TransformerBlock,
 )
 
 __all__ = [
@@ -89,7 +83,7 @@ class ShallowGatedCNNBlock(nn.Module):
         return self.norm2(self.eca(gated))
 
 
-class ShallowGatedCNNBlockV2(nn.Module):
+class ShallowGatedCNNBlockv2(nn.Module):
 
     def __init__(
         self,
@@ -121,6 +115,17 @@ class Prominent(nn.Module):
         y = torch.sigmoid(work)
         mean = y.mean(dim=(2, 3), keepdim=True).clamp_min(torch.finfo(y.dtype).tiny)
         return F.silu(work * torch.sigmoid(y.square() / mean)).to(dtype=x.dtype)
+    
+
+class prominent(nn.Module):
+    def __init__(self, channels=0):
+        super(prominent, self).__init__()
+        self.act = nn.Sigmoid()
+        self.act2 = nn.SiLU(inplace=True)
+
+    def forward(self, x):
+        y = self.act(x)
+        return self.act2(x * self.act(y.pow(2) / y.mean(dim=[2, 3], keepdim=True)))
 
 
 class ShallowGatedCNNBlockv3(nn.Module):
@@ -128,7 +133,6 @@ class ShallowGatedCNNBlockv3(nn.Module):
     def __init__(
         self,
         dim: int = 64,
-        ffn_expansion_factor: float = 2.0,
         bias: bool = False,
         LayerNorm_type: str = "WithBias",
         layer_scale_init: float = 1.0,
@@ -140,7 +144,7 @@ class ShallowGatedCNNBlockv3(nn.Module):
         self.dwconv5x5 = nn.Conv2d(dim, dim, 5, padding=2, groups=dim, bias=bias)
         self.eca = ECABlock(channels=dim)
         self.proj_out = nn.Conv2d(3 * dim, dim, 1, bias=bias)
-        self.prominent = Prominent()
+        self.att = prominent(dim)
         self.scale1 = nn.Parameter(torch.full((1, dim, 1, 1), float(layer_scale_init)))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -149,7 +153,41 @@ class ShallowGatedCNNBlockv3(nn.Module):
         output = F.silu(self.eca(gated)) + gated
         merged = torch.cat((u, v, output), dim=1)
         refined = F.silu(self.proj_out(merged))
-        return x + self.scale1 * self.prominent(refined)
+        return x + self.scale1 * self.att(refined)
+    
+
+# class LayerNorm(nn.Module):
+#     """DCEvo输出头的逐位置通道归一化，不使用可学习缩放。"""
+
+#     def __init__(self, dim: int, norm_type: str) -> None:
+#         super().__init__()
+#         self.bias_free = norm_type == "BiasFree"
+#         self.bias = None if self.bias_free else nn.Parameter(torch.zeros(dim))
+
+#     def forward(self, x: torch.Tensor) -> torch.Tensor:
+#         variance = x.var(dim=1, keepdim=True, unbiased=False)
+#         if self.bias_free:
+#             return x / torch.sqrt(variance + 1e-5)
+#         mean = x.mean(dim=1, keepdim=True)
+#         return (x - mean) / torch.sqrt(variance + 1e-5) + self.bias.view(1, -1, 1, 1)
+
+
+class DETransformerBlock(nn.Module):
+    """参考DCEvo DE_Decoder输出头：两个Prominent残差分支。"""
+
+    def __init__(self, dim: int, num_heads: int, ffn_expansion_factor: float,
+                 bias: bool, LayerNorm_type: str = "WithBias") -> None:
+        super().__init__()
+        self.norm1 = LayerNorm(dim, LayerNorm_type)
+        self.attn = Attention(dim, num_heads, bias)
+        self.norm2 = LayerNorm(dim, LayerNorm_type)
+        self.ffn = FeedForward(dim, ffn_expansion_factor, bias)
+        self.att1 = prominent(dim)
+        self.att2 = prominent(dim)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = x + self.att1(self.attn(self.norm1(x)))
+        return x + self.att2(self.ffn(self.norm2(x)))
 
 
 class Restormer_Encoder(nn.Module):
@@ -166,8 +204,14 @@ class Restormer_Encoder(nn.Module):
     ) -> None:
         super().__init__()
         self.patch_embed = OverlapPatchEmbed(inp_channels, dim)
+        # self.encoder_level1 = nn.Sequential(
+        #     *[ShallowGatedCNNBlockv3(dim=dim, ffn_expansion_factor=ffn_expansion_factor, bias=bias, LayerNorm_type=LayerNorm_type) for _ in range(num_blocks[0])]
+        # )
         self.encoder_level1 = nn.Sequential(
-            *[ShallowGatedCNNBlockv3(dim=dim, ffn_expansion_factor=ffn_expansion_factor, bias=bias, LayerNorm_type=LayerNorm_type) for _ in range(num_blocks[0])],
+            ShallowGatedCNNBlockv2(dim=dim, bias=bias, LayerNorm_type=LayerNorm_type),
+            TransformerBlock(dim, heads[0], ffn_expansion_factor, bias, LayerNorm_type),
+            ShallowGatedCNNBlockv2(dim=dim, bias=bias, LayerNorm_type=LayerNorm_type),
+            TransformerBlock(dim, heads[0], ffn_expansion_factor, bias, LayerNorm_type),
         )
         self.baseFeature = BaseFeatureExtraction(dim=dim, num_heads=heads[2])
         self.detailFeature = DetailFeatureExtraction()
@@ -175,40 +219,6 @@ class Restormer_Encoder(nn.Module):
     def forward(self, inp_img: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         shallow = self.encoder_level1(self.patch_embed(inp_img))
         return self.baseFeature(shallow), self.detailFeature(shallow), shallow
-    
-
-class LayerNorm(nn.Module):
-    """DCEvo输出头的逐位置通道归一化，不使用可学习缩放。"""
-
-    def __init__(self, dim: int, norm_type: str) -> None:
-        super().__init__()
-        self.bias_free = norm_type == "BiasFree"
-        self.bias = None if self.bias_free else nn.Parameter(torch.zeros(dim))
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        variance = x.var(dim=1, keepdim=True, unbiased=False)
-        if self.bias_free:
-            return x / torch.sqrt(variance + 1e-5)
-        mean = x.mean(dim=1, keepdim=True)
-        return (x - mean) / torch.sqrt(variance + 1e-5) + self.bias.view(1, -1, 1, 1)
-
-
-class TransformerBlock(nn.Module):
-    """参考DCEvo DE_Decoder输出头：两个Prominent残差分支。"""
-
-    def __init__(self, dim: int, num_heads: int, ffn_expansion_factor: float,
-                 bias: bool, LayerNorm_type: str = "WithBias") -> None:
-        super().__init__()
-        self.norm1 = LayerNorm(dim, LayerNorm_type)
-        self.attn = Attention(dim, num_heads, bias)
-        self.norm2 = LayerNorm(dim, LayerNorm_type)
-        self.ffn = FeedForward(dim, ffn_expansion_factor, bias)
-        self.att1 = Prominent(channels=dim)
-        self.att2 = Prominent(channels=dim)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = x + self.att1(self.attn(self.norm1(x)))
-        return x + self.att2(self.ffn(self.norm2(x)))
 
 
 class Restormer_Decoder(nn.Module):
@@ -225,17 +235,29 @@ class Restormer_Decoder(nn.Module):
         super(Restormer_Decoder, self).__init__()
 
         self.reduce_channel = nn.Conv2d(int(dim * 2), int(dim), kernel_size=1, bias=bias)
+        # self.encoder_level2 = nn.Sequential(
+        #     *[ShallowGatedCNNBlockv3(dim=dim, ffn_expansion_factor=ffn_expansion_factor, bias=bias, LayerNorm_type=LayerNorm_type) for _ in range(num_blocks[1])]
+        # )
         self.encoder_level2 = nn.Sequential(
-            *[ShallowGatedCNNBlockv3(dim=dim, ffn_expansion_factor=ffn_expansion_factor, bias=bias, LayerNorm_type=LayerNorm_type) for _ in range(num_blocks[1])],
+            TransformerBlock(dim, heads[1], ffn_expansion_factor, bias, LayerNorm_type),
+            ShallowGatedCNNBlockv2(dim=dim, bias=bias, LayerNorm_type=LayerNorm_type),
+            TransformerBlock(dim, heads[1], ffn_expansion_factor, bias, LayerNorm_type),
+            ShallowGatedCNNBlockv2(dim=dim, bias=bias, LayerNorm_type=LayerNorm_type),
         )
         self.output = nn.Sequential(
-            TransformerBlock(dim, heads[1], ffn_expansion_factor, bias, LayerNorm_type),
-            nn.ReflectionPad2d(1),
-            nn.Conv2d(dim, dim // 2, kernel_size=3, stride=1, padding=0, bias=bias),
+            nn.Conv2d(int(dim), int(dim)//2, kernel_size=3, stride=1, padding=1, bias=bias),
             nn.LeakyReLU(),
-            nn.ReflectionPad2d(1),
-            nn.Conv2d(dim // 2, out_channels, kernel_size=3, stride=1, padding=0, bias=bias),
+            nn.Conv2d(int(dim)//2, out_channels, kernel_size=3,stride=1, padding=1, bias=bias),
         )
+        
+        # self.output = nn.Sequential(
+        #     DETransformerBlock(dim, heads[1], ffn_expansion_factor, bias, LayerNorm_type),
+        #     nn.ReflectionPad2d(1),
+        #     nn.Conv2d(dim, dim // 2, kernel_size=3, stride=1, padding=0, bias=bias),
+        #     nn.LeakyReLU(),
+        #     nn.ReflectionPad2d(1),
+        #     nn.Conv2d(dim // 2, out_channels, kernel_size=3, stride=1, padding=0, bias=bias),
+        # )
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, inp_img, base_feature, detail_feature):

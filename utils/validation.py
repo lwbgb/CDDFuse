@@ -1,8 +1,9 @@
-"""独立 RoadScene 验证集：只推理、固定指标、按预定指标保存 best。"""
+"""通用独立验证：按数据集验证，并汇总保存结果。"""
 from __future__ import annotations
 
 import hashlib
 import json
+import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -61,18 +62,20 @@ def image_signature(path: Path) -> str:
     return hashlib.sha256(str(image.shape).encode() + image.tobytes()).hexdigest()
 
 
-class RoadSceneValidator:
-    def __init__(self, opt: DictConfig, output_dir: Path):
-        self.root = Path(opt.validation_dir).resolve()
-        self.output_dir = Path(output_dir)
+class Validator:
+    def __init__(self, opt: DictConfig, dataset_name: str, metric: str):
+        if not isinstance(dataset_name, str) or not re.fullmatch(r"[A-Za-z0-9_-]+", dataset_name):
+            raise ValueError(f"非法验证数据集名称：{dataset_name!r}")
+        self.dataset_name = dataset_name
+        self.root = (Path("datasets") / f"{dataset_name}_valid").resolve()
         self.interval = int(opt.get("validation_every", 5))
         self.start_epoch = opt.get("validation_start_epoch")
         if self.start_epoch is not None:
             if isinstance(self.start_epoch, bool) or not isinstance(self.start_epoch, int) or self.start_epoch < 1:
                 raise ValueError("validation_start_epoch 必须为正整数或 null")
-        self.metric = str(opt.get("validation_metric", "Qabf"))
+        self.metric = str(metric)
         if self.interval < 1 or self.metric not in METRICS:
-            raise ValueError(f"validation_every 必须为正整数，validation_metric 应为 {METRICS}")
+            raise ValueError(f"validation_every 必须为正整数，metric 应为 {METRICS}")
         self.evaluator = test_metrics.FusionEvaluator()
         description = self.evaluator.describe()
         self.selection_mode = "min" if self.metric == "MSE" else "max"
@@ -86,13 +89,10 @@ class RoadSceneValidator:
         names = image_names(self.root, "ir")
         if not names or names != image_names(self.root, "vi"):
             raise ValueError("验证集 ir/vi 必须按相同文件名逐对匹配，且不能为空")
-        expected = int(opt.get("validation_expected_pairs", 50))
-        if expected < 1 or len(names) != expected:
-            raise ValueError(f"验证集应有 {expected} 对，实际 {len(names)} 对")
-        test_root = Path(opt.get("validation_test_dir", "test_img/RoadScene")).resolve()
+        test_root = (Path("test_img") / dataset_name).resolve()
         test_names = image_names(test_root, "ir")
         if not test_names or test_names != image_names(test_root, "vi"):
-            raise ValueError("隔离检查需要有效且配对完整的 RoadScene 测试目录")
+            raise ValueError("隔离检查需要有效且配对完整的测试目录")
         if self.root == test_root or set(names) & set(test_names):
             raise ValueError("验证集与测试集目录或文件名重叠，请提供独立验证集")
         signatures = {folder: [image_signature(self.root / folder / name) for name in names]
@@ -108,15 +108,6 @@ class RoadSceneValidator:
         dataset._items = [(name, name) for name in names]
         self.loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0,
                                  generator=torch.Generator().manual_seed(0))
-        self.best: dict | None = None
-        self.best_path = self.output_dir / "best_validation.json"
-        if opt.get("continue_train", False) and self.best_path.is_file():
-            self.best = json.loads(self.best_path.read_text(encoding="utf-8"))
-            if self.best["fingerprint"] != self.fingerprint or self.best["selection_metric"] != self.metric:
-                raise ValueError("已有 best 记录的验证集或选择指标不同，请使用新的实验目录")
-            if (self.best.get("metric_protocol") != self.metric_protocol
-                    or self.best.get("selection_mode") != self.selection_mode):
-                raise ValueError("已有 best 记录的指标口径不同或缺少协议，不能与新指标混比，请使用新的实验目录")
         self.manifest = {"root": str(self.root), "fingerprint": self.fingerprint,
                          "count": len(names), "names": names,
                          "selection_metric": self.metric, "selection_mode": self.selection_mode,
@@ -162,7 +153,7 @@ class RoadSceneValidator:
         try:
             # 前一训练batch的前向结果不再参与优化；释放后再开始整图验证。
             _clear_forward_tensors(model)
-            model.isTrain = False  # FP32推理；不启用训练BF16 autocast。
+            model.isTrain = False  # 切换验证模式，前向精度由 validation_use_bf16 控制。
             model.eval()
             with torch.inference_mode():
                 for data in self.loader:
@@ -181,29 +172,94 @@ class RoadSceneValidator:
             raise FloatingPointError("验证指标出现 NaN/Inf，不保存 best checkpoint")
         return dict(zip(METRICS, values.tolist()))
 
-    def run(self, model: CDDFuseModel) -> dict:
+    def run(self, model: CDDFuseModel, previous_best: dict | None) -> tuple[dict, dict | None]:
         metrics = self.evaluate(model)
         score = metrics[self.metric]
-        improved = self.best is None or (score < self.best["score"] if self.selection_mode == "min"
-                                         else score > self.best["score"])
+        improved = previous_best is None or (score < previous_best["score"] if self.selection_mode == "min"
+                                            else score > previous_best["score"])
         record = {"epoch": model.get_epoch(), "pairs": len(self.loader.dataset),
                   "metrics": metrics, "selection_metric": self.metric, "score": score,
                   "fingerprint": self.fingerprint, "improved": improved,
                   "selection_mode": self.selection_mode, "metric_protocol": self.metric_protocol}
-        self.output_dir.mkdir(parents=True, exist_ok=True)
-        (self.output_dir / "validation_manifest.json").write_text(
-            json.dumps(self.manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+        best = previous_best
         if improved:
-            checkpoint_name = f"{model.opt.model}_best_RoadScene.pth"
-            model.save_model(checkpoint_name)
-            self.best = {**record, "checkpoint": checkpoint_name}
-            temporary = self.best_path.with_suffix(".json.tmp")
-            temporary.write_text(json.dumps(self.best, ensure_ascii=False, indent=2), encoding="utf-8")
-            temporary.replace(self.best_path)
-        with (self.output_dir / "validation_history.jsonl").open("a", encoding="utf-8") as stream:
-            stream.write(json.dumps(record, allow_nan=False) + "\n")
-        logger.info(f"RoadScene validation epoch={model.get_epoch()}, {self.metric}={score:.6f}, "
+            checkpoint_name = f"{model.opt.model}_best_{self.dataset_name}.pth"
+            best = {**record, "checkpoint": checkpoint_name}
+        logger.info(f"{self.dataset_name} validation epoch={model.get_epoch()}, {self.metric}={score:.6f}, "
                     f"mode={self.selection_mode}, best={improved}; "
                     f"evaluator={self.metric_protocol['implementation']}; "
                     + ", ".join(f"{name}={metrics[name]:.6f}" for name in METRICS))
+        return record, best
+
+
+class ValidationManager:
+    """统一写入各数据集结果，兼容旧版单 RoadScene 的 best 与 manifest。"""
+    def __init__(self, opt: DictConfig, output_dir: Path, validators: list[Validator]):
+        self.output_dir = Path(output_dir)
+        self.validators = validators
+        names = [v.dataset_name for v in validators]
+        if len(set(names)) != len(names):
+            raise ValueError("验证数据集不能重复")
+        self.best_path = self.output_dir / "best_validation.json"
+        self.manifest_path = self.output_dir / "validation_manifest.json"
+        continuing = bool(opt.get("continue_train", False))
+        if not continuing and (self.best_path.exists() or self.manifest_path.exists() or
+                               (self.output_dir / "validation_history.jsonl").exists()):
+            raise ValueError("实验目录已有验证记录，请使用新的实验目录，避免覆盖")
+        self.best = self._read_records(self.best_path) if continuing else {}
+        self.manifests = self._read_records(self.manifest_path) if continuing else {}
+        for validator in validators:
+            old = self.best.get(validator.dataset_name)
+            if old is not None:
+                if old.get("fingerprint") != validator.fingerprint or old.get("selection_metric") != validator.metric:
+                    raise ValueError(f"{validator.dataset_name} 已有 best 的验证集或选择指标不同，请使用新的实验目录")
+                if old.get("metric_protocol") != validator.metric_protocol or old.get("selection_mode") != validator.selection_mode:
+                    raise ValueError(f"{validator.dataset_name} 已有 best 指标口径不同，不能混比，请使用新的实验目录")
+
+    @staticmethod
+    def _read_records(path: Path) -> dict:
+        if not path.is_file():
+            return {}
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(data, dict) and "datasets" in data:
+            if not isinstance(data["datasets"], dict):
+                raise ValueError(f"验证记录格式错误：{path}")
+            return data["datasets"]
+        if isinstance(data, dict) and "fingerprint" in data:
+            return {"RoadScene": data}
+        raise ValueError(f"未知验证记录格式：{path}")
+
+    @staticmethod
+    def _write_json(path: Path, data: dict) -> None:
+        temporary = path.with_suffix(".json.tmp")
+        temporary.write_text(json.dumps(data, ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
+        temporary.replace(path)
+
+    def run(self, model: CDDFuseModel) -> dict:
+        records = {}
+        pending_best = dict(self.best)
+        pending_manifests = dict(self.manifests)
+        for validator in self.validators:
+            name = validator.dataset_name
+            record, best = validator.run(model, self.best.get(name))
+            records[name] = record
+            pending_best[name] = best
+            pending_manifests[name] = validator.manifest
+        # 所有数据集成功评估后，再写入任何 best，避免后一个数据集失败时留下单边结果。
+        for name, record in records.items():
+            if record["improved"]:
+                model.save_model(pending_best[name]["checkpoint"])
+        self.best = pending_best
+        self.manifests = pending_manifests
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        self._write_json(self.manifest_path, {"datasets": self.manifests})
+        self._write_json(self.best_path, {"datasets": self.best})
+        record = {"epoch": model.get_epoch(), "datasets": records}
+        # 暂时不在 history 中记录校验元数据；best 和 manifest 仍保留以检查续训兼容性。
+        history_record = {"epoch": record["epoch"], "datasets": {
+            name: {key: value for key, value in data.items() if key not in ("fingerprint", "metric_protocol")}
+            for name, data in records.items()
+        }}
+        with (self.output_dir / "validation_history.jsonl").open("a", encoding="utf-8") as stream:
+            stream.write(json.dumps(history_record, allow_nan=False) + "\n")
         return record

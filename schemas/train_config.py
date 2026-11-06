@@ -64,9 +64,7 @@ class TrainConfig(BaseConfig):
     max_crop_attempts: int = 20
 
     validation_enabled: bool = False
-    validation_dir: str = "datasets/RoadScene"
-    validation_test_dir: str = "test_img/RoadScene"
-    validation_expected_pairs: int = 50
+    validation_use_bf16: bool = False
+    validation_datasets: list[str] = field(default_factory=list)
     validation_start_epoch: int | None = None
     validation_every: int = 5
-    validation_metric: str = "Qabf"

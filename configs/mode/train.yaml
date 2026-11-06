@@ -1,9 +1,9 @@
 n_epochs: 120 # total epoch
 epoch_gap: 40  # epoches of Phase I 
-start_epoch: 41
+start_epoch: 106
 continue_train: True
 n_epochs_decay: 20
-lr: 1e-4
+lr: 5e-5
 min_lr: 1e-6
 weight_decay: 0
 print_epoch_freq: 1
@@ -11,9 +11,9 @@ print_iter_freq: 4
 display_freq: 100
 save_latest_freq: 1
 save_epoch_freq: 5
-run_dir: "20261103_160001"
-ckp_name: CDDFuse_sgc_epoch_40.pth
-load_dir: "4SGCv3_Encoder_Decoder"
+run_dir: 2SGCv2_2TF_cross_
+ckp_name: CDDFuse_sgc_epoch_105.pth
+load_dir: "2SGCv2_2TF_cross_"
 norm: layer
 isTrain: True
 
@@ -23,6 +23,7 @@ coeff_mse_loss_IF: 1.
 coeff_decomp: 10.      # alpha2 and alpha4
 coeff_tv: 5.
 SSIM_window_size: 11
+coeff_ssim_fusion: 0.0
 
 # Optimizer
 clip_grad_norm_value: 0.01
@@ -62,12 +63,10 @@ augment: false
 filter_low_contrast: true
 max_crop_attempts: 20
 
-# 独立 RoadScene 验证（示例，默认关闭；不能使用 test_img/RoadScene 选模型）
+# 独立验证：datasets/<数据集>_valid，测试集：test_img/<数据集>
 validation_enabled: True
-validation_dir: datasets/RoadScene_valid
-validation_test_dir: test_img/RoadScene
-validation_expected_pairs: 50
+validation_use_bf16: True
+validation_datasets: [M3FD, RoadScene]
 # null 保持原逻辑；指定整数则从该轮开始，之后每 validation_every 轮验证。
 validation_start_epoch: null
 validation_every: 5
-validation_metric: SD

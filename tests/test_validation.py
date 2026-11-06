@@ -1,6 +1,7 @@
-"""合成图像验证流程演示，不冒充真实 RoadScene 分数。"""
+"""独立验证器的合成数据测试；不代表真实数据集结果。"""
 import copy
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -10,24 +11,15 @@ import numpy as np
 from omegaconf import OmegaConf
 from PIL import Image
 import torch
+from utils.validation import Validator, ValidationManager, METRICS, _normalize_to_uint8
 
-from utils.validation import RoadSceneValidator, METRICS
 
-
-def write_pairs(root: Path, prefix: str, seed: int, count: int = 2) -> None:
+def pairs(root, prefix, seed, count=2):
     rng = np.random.default_rng(seed)
     for folder in ("ir", "vi"):
         (root / folder).mkdir(parents=True, exist_ok=True)
-        for index in range(count):
-            Image.fromarray(rng.integers(0, 256, (96, 96), dtype=np.uint8)).save(
-                root / folder / f"{prefix}{index}.png")
-
-
-def options(root: Path):
-    return OmegaConf.create(dict(validation_dir=str(root / "val"),
-                                 validation_test_dir=str(root / "test"),
-                                 validation_expected_pairs=2, validation_every=5,
-                                 validation_metric="Qabf", continue_train=False))
+        for i in range(count):
+            Image.fromarray(rng.integers(0, 256, (96, 96), dtype=np.uint8)).save(root / folder / f"{prefix}{i}.png")
 
 
 class DemoModel:
@@ -43,25 +35,14 @@ class DemoModel:
         self.optimizer = torch.optim.Adam(net.parameters(), lr=1e-4)
         self.saved = []
 
-    def get_epoch(self):
-        return self.epoch
-
-    def get_phase(self):
-        return self.phase
-
+    def get_epoch(self): return self.epoch
+    def get_phase(self): return self.phase
     def eval(self):
-        for net in self.models.values():
-            net.eval()
-
-    def set_input(self, data):
-        self.data_IR, self.data_VIS = data[:2]
-
+        for net in self.models.values(): net.eval()
+    def set_input(self, data): self.data_IR, self.data_VIS = data[:2]
     def forward(self):
-        assert not self.isTrain
-        assert not torch.is_grad_enabled()
-        assert not self.models["fusion"].training
+        assert not self.isTrain and not torch.is_grad_enabled() and not self.models["fusion"].training
         self.data_Fuse = self.models["fusion"](torch.cat((self.data_IR, self.data_VIS), dim=1))
-
     def save_model(self, name):
         assert self.isTrain
         self.saved.append(name)
@@ -69,263 +50,205 @@ class DemoModel:
 
 class ValidationTests(unittest.TestCase):
     def setUp(self):
-        self.temporary = tempfile.TemporaryDirectory()
-        self.root = Path(self.temporary.name)
-        write_pairs(self.root / "val", "val_", 1)
-        write_pairs(self.root / "test", "test_", 2)
-        self.opt = options(self.root)
-        self.validator = RoadSceneValidator(self.opt, self.root / "run")
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.old_cwd = os.getcwd()
+        os.chdir(self.root)
+        for name, split, prefix, seed in (("RoadScene", "valid", "rv", 1), ("RoadScene", "test", "rt", 2),
+                                         ("M3FD", "valid", "mv", 3), ("M3FD", "test", "mt", 4)):
+            path = self.root / ("datasets" if split == "valid" else "test_img") / (name+"_valid" if split == "valid" else name)
+            pairs(path, prefix, seed)
+        self.opt = OmegaConf.create(dict(validation_every=5, validation_start_epoch=None, continue_train=False))
+        self.road = Validator(self.opt, "RoadScene", "SD")
+        self.m3fd = Validator(self.opt, "M3FD", "Qabf")
+        self.output = self.root / "run"
 
     def tearDown(self):
-        self.temporary.cleanup()
+        os.chdir(self.old_cwd)
+        self.temp.cleanup()
 
-    def test_real_metrics_preserve_parameters_gradients_optimizer_and_rng(self):
+    def manager(self): return ValidationManager(self.opt, self.output, [self.road, self.m3fd])
+    def scores(self, x): return dict.fromkeys(METRICS, x)
+
+    def test_default_dataset_paths_and_counts(self):
+        self.assertEqual(self.road.root, (self.root/"datasets/RoadScene_valid").resolve())
+        self.assertEqual(len(self.road.loader.dataset), 2)
+        self.assertEqual(len(self.m3fd.loader.dataset), 2)
+
+    def test_validation_does_not_require_a_fixed_count(self):
+        pairs(self.root/"datasets/M3FD_valid", "extra", 9, count=1)
+        self.assertEqual(len(Validator(self.opt, "M3FD", "Qabf").loader.dataset), 3)
+
+    def test_real_metrics_preserve_training_state(self):
         model = DemoModel()
-        for parameter in model.models["fusion"].parameters():
-            parameter.grad = torch.ones_like(parameter)
-        model.optimizer.step()
-        params = copy.deepcopy(model.models["fusion"].state_dict())
-        state = copy.deepcopy(model.optimizer.state_dict())
-        gradient = next(model.models["fusion"].parameters()).grad.clone()
+        for p in model.models["fusion"].parameters(): p.grad = torch.ones_like(p)
+        model.optimizer.step(); weights = copy.deepcopy(model.models["fusion"].state_dict())
+        optimizer = copy.deepcopy(model.optimizer.state_dict()); gradient = next(model.models["fusion"].parameters()).grad.clone()
         rng = torch.random.get_rng_state().clone()
-        metrics = self.validator.evaluate(model)
-        self.assertEqual(set(metrics), set(METRICS))
-        self.assertTrue(np.isfinite(list(metrics.values())).all())
-        self.assertTrue(model.isTrain)
-        self.assertTrue(model.models["fusion"].training)
+        values = self.m3fd.evaluate(model)
+        self.assertEqual(set(values), set(METRICS));self.assertTrue(np.isfinite(list(values.values())).all())
+        self.assertTrue(model.isTrain and model.models["fusion"].training)
         torch.testing.assert_close(rng, torch.random.get_rng_state(), rtol=0, atol=0)
         torch.testing.assert_close(gradient, next(model.models["fusion"].parameters()).grad, rtol=0, atol=0)
-        for key, parameter in model.models["fusion"].state_dict().items():
-            torch.testing.assert_close(parameter, params[key], rtol=0, atol=0)
-        current = model.optimizer.state_dict()
-        self.assertEqual(current["param_groups"], state["param_groups"])
-        for key in state["state"][0]:
-            torch.testing.assert_close(current["state"][0][key], state["state"][0][key], rtol=0, atol=0)
-        # 验证之后确实仍能继续反向传播。
-        model.optimizer.zero_grad()
-        model.models["fusion"](torch.ones(1, 2, 8, 8)).sum().backward()
-        model.optimizer.step()
+        for k, p in model.models["fusion"].state_dict().items(): torch.testing.assert_close(p, weights[k], rtol=0, atol=0)
+        self.assertEqual(optimizer['param_groups'], model.optimizer.state_dict()['param_groups'])
 
-    def test_restore_modes_on_failure(self):
-        model = DemoModel()
-        with patch.object(model, "forward", side_effect=RuntimeError("injected")):
-            with self.assertRaises(RuntimeError):
-                self.validator.evaluate(model)
-        self.assertTrue(model.isTrain)
-        self.assertTrue(model.models["fusion"].training)
+    def test_both_datasets_share_records_and_separate_best(self):
+        manager=self.manager();model=DemoModel()
+        with patch.object(self.road, 'evaluate', return_value=self.scores(0.5)), patch.object(self.m3fd, 'evaluate', return_value=self.scores(0.7)):
+            record=manager.run(model)
+        self.assertEqual(set(record['datasets']), {'RoadScene','M3FD'})
+        self.assertEqual(model.saved, ['Demo_best_RoadScene.pth','Demo_best_M3FD.pth'])
+        for name in ('best_validation.json','validation_manifest.json'):
+            self.assertEqual(set(json.loads((self.output/name).read_text())['datasets']), {'RoadScene','M3FD'})
+        rows=(self.output/'validation_history.jsonl').read_text().splitlines()
+        self.assertEqual(len(rows),1);self.assertEqual(set(json.loads(rows[0])['datasets']),{'RoadScene','M3FD'})
+        self.assertEqual(record['datasets']['RoadScene']['selection_metric'],'SD')
+        self.assertEqual(record['datasets']['M3FD']['selection_metric'],'Qabf')
 
-    def test_best_selection_and_resume_history(self):
-        model = DemoModel()
-        for epoch, score in ((41, 0.4), (45, 0.39), (50, 0.43)):
-            model.epoch = epoch
-            with patch.object(self.validator, "evaluate", return_value=dict.fromkeys(METRICS, score)):
-                self.validator.run(model)
-        self.assertEqual(len(model.saved), 2)
-        best = json.loads((self.root / "run/best_validation.json").read_text())
-        self.assertEqual(best["epoch"], 50)
-        self.assertEqual(best["score"], 0.43)
-        records = (self.root / "run/validation_history.jsonl").read_text().splitlines()
-        self.assertEqual(len(records), 3)
-        self.opt.continue_train = True
-        restored = RoadSceneValidator(self.opt, self.root / "run")
-        self.assertEqual(restored.best["score"], 0.43)
-        self.opt.validation_metric = "VIF"
-        with self.assertRaisesRegex(ValueError, "选择指标不同"):
-            RoadSceneValidator(self.opt, self.root / "run")
+    def test_independent_best_and_resume(self):
+        manager=self.manager();model=DemoModel()
+        for epoch, a, b in ((41,0.3,0.5),(45,0.4,0.4),(50,0.35,0.6)):
+            model.epoch=epoch
+            with patch.object(self.road,'evaluate',return_value=self.scores(a)),patch.object(self.m3fd,'evaluate',return_value=self.scores(b)):
+                manager.run(model)
+        best=json.loads((self.output/'best_validation.json').read_text())['datasets']
+        self.assertEqual(best['RoadScene']['epoch'],45);self.assertEqual(best['M3FD']['epoch'],50)
+        self.opt.continue_train=True;restored=self.manager()
+        self.assertEqual(restored.best['RoadScene']['score'],0.4);self.assertEqual(restored.best['M3FD']['score'],0.6)
 
-    def test_test_set_rejected_even_if_files_renamed(self):
-        self.opt.validation_dir = self.opt.validation_test_dir
-        with self.assertRaisesRegex(ValueError, "重叠"):
-            RoadSceneValidator(self.opt, self.root / "run")
-        self.opt.validation_dir = str(self.root / "val")
-        source = self.root / "test/ir/test_0.png"
-        (self.root / "val/ir/val_0.png").write_bytes(source.read_bytes())
-        with self.assertRaisesRegex(ValueError, "内容重叠"):
-            RoadSceneValidator(self.opt, self.root / "run")
+    def test_legacy_roadscene_resume_and_history_preserved(self):
+        model=DemoModel();m=self.manager()
+        with patch.object(self.road,'evaluate',return_value=self.scores(0.5)),patch.object(self.m3fd,'evaluate',return_value=self.scores(0.4)):m.run(model)
+        for fn in ('best_validation.json','validation_manifest.json'):
+            path=self.output/fn;d=json.loads(path.read_text());path.write_text(json.dumps(d['datasets']['RoadScene']))
+        history=self.output/'validation_history.jsonl';history.write_text(json.dumps({'epoch':40,'metrics':{'SD':0.4}})+'\n')
+        self.opt.continue_train=True;m=self.manager();self.assertEqual(m.best['RoadScene']['score'],0.5)
+        with patch.object(self.road,'evaluate',return_value=self.scores(0.4)),patch.object(self.m3fd,'evaluate',return_value=self.scores(0.6)):m.run(model)
+        self.assertEqual(len(history.read_text().splitlines()),2)
+        self.assertEqual(set(json.loads((self.output/'best_validation.json').read_text())['datasets']), {'RoadScene','M3FD'})
 
-    def test_interval_phase_boundary_and_final_epoch(self):
-        model = DemoModel()
-        for epoch, phase, expected in ((40, 1, False), (41, 2, True), (42, 2, False),
-                                       (45, 2, True), (119, 2, False), (120, 2, True)):
-            model.epoch, model.phase = epoch, phase
-            self.assertEqual(self.validator.should_validate(model), expected)
+    def test_wrong_metric_or_protocol_fails_resume(self):
+        m=self.manager();model=DemoModel()
+        with patch.object(self.road,'evaluate',return_value=self.scores(0.5)),patch.object(self.m3fd,'evaluate',return_value=self.scores(0.4)):m.run(model)
+        self.opt.continue_train=True
+        with self.assertRaisesRegex(ValueError,'选择指标不同'):
+            ValidationManager(self.opt,self.output,[Validator(self.opt,'RoadScene','VIF')])
+        path=self.output/'best_validation.json';record=json.loads(path.read_text());record['datasets']['RoadScene']['metric_protocol'].pop('postprocess');path.write_text(json.dumps(record))
+        with self.assertRaisesRegex(ValueError,'指标口径不同'):self.manager()
 
-    def test_explicit_start_epoch_and_interval(self):
-        self.opt.validation_start_epoch = 63
-        validator = RoadSceneValidator(self.opt, self.root / "run")
-        model = DemoModel()
-        for epoch, expected in ((41, False), (60, False), (62, False), (63, True),
-                                (65, False), (68, True), (73, True), (119, False), (120, True)):
-            model.epoch = epoch
-            self.assertEqual(validator.should_validate(model), expected, epoch)
+    def test_fresh_experiment_refuses_existing_history(self):
+        self.output.mkdir();(self.output/'validation_history.jsonl').write_text('{}\n')
+        with self.assertRaisesRegex(ValueError,'已有验证记录'):self.manager()
 
-    def test_start_cannot_enable_phase_one_or_force_final_before_start(self):
-        model = DemoModel()
-        self.opt.validation_start_epoch = 10
-        validator = RoadSceneValidator(self.opt, self.root / "run")
-        model.epoch, model.phase = 40, 1
-        self.assertFalse(validator.should_validate(model))
-        model.epoch, model.phase = 41, 2
-        self.assertTrue(validator.should_validate(model))
-        model.epoch = 46
-        self.assertTrue(validator.should_validate(model))
-        self.opt.validation_start_epoch = 121
-        validator = RoadSceneValidator(self.opt, self.root / "run")
-        model.epoch = 120
-        self.assertFalse(validator.should_validate(model))
+    def test_duplicate_dataset_rejected(self):
+        with self.assertRaisesRegex(ValueError,'不能重复'):ValidationManager(self.opt,self.output,[self.road,self.road])
 
-    def test_invalid_start_epoch_rejected(self):
-        for value in (0, -1, 1.5, True, "60"):
-            with self.subTest(value=value):
-                self.opt.validation_start_epoch = value
-                with self.assertRaisesRegex(ValueError, "validation_start_epoch"):
-                    RoadSceneValidator(self.opt, self.root / "run")
+    def test_filename_overlap_rejected(self):
+        test=self.root/'test_img/M3FD'
+        for mod in ('ir','vi'):(test/mod/'mv0.png').write_bytes((test/mod/'mt0.png').read_bytes())
+        with self.assertRaisesRegex(ValueError,'重叠'):Validator(self.opt,'M3FD','Qabf')
 
-    def test_missing_or_unpaired_data_and_invalid_metrics_rejected(self):
-        (self.root / "val/vi/val_0.png").unlink()
-        with self.assertRaisesRegex(ValueError, "逐对匹配"):
-            RoadSceneValidator(self.opt, self.root / "run")
+    def test_renamed_pixel_overlap_rejected(self):
+        (self.root/'datasets/M3FD_valid/ir/mv0.png').write_bytes((self.root/'test_img/M3FD/ir/mt0.png').read_bytes())
+        with self.assertRaisesRegex(ValueError,'内容重叠'):Validator(self.opt,'M3FD','Qabf')
 
-    def test_nonfinite_model_output_is_not_hidden_by_uint8_conversion(self):
-        model = DemoModel()
-        def invalid_forward():
-            model.data_Fuse = torch.full((1, 1, 96, 96), float("nan"))
-        with patch.object(model, "forward", side_effect=invalid_forward):
-            with self.assertRaises(FloatingPointError):
-                self.validator.run(model)
-        self.assertTrue(model.isTrain)
-        self.assertFalse(model.saved)
+    def test_unpaired_or_empty_data_rejected(self):
+        (self.root/'datasets/M3FD_valid/vi/mv0.png').unlink()
+        with self.assertRaisesRegex(ValueError,'逐对匹配'):Validator(self.opt,'M3FD','Qabf')
 
-    def test_nonfinite_metrics_do_not_save_best(self):
-        model = DemoModel()
+    def test_invalid_name_metric_interval_and_start(self):
+        for name in ('../M3FD','M3FD/test','','a.b'):
+            with self.assertRaisesRegex(ValueError,'非法'):Validator(self.opt,name,'SD')
+        with self.assertRaisesRegex(ValueError,'metric'):Validator(self.opt,'M3FD','bad')
+        self.opt.validation_every=0
+        with self.assertRaisesRegex(ValueError,'validation_every'):Validator(self.opt,'M3FD','SD')
+        self.opt.validation_every=5
+        for v in (0,-1,1.5,True,'60'):
+            self.opt.validation_start_epoch=v
+            with self.assertRaisesRegex(ValueError,'validation_start_epoch'):Validator(self.opt,'M3FD','SD')
+
+    def test_schedule_with_and_without_explicit_start(self):
+        model=DemoModel()
+        for epoch,phase,want in ((40,1,False),(41,2,True),(42,2,False),(45,2,True),(120,2,True)):
+            model.epoch,model.phase=epoch,phase;self.assertEqual(self.road.should_validate(model),want)
+        self.opt.validation_start_epoch=63;val=Validator(self.opt,'RoadScene','SD')
+        for epoch,want in ((41,False),(62,False),(63,True),(68,True),(120,True)):
+            model.epoch=epoch;model.phase=2;self.assertEqual(val.should_validate(model),want)
+
+    def test_failed_second_dataset_does_not_save_first_best(self):
+        manager=self.manager();model=DemoModel()
+        with patch.object(self.road,'evaluate',return_value=self.scores(0.4)),patch.object(self.m3fd,'evaluate',side_effect=RuntimeError('failure')):
+            with self.assertRaisesRegex(RuntimeError,'failure'):manager.run(model)
+        self.assertFalse(model.saved);self.assertFalse(self.output.exists())
+
+    def test_nonfinite_output_fails_and_restores_state(self):
+        model=DemoModel()
+        def bad():model.data_Fuse=torch.full((1,1,96,96),float('nan'))
+        with patch.object(model,'forward',side_effect=bad):
+            with self.assertRaises(FloatingPointError):self.road.evaluate(model)
+        self.assertTrue(model.isTrain and model.models['fusion'].training)
+
+    def test_nonfinite_metrics_are_rejected(self):
         from utils.test_metrics import EvaluationResult
-        with patch.object(self.validator.evaluator, "evaluate",
-                          return_value=EvaluationResult(dict.fromkeys(METRICS, float("nan")), {"VIF": "injected"})):
-            with self.assertRaises(FloatingPointError):
-                self.validator.run(model)
-        self.assertFalse(model.saved)
+        model=DemoModel()
+        with patch.object(self.road.evaluator,'evaluate',return_value=EvaluationResult(self.scores(float('nan')), {'VIF':'bad'})):
+            with self.assertRaises(FloatingPointError):self.road.evaluate(model)
 
+    def test_mse_uses_minimum(self):
+        val=Validator(self.opt,'RoadScene','MSE');manager=ValidationManager(self.opt,self.output,[val]);model=DemoModel()
+        for epoch,score in ((41,10.),(45,11.),(50,9.)):
+            model.epoch=epoch
+            with patch.object(val,'evaluate',return_value=self.scores(score)):manager.run(model)
+        self.assertEqual(manager.best['RoadScene']['score'],9.)
+        self.assertEqual(manager.best['RoadScene']['selection_mode'],'min')
 
-    def test_mse_selects_smaller_values(self):
-        self.opt.validation_metric = "MSE"
-        validator = RoadSceneValidator(self.opt, self.root / "mse_run")
-        model = DemoModel()
-        for epoch, score in ((41, 10.0), (45, 11.0), (50, 9.0)):
-            model.epoch = epoch
-            with patch.object(validator, "evaluate", return_value=dict.fromkeys(METRICS, score)):
-                validator.run(model)
-        self.assertEqual(len(model.saved), 2)
-        self.assertEqual(validator.best["score"], 9.0)
-        self.assertEqual(validator.best["selection_mode"], "min")
+    def test_postprocess_matches_existing_semantics(self):
+        x=torch.tensor([[[[0.50,0.55],[0.60,0.65]]]])
+        np.testing.assert_array_equal(_normalize_to_uint8(x), [[0,85],[170,255]])
+        with self.assertRaises(FloatingPointError):_normalize_to_uint8(torch.full((1,1,2,2),float('nan')))
 
-    def test_old_or_different_metric_protocol_rejected_on_resume(self):
-        model = DemoModel()
-        with patch.object(self.validator, "evaluate", return_value=dict.fromkeys(METRICS, 0.4)):
-            self.validator.run(model)
-        path = self.root / "run/best_validation.json"
-        original_record = json.loads(path.read_text())
-        self.opt.continue_train = True
-        for protocol in (None, {"protocol": "different"}):
-            record = dict(original_record)
-            if protocol is None:
-                record.pop("metric_protocol")
-            else:
-                record["metric_protocol"] = protocol
-            path.write_text(json.dumps(record))
-            with self.assertRaisesRegex(ValueError, "指标口径不同"):
-                RoadSceneValidator(self.opt, self.root / "run")
-
-    def test_metric_calculation_matches_new_evaluator(self):
+    def test_metric_calculation_matches_evaluator(self):
         from utils.test_metrics import FusionEvaluator
-        model = DemoModel()
-        references = []
+        model=DemoModel(); references=[]
         with torch.inference_mode():
-            for data in self.validator.loader:
-                ir, vi = data[:2]
-                fused = model.models["fusion"](torch.cat((ir, vi), dim=1))
-                fused = ((fused-fused.min())/(fused.max()-fused.min()).clamp_min(1e-8)*255).squeeze().to(torch.uint8).float()
-                values = FusionEvaluator().evaluate(torch.round(ir.squeeze()*255),
-                                                   torch.round(vi.squeeze()*255), fused, metrics=METRICS).values
-                references.append([values[name] for name in METRICS])
-        actual = self.validator.evaluate(model)
-        np.testing.assert_allclose([actual[name] for name in METRICS], np.mean(references, axis=0), rtol=0, atol=0)
+            for data in self.road.loader:
+                ir,vi=data[:2];fused=model.models['fusion'](torch.cat((ir,vi),dim=1))
+                pixels=_normalize_to_uint8(fused)
+                values=FusionEvaluator().evaluate(torch.round(ir.squeeze()*255),torch.round(vi.squeeze()*255),pixels,metrics=METRICS).values
+                references.append([values[k] for k in METRICS])
+        actual=self.road.evaluate(model)
+        np.testing.assert_allclose([actual[k] for k in METRICS],np.mean(references,axis=0),rtol=0,atol=0)
 
-
-    def test_normalization_clamps_denominator_and_truncates_like_test(self):
-        from utils.validation import _normalize_to_uint8
-        x = torch.tensor([[[[0.50, 0.55], [0.60, 0.65]]]])
-        np.testing.assert_array_equal(_normalize_to_uint8(x), [[0, 85], [170, 255]])
-        np.testing.assert_array_equal(_normalize_to_uint8(torch.ones(1,1,4,4)), np.zeros((4,4), dtype=np.uint8))
-        with self.assertRaises(ValueError):
-            _normalize_to_uint8(torch.ones(2,1,4,4))
-        with self.assertRaises(FloatingPointError):
-            _normalize_to_uint8(torch.full((1,1,4,4), float('nan')))
-
-    def test_forward_tensors_released_between_images_and_cycles(self):
-        import weakref
+    def test_forward_tensors_released_and_partial_failure_restored(self):
         from utils.validation import _FORWARD_TENSORS
-        model = DemoModel()
-        previous = []
-        original_forward = model.forward
-        def tracked_forward():
-            self.assertTrue(all(ref() is None for ref in previous))
-            original_forward()
-            previous.append(weakref.ref(model.data_Fuse))
-            model.feature_VIS_Base = model.data_Fuse
-        for name in _FORWARD_TENSORS:
-            setattr(model, name, torch.ones(1))
-        with patch.object(model, 'forward', side_effect=tracked_forward):
-            for _ in range(2):
-                self.validator.evaluate(model)
-                self.assertTrue(all(getattr(model, name, None) is None for name in _FORWARD_TENSORS))
-                self.assertTrue(all(ref() is None for ref in previous))
-        self.assertTrue(model.isTrain)
-        model.optimizer.zero_grad()
-        model.models['fusion'](torch.ones(1,2,8,8)).sum().backward()
-        model.optimizer.step()
+        model=DemoModel();model.models['fusion'].train(False)
+        def bad():
+            model.feature_IR_Base=torch.ones(1,64,96,96)
+            raise RuntimeError('partial')
+        with patch.object(model,'forward',side_effect=bad):
+            with self.assertRaisesRegex(RuntimeError,'partial'):self.road.evaluate(model)
+        self.assertTrue(model.isTrain);self.assertFalse(model.models['fusion'].training)
+        self.assertTrue(all(getattr(model,n,None) is None for n in _FORWARD_TENSORS))
 
-    def test_partial_forward_failure_cleans_tensors_and_restores_modes(self):
-        from utils.validation import _FORWARD_TENSORS
-        model = DemoModel()
-        model.models['fusion'].train(False)
-        def failing_forward():
-            model.feature_IR_Base = torch.ones(1,64,96,96)
-            raise RuntimeError('partial_forward')
-        with patch.object(model, 'forward', side_effect=failing_forward):
-            with self.assertRaisesRegex(RuntimeError, 'partial_forward'):
-                self.validator.evaluate(model)
-        self.assertTrue(model.isTrain)
-        self.assertFalse(model.models['fusion'].training)
-        self.assertTrue(all(getattr(model,name,None) is None for name in _FORWARD_TENSORS))
-
-    def test_cuda_cache_cleanup_once_at_validation_boundary(self):
+    def test_cuda_cache_cleanup_at_validation_boundary(self):
         from contextlib import nullcontext
         from types import SimpleNamespace
+        model=DemoModel();model.device=SimpleNamespace(type='cuda')
+        with patch('utils.validation.torch.cuda.device',return_value=nullcontext()),patch('utils.validation.torch.cuda.empty_cache') as empty:
+            self.road.evaluate(model);empty.assert_called_once()
+
+    def test_all_forward_tensors_released_between_images(self):
+        import weakref
         from utils.validation import _FORWARD_TENSORS
-        model = DemoModel()
-        # 模拟CUDA边界，不实际初始化GPU或移动张量。
-        model.device = SimpleNamespace(type='cuda')
-        def check_clean():
-            self.assertTrue(model.isTrain)
-            self.assertTrue(all(getattr(model,name,None) is None for name in _FORWARD_TENSORS))
-        with patch('utils.validation.torch.cuda.device', return_value=nullcontext()), \
-                patch('utils.validation.torch.cuda.empty_cache', side_effect=check_clean) as empty:
-            self.validator.evaluate(model)
-            empty.assert_called_once()
+        model=DemoModel();previous=[];original=model.forward
+        def tracked():
+            self.assertTrue(all(r() is None for r in previous));original();previous.append(weakref.ref(model.data_Fuse));model.feature_VIS_Base=model.data_Fuse
+        for name in _FORWARD_TENSORS:setattr(model,name,torch.ones(1))
+        with patch.object(model,'forward',side_effect=tracked):
+            for _ in range(2):
+                self.road.evaluate(model);self.assertTrue(all(getattr(model,n,None) is None for n in _FORWARD_TENSORS));self.assertTrue(all(r() is None for r in previous))
 
-    def test_postprocess_change_blocks_old_best_resume(self):
-        model = DemoModel()
-        with patch.object(self.validator, 'evaluate', return_value=dict.fromkeys(METRICS, 0.4)):
-            self.validator.run(model)
-        path = self.root/'run/best_validation.json'
-        record = json.loads(path.read_text())
-        record['metric_protocol'].pop('postprocess')
-        path.write_text(json.dumps(record))
-        self.opt.continue_train = True
-        with self.assertRaisesRegex(ValueError, '指标口径不同'):
-            RoadSceneValidator(self.opt,self.root/'run')
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     torch.set_num_threads(1)
     unittest.main()

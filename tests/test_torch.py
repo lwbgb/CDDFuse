@@ -23,3 +23,4 @@ class TestTorch(unittest.TestCase):
     def test01(self):
         datasets = ["MSRS", "TNO", "RoadScene"]
         print(list(datasets[-1]))
+        print("" is None)

@@ -26,6 +26,10 @@ class CDDFuseModel(BaseModel):
         BaseModel.__init__(self, opt)
         self.name = opt.model
         self.use_bf16: bool = bool(opt.get("use_bf16", False))
+        self.validation_use_bf16: bool = bool(opt.get("validation_use_bf16", False))
+        if self.isTrain and opt.get("validation_enabled", False) and self.validation_use_bf16:
+            if self.device.type != "cuda" or not torch.cuda.is_bf16_supported():
+                raise RuntimeError("BF16验证需要支持 BF16 的 CUDA 设备")
         self.epoch_completed = False
         if opt.isTrain:
             self._epoch = opt.start_epoch
@@ -124,7 +128,8 @@ class CDDFuseModel(BaseModel):
 
     def forward(self):
         """执行前向传播计算"""
-        use_amp = self.isTrain and self.use_bf16 and self.device.type == "cuda"
+        validation_amp = not self.isTrain and bool(self.opt.get("isTrain", False)) and self.validation_use_bf16
+        use_amp = self.device.type == "cuda" and ((self.isTrain and self.use_bf16) or validation_amp)
         with torch.amp.autocast(device_type=self.device.type, dtype=torch.bfloat16, enabled=use_amp):
             if self._phase == 1:
                 # Phase I: 自编码重构
@@ -142,7 +147,7 @@ class CDDFuseModel(BaseModel):
                 self.feature_Fuse_Base = self.BaseFuseLayer(self.feature_IR_Base + self.feature_VIS_Base)
                 self.feature_Fuse_Detail = self.DetailFuseLayer(self.feature_IR_Detail + self.feature_VIS_Detail)
 
-                self.data_Fuse, _ = self.DIDF_Decoder(([self.data_VIS, self.data_IR]), self.feature_Fuse_Base, self.feature_Fuse_Detail)
+                self.data_Fuse, _ = self.DIDF_Decoder(([self.data_VIS]), self.feature_Fuse_Base, self.feature_Fuse_Detail)
 
     def backward(self):
         """执行反向传播计算"""
@@ -185,8 +190,8 @@ class CDDFuseModel(BaseModel):
                 self.loss_fusion, self.loss_in, self.loss_grad = self.criteria_fusion(self.data_VIS, self.data_IR, fuse_out)
     
                 self.loss_total: torch.Tensor = (
-                    self.opt.coeff_mse_loss_VF * self.loss_MSE_VIS
-                    + self.opt.coeff_mse_loss_IF * self.loss_MSE_IR
+                    self.opt.coeff_mse_loss_VF * self.loss_MSE_VIS * 0
+                    + self.opt.coeff_mse_loss_IF * self.loss_MSE_IR * 0
                     + self.opt.coeff_decomp * self.loss_decomp
                     + self.loss_fusion
                 )
@@ -310,7 +315,14 @@ class CDDFuseModel(BaseModel):
             if reset_schedule:
                 self.reset_learning_rate_and_schedulers()
             else:
-                saved_options = OmegaConf.merge(self.opt, model_ckp.config)
+                # saved_options = OmegaConf.merge(self.opt, model_ckp.config)
+                # 调度器恢复仅需要这些字段；历史 checkpoint 的其他配置可能已被删除。
+                # 对同名字段保留 checkpoint 优先、当前配置作为缺省值的原有语义。
+                scheduler_keys = ("lr_policy", "optim_step", "optim_gamma", "n_epochs", "n_epochs_decay", "epoch_count")
+                saved_options = OmegaConf.create({
+                    key: model_ckp.config[key] if key in model_ckp.config else self.opt[key]
+                    for key in scheduler_keys if key in model_ckp.config or key in self.opt
+                })
                 for suffix, attr in (("encoder", "encoder"), ("decoder", "decoder"),
                                      ("base_fusion", "base"), ("detail_fusion", "detail")):
                     key = f"scheduler_{suffix}"

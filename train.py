@@ -16,7 +16,7 @@ from models.cddfuse_model import CDDFuseModel
 from schemas.base_config import BaseConfig
 from schemas.train_config import TrainConfig
 from utils import create_dataset, path_util
-from utils.validation import RoadSceneValidator
+from utils.validation import Validator, ValidationManager
 from utils.device import cleanup_ddp, set_seed
 from utils.logger_initializer import init_logger, logger
 
@@ -30,7 +30,19 @@ def train(opt: TrainConfig) -> Path:
     
     model = CDDFuseModel(opt)
     model.setup()
-    validator = RoadSceneValidator(opt, model.save_dir) if opt.get('validation_enabled', False) else None
+    validators = []
+    manager = None
+    if opt.get('validation_enabled', False):
+        selection_metrics = {"RoadScene": "SD", "M3FD": "Qabf"}
+        dataset_names = list(opt.get('validation_datasets', []))
+        if not dataset_names:
+            raise ValueError("启用验证时 validation_datasets 不能为空")
+        unknown = set(dataset_names) - set(selection_metrics)
+        if unknown:
+            raise ValueError(f"请在创建 Validator 时为这些数据集指定选模指标：{sorted(unknown)}")
+        validators = [Validator(opt, name, selection_metrics[name]) for name in dataset_names]
+        if validators:
+            manager = ValidationManager(opt, model.save_dir, validators)
     
     path_util.check_file_path(model.save_dir / 'config.yaml', create=True)
     OmegaConf.save(opt, model.save_dir / 'config.yaml')
@@ -84,8 +96,8 @@ def train(opt: TrainConfig) -> Path:
                     pbar.set_postfix(loss=f'{loss:.6f}', avg=f'{epoch_loss / epoch_iters:.6f}', refresh=False)
 
             model.update_learning_rate()
-            if validator is not None and validator.should_validate(model):
-                validator.run(model)
+            if manager is not None and validators[0].should_validate(model):
+                manager.run(model)
             
             total_epochs += 1
             total_iters += epoch_iters
