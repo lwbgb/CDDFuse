@@ -185,13 +185,13 @@ class CDDFuseModel(BaseModel):
     
             elif self._phase == 2:
                 fuse_out = self.data_Fuse.float()
-                self.loss_MSE_VIS: torch.Tensor = 2 * self.Loss_ssim(self.data_VIS, fuse_out) #+ MSELoss(data_VIS, data_Fuse)
-                self.loss_MSE_IR: torch.Tensor = 2 * self.Loss_ssim(self.data_IR, fuse_out) #+ MSELoss(data_IR, data_Fuse)
+                self.loss_MSE_VIS: torch.Tensor = self.Loss_ssim(self.data_VIS, fuse_out) + self.MSELoss(self.data_VIS, self.data_Fuse)
+                self.loss_MSE_IR: torch.Tensor = self.Loss_ssim(self.data_IR, fuse_out) + self.MSELoss(self.data_IR, self.data_Fuse)
                 self.loss_fusion, self.loss_in, self.loss_grad = self.criteria_fusion(self.data_VIS, self.data_IR, fuse_out)
     
                 self.loss_total: torch.Tensor = (
-                    self.opt.coeff_mse_loss_VF * self.loss_MSE_VIS * 0
-                    + self.opt.coeff_mse_loss_IF * self.loss_MSE_IR * 0
+                    self.opt.coeff_mse_loss_VF * self.loss_MSE_VIS / 2 * 0
+                    + self.opt.coeff_mse_loss_IF * self.loss_MSE_IR / 2 * 0
                     + self.opt.coeff_decomp * self.loss_decomp
                     + self.loss_fusion
                 )

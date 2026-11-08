@@ -107,7 +107,7 @@ class Mlp(nn.Module):
         x = self.project_out(x)
         return x
 
-class   BaseFeatureExtraction(nn.Module):
+class BaseFeatureExtraction(nn.Module):
     def __init__(self,
                  dim,
                  num_heads,

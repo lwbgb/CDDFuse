@@ -205,12 +205,12 @@ class Restormer_Encoder(nn.Module):
         super().__init__()
         self.patch_embed = OverlapPatchEmbed(inp_channels, dim)
         # self.encoder_level1 = nn.Sequential(
-        #     *[ShallowGatedCNNBlockv3(dim=dim, ffn_expansion_factor=ffn_expansion_factor, bias=bias, LayerNorm_type=LayerNorm_type) for _ in range(num_blocks[0])]
+        #     *[ShallowGatedCNNBlockv2(dim=dim, bias=bias, LayerNorm_type=LayerNorm_type) for _ in range(num_blocks[0])]
         # )
         self.encoder_level1 = nn.Sequential(
-            ShallowGatedCNNBlockv2(dim=dim, bias=bias, LayerNorm_type=LayerNorm_type),
+            ShallowGatedCNNBlockv3(dim=dim, bias=bias, LayerNorm_type=LayerNorm_type),
             TransformerBlock(dim, heads[0], ffn_expansion_factor, bias, LayerNorm_type),
-            ShallowGatedCNNBlockv2(dim=dim, bias=bias, LayerNorm_type=LayerNorm_type),
+            ShallowGatedCNNBlockv3(dim=dim, bias=bias, LayerNorm_type=LayerNorm_type),
             TransformerBlock(dim, heads[0], ffn_expansion_factor, bias, LayerNorm_type),
         )
         self.baseFeature = BaseFeatureExtraction(dim=dim, num_heads=heads[2])
@@ -236,13 +236,13 @@ class Restormer_Decoder(nn.Module):
 
         self.reduce_channel = nn.Conv2d(int(dim * 2), int(dim), kernel_size=1, bias=bias)
         # self.encoder_level2 = nn.Sequential(
-        #     *[ShallowGatedCNNBlockv3(dim=dim, ffn_expansion_factor=ffn_expansion_factor, bias=bias, LayerNorm_type=LayerNorm_type) for _ in range(num_blocks[1])]
+        #     *[ShallowGatedCNNBlockv2(dim=dim, bias=bias, LayerNorm_type=LayerNorm_type) for _ in range(num_blocks[1])]
         # )
         self.encoder_level2 = nn.Sequential(
             TransformerBlock(dim, heads[1], ffn_expansion_factor, bias, LayerNorm_type),
-            ShallowGatedCNNBlockv2(dim=dim, bias=bias, LayerNorm_type=LayerNorm_type),
+            ShallowGatedCNNBlockv3(dim=dim, bias=bias, LayerNorm_type=LayerNorm_type),
             TransformerBlock(dim, heads[1], ffn_expansion_factor, bias, LayerNorm_type),
-            ShallowGatedCNNBlockv2(dim=dim, bias=bias, LayerNorm_type=LayerNorm_type),
+            ShallowGatedCNNBlockv3(dim=dim, bias=bias, LayerNorm_type=LayerNorm_type),
         )
         self.output = nn.Sequential(
             nn.Conv2d(int(dim), int(dim)//2, kernel_size=3, stride=1, padding=1, bias=bias),

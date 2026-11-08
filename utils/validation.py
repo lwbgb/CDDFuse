@@ -248,7 +248,8 @@ class ValidationManager:
         # 所有数据集成功评估后，再写入任何 best，避免后一个数据集失败时留下单边结果。
         for name, record in records.items():
             if record["improved"]:
-                model.save_model(pending_best[name]["checkpoint"])
+                # model.save_model(pending_best[name]["checkpoint"])
+                ...
         self.best = pending_best
         self.manifests = pending_manifests
         self.output_dir.mkdir(parents=True, exist_ok=True)

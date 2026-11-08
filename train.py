@@ -33,7 +33,7 @@ def train(opt: TrainConfig) -> Path:
     validators = []
     manager = None
     if opt.get('validation_enabled', False):
-        selection_metrics = {"RoadScene": "SD", "M3FD": "Qabf"}
+        selection_metrics = {"RoadScene": "SD", "M3FD": "MI"}
         dataset_names = list(opt.get('validation_datasets', []))
         if not dataset_names:
             raise ValueError("启用验证时 validation_datasets 不能为空")

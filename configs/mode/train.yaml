@@ -1,7 +1,7 @@
-n_epochs: 120 # total epoch
-epoch_gap: 40  # epoches of Phase I 
-start_epoch: 106
-continue_train: True
+n_epochs: 100 # total epoch
+epoch_gap: 30  # epoches of Phase I 
+start_epoch: 1
+continue_train: False
 n_epochs_decay: 20
 lr: 5e-5
 min_lr: 1e-6
@@ -11,9 +11,9 @@ print_iter_freq: 4
 display_freq: 100
 save_latest_freq: 1
 save_epoch_freq: 5
-run_dir: 2SGCv2_2TF_cross_
-ckp_name: CDDFuse_sgc_epoch_105.pth
-load_dir: "2SGCv2_2TF_cross_"
+run_dir: 2SGCv3_2TF_cross_seed2002
+ckp_name: CDDFuse_sgc_epoch_126.pth
+load_dir: "2SGCv3_2TF_cross_v3"
 norm: layer
 isTrain: True
 
@@ -40,13 +40,13 @@ reset_lr_on_resume: False # 保留 Adam 状态，按 resume_lrs 选择性覆盖�
 resume_lrs:
   # optimizer_encoder: 1e-5
   # optimizer_decoder: 1e-5
-  optimizer_base_fusion: 1e-4
-  optimizer_detail_fusion: 1e-4
+  optimizer_base_fusion: 2e-6
+  optimizer_detail_fusion: 2e-6
 
 # device
 device: gpu
 use_bf16: True  # 浮点计算加速
-seed: 1696
+seed: 2002
 
 # dataset
 batch_size: 8
